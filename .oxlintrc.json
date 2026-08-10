@@ -1,5 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "ignorePatterns": ["src/routeTree.gen.ts"],
   "env": {
     "browser": true,
     "es6": true
@@ -7,6 +8,14 @@
   "plugins": [
     "react",
     "oxc"
+  ],
+  "overrides": [
+    {
+      "files": ["src/routes/**"],
+      "rules": {
+        "react/only-export-components": "off"
+      }
+    }
   ],
   "rules": {
     "no-undef": "error",
