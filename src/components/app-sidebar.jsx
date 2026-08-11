@@ -9,6 +9,7 @@ import {
   FileBarChartIcon,
   HistoryIcon,
   LayoutDashboardIcon,
+  MessageCircle,
   SettingsIcon,
   ShieldAlertIcon,
   StethoscopeIcon,
@@ -34,6 +35,14 @@ const operationsNavigation = [
   { title: "EMR Case Viewer", to: "/emr-viewer", icon: StethoscopeIcon, badge: "Draft" },
   { title: "Coding Review", to: "/coding-review", icon: BriefcaseMedicalIcon, badge: "Draft" },
   { title: "Claim & Alerts", to: "/claim-alerts", icon: ShieldAlertIcon, badge: "12" },
+
+]
+
+const speechtotextNavigation = [
+   { title: "Dashboard Conversation", to: "/dashboard-conversation", icon: LayoutDashboardIcon },
+     // { title: "Speech to text", to: "/speech-to-text", icon: MessageCircle },
+  // { title: "Result", to: "/result-page", icon: LayoutDashboardIcon },
+
 ]
 
 const insightNavigation = [
@@ -61,6 +70,7 @@ export function AppSidebar(props) {
 
       <SidebarContent className="gap-0 px-2 py-4">
         <NavigationMenu label="DRG Operations" items={operationsNavigation} pathname={pathname} />
+        <NavigationMenu label="Speech to text" items={speechtotextNavigation} pathname={pathname} />
         <NavigationMenu label="Insights" items={insightNavigation} pathname={pathname} />
         <div className="my-4 border-t border-sidebar-border" />
         <NavigationMenu label="Administration" items={administrationNavigation} pathname={pathname} />

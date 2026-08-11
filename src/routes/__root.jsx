@@ -92,6 +92,9 @@ const breadcrumbByPath = {
   "/coding-review": { section: "DRG Operations", page: "Coding Review" },
   "/claim-alerts": { section: "DRG Operations", page: "Claim & Alerts" },
   "/revenue-risk": { section: "Insights", page: "Revenue & Risk" },
+  "/speech-to-text": { section: "Speech to text", page: "Speech to text" },
+  "/dashboard-conversation": { section: "Speech to text", page: "Dashboard Conversation" },
+  "/result-page": { section: "Speech to text", page: "Result" },
 }
 
 function NotFound() {
