@@ -16,6 +16,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { Toaster } from "@/components/ui/toast-notification"
 
 export const Route = createRootRoute({
   component: RootLayout,
@@ -28,37 +29,22 @@ function RootLayout() {
 
   return (
     <SidebarProvider>
+      <Toaster />
       <AppSidebar />
       <SidebarInset className="bg-background">
-        <header className="flex h-16 shrink-0 items-center border-b border-border bg-white px-4 md:px-6">
-          <SidebarTrigger className="mr-3 md:hidden" />
-          <p className="text-2xl font-bold tracking-tight text-primary">
+        <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center border-b border-border bg-white px-3 sm:px-4 md:px-6">
+          <SidebarTrigger className="mr-2 sm:mr-3 md:hidden" />
+          <p className="text-lg sm:text-2xl font-bold tracking-tight text-primary truncate">
             SMART DRG<span className="text-sky-500">+</span> AI
           </p>
 
           <div className="ml-auto flex items-center gap-2 sm:gap-4">
-            <Button variant="outline" className="h-10 gap-2 border-border px-3 text-sm font-medium">
-              <CalendarDaysIcon className="size-4 text-muted-foreground" />
-              <span className="hidden sm:inline">20 พ.ค. 2567</span>
-              <ChevronDownIcon className="size-4 text-muted-foreground" />
-            </Button>
-            <button
-              type="button"
-              aria-label="การแจ้งเตือน"
-              className="relative grid size-10 place-items-center rounded-lg text-primary transition-colors hover:bg-accent"
-            >
-              <BellIcon className="size-5" />
-              <span className="absolute right-1 top-1 grid size-4 place-items-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground">
-                3
-              </span>
-            </button>
-            <div className="hidden h-8 border-l border-border sm:block" />
-            <NavUser user={currentUser} className="w-48 sm:w-60" />
+            <NavUser user={currentUser} className="w-auto max-w-[150px] sm:w-56 sm:max-w-none md:w-60" />
           </div>
         </header>
-        <div className="px-4 py-3 md:px-6">
+        <div className="overflow-x-auto px-3 py-2 sm:px-4 sm:py-3 md:px-6">
           <Breadcrumb>
-            <BreadcrumbList className="normal-case text-sm tracking-normal">
+            <BreadcrumbList className="normal-case text-xs sm:text-sm tracking-normal flex-nowrap whitespace-nowrap">
               <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
               <BreadcrumbSeparator />
               {breadcrumb.section && (
@@ -75,7 +61,7 @@ function RootLayout() {
             </BreadcrumbList>
           </Breadcrumb>
         </div>
-        <main className="flex-1 px-4 py-2 md:px-6 md:py-3">
+        <main className="flex-1 px-3 py-3 sm:px-4 sm:py-4 md:px-6">
           <Outlet />
         </main>
       </SidebarInset>

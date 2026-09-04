@@ -1,4 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router"
-import { ProductDraftPage } from "@/features/product-drafts/draft-page"
+import { CaseReviewPage } from "@/features/case-review/case-review-page"
 
-export const Route = createFileRoute("/emr-viewer")({ component: () => <ProductDraftPage type="emr" /> })
+export const Route = createFileRoute("/emr-viewer")({ component: () => <CaseReviewPage initialTab="emr" /> })

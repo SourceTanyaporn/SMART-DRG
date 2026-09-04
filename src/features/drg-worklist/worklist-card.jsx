@@ -4,10 +4,10 @@ import { drgWorklistData } from "@/features/drg-worklist/data"
 
 export function WorklistCard({ onCaseSelect, selectedCaseAn }) {
   return (
-    <section className="rounded-xl border border-[#edf0f5] bg-card p-5">
-      <div className="mb-5">
-        <h2 className="text-lg font-semibold text-black">DRG Worklist</h2>
-        <p className="mt-1 text-sm text-muted-foreground">รายการผู้ป่วยที่รอการตรวจสอบ DRG</p>
+    <section className="rounded-xl border border-[#edf0f5] bg-card p-3.5 sm:p-5">
+      <div className="mb-3.5 sm:mb-5">
+        <h2 className="text-base sm:text-lg font-semibold text-black">DRG Worklist</h2>
+        <p className="text-xs sm:text-sm text-muted-foreground">รายการผู้ป่วยที่รอการตรวจสอบ DRG</p>
       </div>
       <DataTable
         columns={drgWorklistColumns}

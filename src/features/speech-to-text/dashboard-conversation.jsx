@@ -10,6 +10,8 @@ import {
   Grid2X2,
   List,
   ChevronDown,
+  UserRound,
+  Stethoscope,
 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
@@ -24,6 +26,8 @@ const notebookData = [
     time: "14:00 น.",
     source: "1 รายการ",
     users: "3 คน",
+    doctor: "นพ.สมศัก มหาประลัย",
+    patient: "นาย องอาจ มองทางไกล",
   },
   {
     id: 2,
@@ -34,6 +38,8 @@ const notebookData = [
     time: "14:00 น.",
     source: "1 รายการ",
     users: "3 คน",
+        doctor: "นพ.สมศัก มหาประลัย",
+    patient: "นาย องอาจ มองทางไกล",
   },
   {
     id: 3,
@@ -44,6 +50,8 @@ const notebookData = [
     time: "14:00 น.",
     source: "1 รายการ",
     users: "3 คน",
+        doctor: "นพ.สมศัก มหาประลัย",
+    patient: "นาย องอาจ มองทางไกล",
   },
   {
     id: 4,
@@ -54,6 +62,8 @@ const notebookData = [
     time: "14:00 น.",
     source: "1 รายการ",
     users: "3 คน",
+        doctor: "นพ.สมศัก มหาประลัย",
+    patient: "นาย องอาจ มองทางไกล",
   },
   {
     id: 5,
@@ -64,6 +74,8 @@ const notebookData = [
     time: "14:00 น.",
     source: "1 รายการ",
     users: "3 คน",
+        doctor: "นพ.สมศัก มหาประลัย",
+    patient: "นาย องอาจ มองทางไกล",
   },
   {
     id: 6,
@@ -74,6 +86,8 @@ const notebookData = [
     time: "14:00 น.",
     source: "1 รายการ",
     users: "3 คน",
+        doctor: "นพ.สมศัก มหาประลัย",
+    patient: "นาย องอาจ มองทางไกล",
   },
 ];
 
@@ -152,6 +166,17 @@ function NotebookCard({ item, isCreate = false, onClick }) {
       </div>
 
       <div className="mt-4 space-y-2 text-[11px] text-[#a0a8b6]">
+        <div className="mt-2 space-y-1 text-[11px] text-[#8a94a6]">
+  <div className="flex items-center gap-1.5">
+    <UserRound size={12} />
+    <span>{item.patient}</span>
+  </div>
+
+  <div className="flex items-center gap-1.5">
+    <Stethoscope size={12} />
+    <span>{item.doctor}</span>
+  </div>
+</div>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5">
             <CalendarDays size={13} />
@@ -199,11 +224,11 @@ export function DashboardConversation() {
       <div className="p-5">
         <div
           className="
-          mb-3 flex items-center justify-between gap-2 rounded-xl
-           bg-white px-3 py-2 
+          mb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl
+           bg-white px-1 sm:px-3 py-2 
         "
         >
-          <div className="relative w-[400px]">
+          <div className="relative w-full sm:w-[320px] md:w-[400px]">
             <input
               type="text"
               value={search}
@@ -274,64 +299,183 @@ export function DashboardConversation() {
 
         </div>
 
-        {viewMode === "grid" ? (
-          <div
-            className="
-            grid grid-cols-1 gap-7
-            sm:grid-cols-2
-            lg:grid-cols-3
-            xl:grid-cols-4
+  {viewMode === "grid" ? (
+  <div
+    className="
+      grid grid-cols-1 gap-7
+      sm:grid-cols-2
+      lg:grid-cols-3
+      xl:grid-cols-4
+    "
+  >
+    <NotebookCard
+      isCreate
+      onClick={() => navigate("/speech-to-text")}
+    />
+
+    {filteredData.map((item) => (
+      <NotebookCard
+        key={item.id}
+        item={item}
+        onClick={() => navigate("/speech-to-text")}
+      />
+    ))}
+  </div>
+) : (
+  <div className="space-y-2">
+
+    {/* Create Notebook */}
+    <Link
+      to="/speech-to-text"
+      className="
+        group flex h-[72px] w-full cursor-pointer
+        items-center justify-center
+        rounded-lg border border-dashed border-[#78aaf5]
+        bg-[#edf5ff]
+        transition-all
+        hover:border-[#1677ff]
+        hover:bg-[#e7f1ff]
+      "
+    >
+      <div className="flex items-center gap-3">
+        <div
+          className="
+            flex h-9 w-9 items-center justify-center
+            rounded-full bg-[#003b7a] text-white
+            transition-transform
+            group-hover:scale-105
           "
-          >
-            <NotebookCard isCreate onClick={() => navigate("/speech-to-text")} />
+        >
+          <Plus size={21} strokeWidth={1.8} />
+        </div>
 
-            {filteredData.map((item) => (
-              <NotebookCard key={item.id} item={item} onClick={() => navigate("/speech-to-text")} />
-            ))}
+        <span className="text-xs font-semibold text-[#003b7a]">
+          สร้าง Notebook ใหม่
+        </span>
+      </div>
+    </Link>
+
+    {/* Notebook List */}
+    {filteredData.map((item) => (
+      <Link
+        key={item.id}
+        to="/speech-to-text"
+        className="
+          flex min-h-[68px] w-full cursor-pointer
+          items-center gap-4
+          rounded-lg border border-[#e5ebf4]
+          bg-white px-3 py-2
+          transition-all
+          hover:border-[#b8d3f7]
+          hover:shadow-sm
+        "
+      >
+        {/* Icon */}
+        <div
+          className="
+            flex h-9 w-9 shrink-0
+            items-center justify-center
+            rounded-lg bg-[#eef5ff]
+          "
+        >
+          <FileText
+            size={20}
+            strokeWidth={1.8}
+            className="text-[#4b9cff]"
+          />
+        </div>
+
+        {/* Title */}
+        <div className="w-[180px] shrink-0">
+          <h3 className="text-xs font-bold text-[#0066cc]">
+            {item.title}
+          </h3>
+        </div>
+
+        {/* Description */}
+        <div className="min-w-0 flex-1">
+          <p className="line-clamp-2 text-[11px] leading-4 text-[#737b8c]">
+            {item.description}
+          </p>
+        </div>
+
+        {/* Date / Time */}
+        <div className="mt-2 space-y-1 text-[11px] text-[#8a94a6]">
+  <div className="flex items-center gap-1.5">
+    <UserRound size={12} />
+    <span>{item.patient}</span>
+  </div>
+
+  <div className="flex items-center gap-1.5">
+    <Stethoscope size={12} />
+    <span>{item.doctor}</span>
+  </div>
+</div>
+        <div
+          className="
+            hidden w-[110px] shrink-0
+            text-[10px] text-[#a0a8b6]
+            lg:block
+          "
+        >
+          <div className="flex items-center gap-1">
+            <CalendarDays size={11} />
+            <span>{item.date}</span>
           </div>
-        ) : (
-          <div className="space-y-2">
-            {filteredData.map((item) => (
-              <div
-                key={item.id}
-                className="
-              cursor-pointer 
-                flex items-center gap-4 rounded-xl
-                border border-[#e5ebf4] bg-white p-4
-                hover:border-[#b8d3f7]
-              "
-              >
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#eef5ff]">
-                  <FileText
-                    size={22}
-                    className="text-[#4b9cff]"
-                  />
-                </div>
 
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-sm font-bold text-[#0066cc]">
-                    {item.title}
-                  </h3>
-                  <p className="mt-1 truncate text-xs text-[#737b8c]">
-                    {item.description}
-                  </p>
-                </div>
-
-                <div className="hidden text-right text-[11px] text-[#a0a8b6] md:block">
-                  <div>{item.date}</div>
-                  <div className="mt-1">{item.time}</div>
-                </div>
-
-                <button
-                  type="button"
-                  className="text-[#a8c5e9] hover:text-[#1677ff]"
-                >
-                  <MoreVertical size={18} />
-                </button>
-              </div>
-            ))}
+          <div className="mt-1 flex items-center gap-1">
+            <Clock3 size={11} />
+            <span>{item.time}</span>
           </div>
-        )}
+        </div>
+
+        {/* Source */}
+        <div
+          className="
+            hidden w-[90px] shrink-0
+            text-[10px] text-[#a0a8b6]
+            md:block
+          "
+        >
+          <div>
+            แหล่งข้อมูล{" "}
+            <span className="font-medium text-[#1677ff]">
+              {item.source}
+            </span>
+          </div>
+
+          <div className="mt-1">
+            จำนวนผู้สนทนา{" "}
+            <span className="font-medium text-[#1677ff]">
+              {item.users}
+            </span>
+          </div>
+        </div>
+
+        {/* More */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          className="
+            flex h-7 w-7 shrink-0
+            items-center justify-center
+            rounded-full
+            bg-[#eef5ff]
+            text-[#a8c5e9]
+            transition-colors
+            hover:bg-[#dcecff]
+            hover:text-[#1677ff]
+          "
+        >
+          <MoreVertical size={16} />
+        </button>
+      </Link>
+    ))}
+  </div>
+)}
       </div>
 
     </section>

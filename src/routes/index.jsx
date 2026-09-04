@@ -23,32 +23,32 @@ function DashboardPage() {
 
   return (
     <div className="space-y-4">
-      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
       {dashboardStats.map((stat) => {
         const Icon = stat.icon
 
         return (
           <Card
             key={stat.label}
-            className="rounded-xl border border-[#edf0f5] px-5 py-4 shadow-none ring-0"
+            className="rounded-xl border border-[#edf0f5] p-3.5 sm:p-4 xl:p-4.5 shadow-none ring-0"
             style={{ "--card-spacing": "0.75rem" }}
           >
-            <div className="flex items-center gap-5">
-              <div className={`grid size-20 shrink-0 place-items-center rounded-xl ${stat.iconClass}`}>
-                <Icon className="size-8" strokeWidth={2} />
+            <div className="flex items-center gap-3.5 sm:gap-4">
+              <div className={`grid size-12 sm:size-14 xl:size-16 shrink-0 place-items-center rounded-xl ${stat.iconClass}`}>
+                <Icon className="size-6 sm:size-7" strokeWidth={2} />
               </div>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-black">{stat.label}</p>
-                <div className="mt-1 flex items-baseline gap-2">
-                  <p className="text-2xl font-medium tracking-tight text-black">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-xs sm:text-sm font-semibold text-black">{stat.label}</p>
+                <div className="mt-0.5 sm:mt-1 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+                  <p className="text-xl sm:text-2xl font-bold tracking-tight text-black">
                     {stat.value}
                   </p>
-                  {stat.unit && <span className="text-sm font-semibold text-black">{stat.unit}</span>}
+                  {stat.unit && <span className="text-xs sm:text-sm font-semibold text-black">{stat.unit}</span>}
                 </div>
-                <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                  <ArrowUpIcon className="size-3 text-emerald-500" />
-                  <span className="text-emerald-600">{stat.growth}</span>
-                  <span>{stat.comparison}</span>
+                <p className="mt-0.5 sm:mt-1 flex flex-wrap items-center gap-x-1 gap-y-0.5 text-[11px] sm:text-xs text-muted-foreground">
+                  <ArrowUpIcon className="size-3 shrink-0 text-emerald-500" />
+                  <span className="font-medium text-emerald-600">{stat.growth}</span>
+                  <span className="truncate">{stat.comparison}</span>
                 </p>
               </div>
             </div>
@@ -56,12 +56,14 @@ function DashboardPage() {
         )
       })}
       </section>
-      <section className="grid items-start gap-4 xl:grid-cols-[minmax(0,1.8fr)_minmax(25rem,1fr)]">
-        <div className="space-y-4">
+      <section className="grid items-start gap-4 grid-cols-1 xl:grid-cols-12">
+        <div className="space-y-4 xl:col-span-7 2xl:col-span-8">
           <WorklistCard onCaseSelect={setSelectedCase} selectedCaseAn={selectedCase.an} />
           <DashboardCharts />
         </div>
-        <CaseReviewPanel caseData={selectedCase} />
+        <div className="xl:col-span-5 2xl:col-span-4">
+          <CaseReviewPanel caseData={selectedCase} />
+        </div>
       </section>
     </div>
   )

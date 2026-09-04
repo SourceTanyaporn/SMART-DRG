@@ -36,7 +36,7 @@ const revenueConfig = {
 
 export function DashboardCharts() {
   return (
-    <section className="grid gap-4 lg:grid-cols-[minmax(16rem,0.8fr)_minmax(0,1.5fr)]">
+    <section className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-[minmax(14rem,0.85fr)_minmax(0,1.15fr)]">
       <RiskDistribution />
       <RevenueTrend />
     </section>
@@ -45,20 +45,20 @@ export function DashboardCharts() {
 
 function RiskDistribution() {
   return (
-    <section className="rounded-xl border border-[#edf0f5] bg-card p-5">
-      <h2 className="text-base font-semibold text-foreground">การกระจายความเสี่ยง</h2>
-      <div className="mt-2 grid items-center gap-2 sm:grid-cols-[minmax(0,1fr)_9rem] lg:grid-cols-1 xl:grid-cols-[minmax(0,1fr)_8rem]">
-        <ChartContainer config={riskConfig} className="h-52 min-h-52 aspect-auto">
+    <section className="rounded-xl border border-[#edf0f5] bg-card p-3.5 sm:p-4.5 flex flex-col justify-between">
+      <h2 className="text-sm sm:text-base font-semibold text-foreground">การกระจายความเสี่ยง</h2>
+      <div className="mt-2 flex flex-col sm:flex-row md:flex-col xl:flex-row items-center justify-around gap-2 sm:gap-4">
+        <ChartContainer config={riskConfig} className="h-48 sm:h-52 min-h-48 sm:min-h-52 w-full max-w-[220px] aspect-auto">
           <PieChart>
             <ChartTooltip content={<ChartTooltipContent nameKey="name" hideLabel />} />
-            <Pie data={riskData} dataKey="value" nameKey="name" innerRadius={52} outerRadius={76} paddingAngle={3} strokeWidth={0}>
+            <Pie data={riskData} dataKey="value" nameKey="name" innerRadius={48} outerRadius={72} paddingAngle={3} strokeWidth={0}>
               {riskData.map((item) => <Cell key={item.name} fill={item.fill} />)}
               <Label
                 content={({ viewBox }) => {
                   if (!viewBox || !("cx" in viewBox) || !("cy" in viewBox)) return null
                   return (
                     <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
-                      <tspan x={viewBox.cx} className="fill-foreground text-2xl font-bold">512</tspan>
+                      <tspan x={viewBox.cx} className="fill-foreground text-xl sm:text-2xl font-bold">512</tspan>
                       <tspan x={viewBox.cx} dy="1.45em" className="fill-muted-foreground text-xs">เคสทั้งหมด</tspan>
                     </text>
                   )
@@ -67,7 +67,7 @@ function RiskDistribution() {
             </Pie>
           </PieChart>
         </ChartContainer>
-        <ul className="space-y-2.5 text-xs">
+        <ul className="flex flex-wrap sm:flex-col justify-center gap-2 sm:gap-2.5 text-xs">
           {riskData.map((item) => (
             <li key={item.name} className="flex items-start gap-2">
               <span className="mt-1 size-2.5 shrink-0 rounded-sm" style={{ backgroundColor: item.fill }} />
@@ -82,19 +82,19 @@ function RiskDistribution() {
 
 function RevenueTrend() {
   return (
-    <section className="rounded-xl border border-[#edf0f5] bg-card p-5">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-base font-semibold text-foreground">แนวโน้มรายได้ (บาท)</h2>
-        <div className="flex items-center gap-3 text-xs">
+    <section className="rounded-xl border border-[#edf0f5] bg-card p-3.5 sm:p-4.5 flex flex-col justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
+        <h2 className="text-sm sm:text-base font-semibold text-foreground">แนวโน้มรายได้ (บาท)</h2>
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs">
           <LegendItem color="#2878e2" label="รายได้คาดการณ์" />
           <LegendItem color="#7537d8" label="รายได้จริง" />
         </div>
       </div>
-      <ChartContainer config={revenueConfig} className="mt-3 h-56 min-h-56 aspect-auto">
-        <LineChart data={revenueData} margin={{ top: 8, right: 4, left: -18, bottom: 0 }}>
+      <ChartContainer config={revenueConfig} className="mt-2 sm:mt-3 h-48 sm:h-56 min-h-48 sm:min-h-56 aspect-auto">
+        <LineChart data={revenueData} margin={{ top: 8, right: 8, left: -14, bottom: 0 }}>
           <CartesianGrid vertical={false} strokeDasharray="3 3" />
           <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={10} />
-          <YAxis tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => `${value / 1000000}M`} />
+          <YAxis tickLine={false} axisLine={false} tickMargin={6} tickFormatter={(value) => `${value / 1000000}M`} />
           <ChartTooltip content={<ChartTooltipContent formatter={(value, name) => <><span>{revenueConfig[name]?.label}</span><span className="ml-auto font-mono font-semibold">฿{Number(value).toLocaleString()}</span></>} />} />
           <Line type="monotone" dataKey="expected" stroke="var(--color-expected)" strokeWidth={2.5} dot={{ r: 3, fill: "var(--color-expected)" }} activeDot={{ r: 5 }} />
           <Line type="monotone" dataKey="actual" stroke="var(--color-actual)" strokeWidth={2.5} dot={{ r: 3, fill: "var(--color-actual)" }} activeDot={{ r: 5 }} />

@@ -8,7 +8,7 @@ import {
   Printer,
   Share2,
   RefreshCw,
-    ClipboardList,
+  ClipboardList,
   UserRound,
   Stethoscope,
   BarChart3,
@@ -26,20 +26,20 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 export function ResultPage() {
-     const navigate = useNavigate();
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-white p-2 text-[12px] text-slate-700">
-     
+
       <div className="mb-3 flex items-center justify-between">
         <Link to="/speech-to-text">
-        <button
-          type="button"
-          className="cursor-pointer flex h-8 items-center gap-1 rounded-md border border-blue-500 bg-white px-3 text-blue-600 hover:bg-blue-50"
-        >
-          <ArrowLeft size={15} />
-          ย้อนกลับ
-        </button>
-</Link>
+          <button
+            type="button"
+            className="cursor-pointer flex h-8 items-center gap-1 rounded-md border border-blue-500 bg-white px-3 text-blue-600 hover:bg-blue-50"
+          >
+            <ArrowLeft size={15} />
+            ย้อนกลับ
+          </button>
+        </Link>
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -78,165 +78,165 @@ export function ResultPage() {
       {/* ================= Patient + Vitals ================= */}
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
         {/* Patient */}
-     <section className="w-full overflow-hidden rounded-xl border border-slate-200 bg-white">
-  <div className="p-3">
-    {/* ================= Patient ================= */}
-    <div className="flex items-center justify-between">
-      <div>
-   <div className="flex items-center gap-3">
-  {/* Avatar */}
-  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-50">
-    <User size={28} className="text-blue-400" />
-  </div>
+        <section className="w-full overflow-hidden rounded-xl border border-slate-200 bg-white">
+          <div className="p-3">
+            {/* ================= Patient ================= */}
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-3">
+                  {/* Avatar */}
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-50">
+                    <User size={28} className="text-blue-400" />
+                  </div>
 
-  {/* Patient Info */}
-  <div>
-    <div className="text-lg font-bold text-slate-700">
-      น.ส. กุลธิดา ชูมายงสี
-      <span className="ml-1 text-pink-500">♀</span>
-    </div>
+                  {/* Patient Info */}
+                  <div>
+                    <div className="text-lg font-bold text-slate-700">
+                      น.ส. กุลธิดา ชูมายงสี
+                      <span className="ml-1 text-pink-500">♀</span>
+                    </div>
 
-    <div className="mt-1 text-sm text-slate-500">
-      อายุ 9 ปี 0 ด.
-    </div>
-  </div>
-</div>
+                    <div className="mt-1 text-sm text-slate-500">
+                      อายุ 9 ปี 0 ด.
+                    </div>
+                  </div>
+                </div>
 
 
-      </div>
+              </div>
 
-      <button
-        type="button"
-        className="flex h-9 w-9 items-center justify-center rounded-xl border border-purple-100 text-purple-400 hover:text-purple-600"
-      >
-        <Edit3 size={20} />
-      </button>
-    </div>
+              <button
+                type="button"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-purple-100 text-purple-400 hover:text-purple-600"
+              >
+                <Edit3 size={20} />
+              </button>
+            </div>
 
-    {/* ================= Hx ================= */}
-    <div className="my-3 border-t border-slate-100" />
+            {/* ================= Hx ================= */}
+            <div className="my-3 border-t border-slate-100" />
 
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50">
-          <HeartPulse size={23} className="text-red-400" />
-        </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-50">
+                  <HeartPulse size={23} className="text-red-400" />
+                </div>
 
-        <span className="font-semibold text-red-500">
-          Hx
-        </span>
-      </div>
+                <span className="font-semibold text-red-500">
+                  Hx
+                </span>
+              </div>
 
-      <button
-        type="button"
-        className="flex h-9 w-9 items-center justify-center rounded-xl border border-blue-100"
-      >
-        <Eye size={20} className="text-blue-400" />
-      </button>
-    </div>
+              <button
+                type="button"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-blue-100"
+              >
+                <Eye size={20} className="text-blue-400" />
+              </button>
+            </div>
 
-    {/* ================= Allergy ================= */}
-    <div className="my-3 border-t border-slate-100" />
+            {/* ================= Allergy ================= */}
+            <div className="my-3 border-t border-slate-100" />
 
-    <div className="flex items-center justify-between gap-3">
-      <div className="flex min-w-0 items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-50">
-          <Pill size={23} className="text-purple-400" />
-        </div>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-50">
+                  <Pill size={23} className="text-purple-400" />
+                </div>
 
-        <span className="shrink-0 font-semibold text-red-500">
-          แพ้ยา :
-        </span>
+                <span className="shrink-0 font-semibold text-red-500">
+                  แพ้ยา :
+                </span>
 
-        <span className="truncate rounded-lg border border-red-200 bg-red-50 px-4 py-1.5 text-sm text-red-500">
-          ยา: AMLODIPINE
-        </span>
-      </div>
+                <span className="truncate rounded-lg border border-red-200 bg-red-50 px-4 py-1.5 text-sm text-red-500">
+                  ยา: AMLODIPINE
+                </span>
+              </div>
 
-      <button
-        type="button"
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-blue-100"
-      >
-        <Eye size={20} className="text-blue-400" />
-      </button>
-    </div>
+              <button
+                type="button"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-blue-100"
+              >
+                <Eye size={20} className="text-blue-400" />
+              </button>
+            </div>
 
-    {/* ================= Rights ================= */}
-    <div className="my-3 border-t border-slate-100" />
+            {/* ================= Rights ================= */}
+            <div className="my-3 border-t border-slate-100" />
 
-    <div className="flex items-center gap-3 overflow-x-auto">
-      {/* สิทธิ */}
-      <div className="flex shrink-0 items-center gap-2">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-50">
-          <ShieldCheck size={22} className="text-teal-500" />
-        </div>
+            <div className="flex items-center gap-3 overflow-x-auto">
+              {/* สิทธิ */}
+              <div className="flex shrink-0 items-center gap-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-50">
+                  <ShieldCheck size={22} className="text-teal-500" />
+                </div>
 
-        <span className="font-semibold text-slate-700">
-          สิทธิ
-        </span>
+                <span className="font-semibold text-slate-700">
+                  สิทธิ
+                </span>
 
-        <div className="relative">
-          <select
-            defaultValue="บัตรทอง"
-            className="h-9 w-28 appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-7 text-sm text-slate-700 outline-none"
-          >
-            <option value="บัตรทอง">บัตรทอง</option>
-          </select>
+                <div className="relative">
+                  <select
+                    defaultValue="บัตรทอง"
+                    className="h-9 w-28 appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-7 text-sm text-slate-700 outline-none"
+                  >
+                    <option value="บัตรทอง">บัตรทอง</option>
+                  </select>
 
-          <ChevronDown
-            size={16}
-            className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 "
-          />
-        </div>
-      </div>
+                  <ChevronDown
+                    size={16}
+                    className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 "
+                  />
+                </div>
+              </div>
 
-      {/* จำนวนเงิน */}
-      <div className="flex shrink-0 items-center gap-2 border-l border-slate-200 pl-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-50">
-          <WalletCards size={21} className="text-purple-400" />
-        </div>
+              {/* จำนวนเงิน */}
+              <div className="flex shrink-0 items-center gap-2 border-l border-slate-200 pl-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-50">
+                  <WalletCards size={21} className="text-purple-400" />
+                </div>
 
-        <div className="text-sm">
-          <div className="font-semibold text-slate-700">
-            จำนวนเงิน
+                <div className="text-sm">
+                  <div className="font-semibold text-slate-700">
+                    จำนวนเงิน
+                  </div>
+                  <div className="text-slate-700">-</div>
+                </div>
+              </div>
+
+              {/* เบิกได้ */}
+              <div className="flex shrink-0 items-center gap-2 border-l border-slate-200 pl-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50">
+                  <ChartNoAxesColumnIncreasing
+                    size={21}
+                    className="text-blue-500"
+                  />
+                </div>
+
+                <div className="text-sm">
+                  <div className="font-semibold text-slate-700">
+                    เบิกได้
+                  </div>
+                  <div className="text-slate-700">-</div>
+                </div>
+              </div>
+
+              {/* เบิกไม่ได้ */}
+              <div className="flex shrink-0 items-center gap-2 border-l border-slate-200 pl-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-50">
+                  <Wallet size={21} className="text-orange-400" />
+                </div>
+
+                <div className="text-sm">
+                  <div className="font-semibold text-slate-700">
+                    เบิกไม่ได้
+                  </div>
+                  <div className="text-slate-700">-</div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="text-slate-700">-</div>
-        </div>
-      </div>
-
-      {/* เบิกได้ */}
-      <div className="flex shrink-0 items-center gap-2 border-l border-slate-200 pl-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50">
-          <ChartNoAxesColumnIncreasing
-            size={21}
-            className="text-blue-500"
-          />
-        </div>
-
-        <div className="text-sm">
-          <div className="font-semibold text-slate-700">
-            เบิกได้
-          </div>
-          <div className="text-slate-700">-</div>
-        </div>
-      </div>
-
-      {/* เบิกไม่ได้ */}
-      <div className="flex shrink-0 items-center gap-2 border-l border-slate-200 pl-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-50">
-          <Wallet size={21} className="text-orange-400" />
-        </div>
-
-        <div className="text-sm">
-          <div className="font-semibold text-slate-700">
-            เบิกไม่ได้
-          </div>
-          <div className="text-slate-700">-</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+        </section>
 
         <section className="rounded-xl border border-slate-200 bg-white">
           <div className="p-2">
@@ -245,7 +245,7 @@ export function ResultPage() {
             </div>
 
             <div className="grid grid-cols-6 gap-x-3 gap-y-2 pt-2 text-[10px]">
- 
+
               <VitalInput label="PR1" unit="mm" />
               <VitalInput label="BP1" unit="mm" />
               <VitalInput label="/" unit="mm" />
@@ -326,57 +326,57 @@ export function ResultPage() {
             อาการของผู้ป่วย
           </div>
 
-      <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-5">
-  <NoteCard
-    title="อาการสำคัญ"
-    icon={ClipboardList}
-    iconColor="text-blue-500"
-    iconBg="bg-blue-100"
-    bgColor="from-blue-50/80 to-white"
-    borderColor="border-blue-100"
-    text="ผู้ป่วยมีอาการอ่อนเพลียมากขึ้น โดยเฉพาะในช่วงบ่าย ร่วมกับมีอาการตามัวเล็กน้อยหลังตื่นนอน และยังคงมีอาการเบื่ออาหารร่วมกับน้ำหนักที่เคยได้รับการประเมินมาก่อน"
-  />
+          <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-5">
+            <NoteCard
+              title="อาการสำคัญ"
+              icon={ClipboardList}
+              iconColor="text-blue-500"
+              iconBg="bg-blue-100"
+              bgColor="from-blue-50/80 to-white"
+              borderColor="border-blue-100"
+              text="ผู้ป่วยมีอาการอ่อนเพลียมากขึ้น โดยเฉพาะในช่วงบ่าย ร่วมกับมีอาการตามัวเล็กน้อยหลังตื่นนอน และยังคงมีอาการเบื่ออาหารร่วมกับน้ำหนักที่เคยได้รับการประเมินมาก่อน"
+            />
 
-  <NoteCard
-    title="การเจ็บป่วยในปัจจุบัน"
-    icon={ClipboardList}
-    iconColor="text-emerald-500"
-    iconBg="bg-emerald-100"
-    bgColor="from-emerald-50/80 to-white"
-    borderColor="border-emerald-100"
-    text="ผู้ป่วยรายงานว่าช่วงที่ผ่านมาเริ่มมีอาการอ่อนเพลียมากขึ้น โดยอาการมักเป็นชัดในช่วงบ่าย ร่วมกับมีอาการตามัวเล็กน้อยในช่วงเช้าหลังตื่นนอน ผู้ป่วยไม่มีการกล่าวถึงอาการเวียนศีรษะ หมดสติ หรือปวดศีรษะ และมีความกังวลว่าตนเองอาจสัมพันธ์กับโรคเบาหวานที่เคยได้รับคำแนะนำจากแพทย์ก่อนหน้านี้"
-  />
+            <NoteCard
+              title="การเจ็บป่วยในปัจจุบัน"
+              icon={ClipboardList}
+              iconColor="text-emerald-500"
+              iconBg="bg-emerald-100"
+              bgColor="from-emerald-50/80 to-white"
+              borderColor="border-emerald-100"
+              text="ผู้ป่วยรายงานว่าช่วงที่ผ่านมาเริ่มมีอาการอ่อนเพลียมากขึ้น โดยอาการมักเป็นชัดในช่วงบ่าย ร่วมกับมีอาการตามัวเล็กน้อยในช่วงเช้าหลังตื่นนอน ผู้ป่วยไม่มีการกล่าวถึงอาการเวียนศีรษะ หมดสติ หรือปวดศีรษะ และมีความกังวลว่าตนเองอาจสัมพันธ์กับโรคเบาหวานที่เคยได้รับคำแนะนำจากแพทย์ก่อนหน้านี้"
+            />
 
-  <NoteCard
-    title="การตรวจร่างกาย"
-    icon={UserRound}
-    iconColor="text-orange-400"
-    iconBg="bg-orange-100"
-    bgColor="from-orange-50/80 to-white"
-    borderColor="border-orange-100"
-    text="ผู้ป่วยมีอาการอ่อนเพลียเพิ่มขึ้นในช่วงบ่าย ร่วมกับอาการตามัวหลังตื่นนอน ซึ่งอาจสัมพันธ์กับการควบคุมระดับน้ำตาลในเลือดที่ยังไม่เหมาะสม หรือภาวะแทรกซ้อนของโรคเบาหวาน โดยเฉพาะภาวะเบาหวานขึ้นจอประสาทตา (Diabetic Retinopathy)"
-  />
+            <NoteCard
+              title="การตรวจร่างกาย"
+              icon={UserRound}
+              iconColor="text-orange-400"
+              iconBg="bg-orange-100"
+              bgColor="from-orange-50/80 to-white"
+              borderColor="border-orange-100"
+              text="ผู้ป่วยมีอาการอ่อนเพลียเพิ่มขึ้นในช่วงบ่าย ร่วมกับอาการตามัวหลังตื่นนอน ซึ่งอาจสัมพันธ์กับการควบคุมระดับน้ำตาลในเลือดที่ยังไม่เหมาะสม หรือภาวะแทรกซ้อนของโรคเบาหวาน โดยเฉพาะภาวะเบาหวานขึ้นจอประสาทตา (Diabetic Retinopathy)"
+            />
 
-  <NoteCard
-    title="การแปลผลทางคลินิก"
-    icon={BarChart3}
-    iconColor="text-purple-500"
-    iconBg="bg-purple-100"
-    bgColor="from-purple-50/80 to-white"
-    borderColor="border-purple-100"
-    text="ยังไม่มีข้อมูลการตรวจร่างกายจากบทสนทนา"
-  />
+            <NoteCard
+              title="การแปลผลทางคลินิก"
+              icon={BarChart3}
+              iconColor="text-purple-500"
+              iconBg="bg-purple-100"
+              bgColor="from-purple-50/80 to-white"
+              borderColor="border-purple-100"
+              text="ยังไม่มีข้อมูลการตรวจร่างกายจากบทสนทนา"
+            />
 
-  <NoteCard
-    title="Doctor Note"
-    icon={FilePenLine}
-    iconColor="text-blue-500"
-    iconBg="bg-blue-100"
-    bgColor="from-indigo-50/80 to-white"
-    borderColor="border-indigo-100"
-    text="ผู้ป่วยมีอาการอ่อนเพลียและตามัวร่วมด้วย อาจสัมพันธ์กับภาวะแทรกซ้อนจากโรคเบาหวาน โดยเฉพาะภาวะเบาหวานขึ้นจอประสาทตา (Diabetic Retinopathy) จำเป็นต้องประเมินเพิ่มเติมด้วยการตรวจจอประสาทตา รวมถึงติดตามการควบคุมระดับน้ำตาลในเลือด"
-  />
-</div>
+            <NoteCard
+              title="Doctor Note"
+              icon={FilePenLine}
+              iconColor="text-blue-500"
+              iconBg="bg-blue-100"
+              bgColor="from-indigo-50/80 to-white"
+              borderColor="border-indigo-100"
+              text="ผู้ป่วยมีอาการอ่อนเพลียและตามัวร่วมด้วย อาจสัมพันธ์กับภาวะแทรกซ้อนจากโรคเบาหวาน โดยเฉพาะภาวะเบาหวานขึ้นจอประสาทตา (Diabetic Retinopathy) จำเป็นต้องประเมินเพิ่มเติมด้วยการตรวจจอประสาทตา รวมถึงติดตามการควบคุมระดับน้ำตาลในเลือด"
+            />
+          </div>
         </div>
       </section>
     </div>
@@ -396,7 +396,7 @@ function VitalInput({
 
       <div className="flex h-7 min-w-0 flex-1 items-center rounded-md border border-slate-200 bg-white">
         <input
-        placeholder={unit}
+          placeholder={unit}
           className="min-w-0 flex-1 bg-transparent px-2 text-[10px] outline-none"
         />
 
@@ -407,17 +407,17 @@ function VitalInput({
 
 function ScoreBox({ title, values }) {
   const scoreColors = [
-    "bg-green-600",   
-    "bg-green-500",  
-    "bg-lime-500",   
-    "bg-lime-400",   
-    "bg-yellow-400",  
-    "bg-yellow-500",  
-    "bg-amber-500",   
-    "bg-orange-500",  
-    "bg-orange-600",  
-    "bg-red-500",     
-    "bg-red-600",     
+    "bg-green-600",
+    "bg-green-500",
+    "bg-lime-500",
+    "bg-lime-400",
+    "bg-yellow-400",
+    "bg-yellow-500",
+    "bg-amber-500",
+    "bg-orange-500",
+    "bg-orange-600",
+    "bg-red-500",
+    "bg-red-600",
   ]
 
   return (
@@ -430,9 +430,8 @@ function ScoreBox({ title, values }) {
         {values.map((value, index) => (
           <label
             key={value}
-            className={`flex h-7 w-5 cursor-pointer flex-col items-center justify-center border-r border-white text-[8px] text-white ${
-              scoreColors[index]
-            }`}
+            className={`flex h-7 w-5 cursor-pointer flex-col items-center justify-center border-r border-white text-[8px] text-white ${scoreColors[index]
+              }`}
           >
             <span>{value}</span>
 

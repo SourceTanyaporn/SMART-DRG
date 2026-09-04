@@ -32,15 +32,15 @@ const operationsNavigation = [
   { title: "Dashboard", to: "/", icon: LayoutDashboardIcon },
   { title: "DRG Worklist", to: "/worklist", icon: ClipboardListIcon },
   { title: "Case Review", to: "/case-review", icon: FileBarChartIcon },
-  { title: "EMR Case Viewer", to: "/emr-viewer", icon: StethoscopeIcon, badge: "Draft" },
-  { title: "Coding Review", to: "/coding-review", icon: BriefcaseMedicalIcon, badge: "Draft" },
-  { title: "Claim & Alerts", to: "/claim-alerts", icon: ShieldAlertIcon, badge: "12" },
+  // { title: "EMR Case Viewer", to: "/emr-viewer", icon: StethoscopeIcon, badge: "Draft" },
+  // { title: "Coding Review", to: "/coding-review", icon: BriefcaseMedicalIcon, badge: "Draft" },
+  // { title: "Claim & Alerts", to: "/claim-alerts", icon: ShieldAlertIcon, badge: "12" },
 
 ]
 
 const speechtotextNavigation = [
-   { title: "Dashboard Conversation", to: "/dashboard-conversation", icon: LayoutDashboardIcon },
-     // { title: "Speech to text", to: "/speech-to-text", icon: MessageCircle },
+  { title: "Dashboard Conversation", to: "/dashboard-conversation", icon: LayoutDashboardIcon },
+  // { title: "Speech to text", to: "/speech-to-text", icon: MessageCircle },
   // { title: "Result", to: "/result-page", icon: LayoutDashboardIcon },
 
 ]
@@ -61,10 +61,47 @@ export function AppSidebar(props) {
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader className="h-16 border-b border-sidebar-border px-4 py-3">
-        <div className="flex items-center gap-3 overflow-hidden">
-          <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-sidebar-primary/10 text-sidebar-primary"><Building2Icon className="size-5" /></div>
-          <div className="min-w-0 leading-tight group-data-[collapsible=icon]:hidden"><p className="truncate text-sm font-semibold">โรงพยาบาลศิริสุข</p><p className="truncate text-[11px] text-muted-foreground">Sirisuk Hospital</p></div>
+      <SidebarHeader
+        className="
+    h-16
+    border-b
+    border-sidebar-border
+    px-4
+    py-3
+    group-data-[collapsible=icon]:px-0
+  "
+      >
+        <div
+          className="
+      flex
+      items-center
+      gap-3
+      overflow-hidden
+      group-data-[collapsible=icon]:justify-center
+    "
+        >
+          <div
+            className="
+        grid
+        size-9
+        shrink-0
+        place-items-center
+        rounded-lg
+        bg-sidebar-primary/10
+        text-sidebar-primary
+      "
+          >
+            <Building2Icon className="size-5" />
+          </div>
+
+          <div className="min-w-0 leading-tight group-data-[collapsible=icon]:hidden">
+            <p className="truncate text-sm font-semibold">
+              โรงพยาบาลศิริสุข
+            </p>
+            <p className="truncate text-[11px] text-muted-foreground">
+              Sirisuk Hospital
+            </p>
+          </div>
         </div>
       </SidebarHeader>
 
