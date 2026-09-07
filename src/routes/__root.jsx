@@ -34,15 +34,9 @@ function RootLayout() {
       <SidebarInset className="bg-background">
         <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center border-b border-border bg-white px-3 sm:px-4 md:px-6">
           <SidebarTrigger className="mr-2 sm:mr-3 md:hidden" />
-          <p className="text-lg sm:text-2xl font-bold tracking-tight text-primary truncate">
+          {/* <p className="text-lg sm:text-2xl font-bold tracking-tight text-primary truncate">
             SMART DRG<span className="text-sky-500">+</span> AI
-          </p>
-
-          <div className="ml-auto flex items-center gap-2 sm:gap-4">
-            <NavUser user={currentUser} className="w-auto max-w-[150px] sm:w-56 sm:max-w-none md:w-60" />
-          </div>
-        </header>
-        <div className="overflow-x-auto px-3 py-2 sm:px-4 sm:py-3 md:px-6">
+          </p> */}
           <Breadcrumb>
             <BreadcrumbList className="normal-case text-xs sm:text-sm tracking-normal flex-nowrap whitespace-nowrap">
               <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
@@ -60,8 +54,11 @@ function RootLayout() {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-        </div>
-        <main className="flex-1 px-3 py-3 sm:px-4 sm:py-4 md:px-6">
+          <div className="ml-auto flex items-center gap-2 sm:gap-4">
+            <NavUser user={currentUser} className="w-auto max-w-[150px] sm:w-56 sm:max-w-none md:w-60" />
+          </div>
+        </header>
+        <main className="flex-1 px-2 py-2 sm:px-2 sm:py-2 md:px-2">
           <Outlet />
         </main>
       </SidebarInset>

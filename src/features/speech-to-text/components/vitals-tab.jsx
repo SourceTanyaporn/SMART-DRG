@@ -1,0 +1,460 @@
+import { HeartPulse, Scale, Wind } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Button } from "@/components/ui/button";
+import { Grid } from "@/components/ui/grid";
+import { Select } from "@/components/ui/select";
+import { DualInput, InputField } from "@/components/ui/input";
+
+export const calculateMAP = (sys, dia) => {
+    const s = parseFloat(sys);
+    const d = parseFloat(dia);
+    if (isNaN(s) || isNaN(d) || s <= 0 || d <= 0) return "";
+    return String(Math.round(((2 * d + s) / 3) * 10) / 10);
+};
+
+export const calculateBMI = (wt, ht) => {
+    const w = parseFloat(wt);
+    const h = parseFloat(ht) / 100;
+    if (isNaN(w) || isNaN(h) || w <= 0 || h <= 0) return null;
+    const bmi = w / (h * h);
+    let status = "สมส่วน (Normal)";
+    let color = "text-emerald-700 bg-emerald-50 border-emerald-200";
+    if (bmi < 18.5) {
+        status = "น้ำหนักน้อย (Underweight)";
+        color = "text-sky-700 bg-sky-50 border-sky-200";
+    } else if (bmi >= 23 && bmi < 25) {
+        status = "ท้วม (Overweight)";
+        color = "text-amber-700 bg-amber-50 border-amber-200";
+    } else if (bmi >= 25 && bmi < 30) {
+        status = "อ้วนระดับ 1 (Obese I)";
+        color = "text-orange-700 bg-orange-50 border-orange-200";
+    } else if (bmi >= 30) {
+        status = "อ้วนระดับ 2 (Obese II)";
+        color = "text-rose-700 bg-rose-50 border-rose-200";
+    }
+    return { value: bmi.toFixed(1), status, color };
+};
+
+export const calculateBSA = (wt, ht) => {
+    const w = parseFloat(wt);
+    const h = parseFloat(ht);
+    if (isNaN(w) || isNaN(h) || w <= 0 || h <= 0) return "";
+    // Mosteller formula: sqrt((weight in kg * height in cm) / 3600)
+    return (Math.sqrt((w * h) / 3600)).toFixed(2);
+};
+
+export function ScoreBox({ title, values, value, onChange }) {
+    const painColors = [
+        "bg-emerald-500 hover:bg-emerald-600", // 0
+        "bg-emerald-400 hover:bg-emerald-500", // 1
+        "bg-lime-500 hover:bg-lime-600",       // 2
+        "bg-lime-400 hover:bg-lime-500",       // 3
+        "bg-yellow-400 hover:bg-yellow-500",   // 4
+        "bg-yellow-500 hover:bg-yellow-600",   // 5
+        "bg-amber-500 hover:bg-amber-600",     // 6
+        "bg-orange-500 hover:bg-orange-600",   // 7
+        "bg-orange-600 hover:bg-orange-700",   // 8
+        "bg-rose-500 hover:bg-rose-600",       // 9
+        "bg-rose-600 hover:bg-rose-700",       // 10
+    ];
+
+    const getPainLabel = (val) => {
+        const n = parseInt(val, 10);
+        if (isNaN(n)) return "";
+        if (n === 0) return "ไม่ปวด";
+        if (n <= 3) return "ปวดเล็กน้อย";
+        if (n <= 6) return "ปวดปานกลาง";
+        return "ปวดรุนแรง";
+    };
+
+    return (
+        <div className="flex flex-col justify-between h-full space-y-1.5">
+            <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-800">{title}</span>
+            </div>
+
+            <div className="flex w-full items-center gap-0.5 pt-0.5">
+                {values.map((v, index) => {
+                    const isSelected = String(value) === String(v);
+                    return (
+                        <button
+                            key={v}
+                            type="button"
+                            onClick={() => onChange?.(v)}
+                            className={`cursor-pointer flex-1 h-7 min-w-0 flex items-center justify-center rounded text-[9px] font-bold text-white transition-all ${painColors[index]} ${isSelected
+                                ? "ring-2 ring-blue-600 ring-offset-1 scale-105 z-10 shadow-xs font-black"
+                                : "opacity-85 hover:opacity-100 hover:scale-105"
+                                }`}
+                            title={`Pain Score: ${v} - ${getPainLabel(v)}`}
+                        >
+                            {v}
+                        </button>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
+export function VitalsTab({ formData, setFormData }) {
+    return (
+        <div className="flex h-full flex-col space-y-3.5">
+            {/* 3 Main Medical Category Cards Grid */}
+            <Grid cols={{ default: 1 }} className="@[700px]:grid-cols-3" gap={3}>
+
+                {/* Card 1: Circulation & Heart (ความดันและชีพจร) */}
+                <div className="flex flex-col rounded-xl border border-blue-100/90 bg-gradient-to-b from-blue-50/30 via-white to-white p-3 sm:p-3.5 shadow-2xs transition-all hover:border-blue-200">
+                    <div className="flex items-center gap-2 pb-2 mb-2.5 border-b border-blue-100/60">
+                        <div className="flex size-6.5 items-center justify-center rounded-md bg-blue-100/80 text-blue-600">
+                            <HeartPulse className="size-3.5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                            <h3 className="text-xs font-bold text-slate-800">
+                                ความดันโลหิตและชีพจร
+                            </h3>
+                        </div>
+                    </div>
+
+                    <div className="space-y-2.5 flex-1">
+                        {/* BP1 */}
+                        <DualInput
+                            label="BP1"
+                            size="sm"
+                            value1={formData.systolic || ""}
+                            value2={formData.diastolic || ""}
+                            onChange1={(val) => {
+                                const mapVal = calculateMAP(val, formData.diastolic);
+                                setFormData(prev => ({
+                                    ...prev,
+                                    systolic: val,
+                                    bp: `${val}/${prev.diastolic || ""}`,
+                                    map: mapVal || prev.map
+                                }));
+                            }}
+                            onChange2={(val) => {
+                                const mapVal = calculateMAP(formData.systolic, val);
+                                setFormData(prev => ({
+                                    ...prev,
+                                    diastolic: val,
+                                    bp: `${prev.systolic || ""}/${val}`,
+                                    map: mapVal || prev.map
+                                }));
+                            }}
+                            unit="mmHg"
+                        />
+
+                        {/* BP2 */}
+                        <DualInput
+                            label="BP2"
+                            size="sm"
+                            value1={formData.systolic2 || ""}
+                            value2={formData.diastolic2 || ""}
+                            onChange1={(val) => {
+                                const mapVal = calculateMAP(val, formData.diastolic2);
+                                setFormData(prev => ({
+                                    ...prev,
+                                    systolic2: val,
+                                    map2: mapVal || prev.map2
+                                }));
+                            }}
+                            onChange2={(val) => {
+                                const mapVal = calculateMAP(formData.systolic2, val);
+                                setFormData(prev => ({
+                                    ...prev,
+                                    diastolic2: val,
+                                    map2: mapVal || prev.map2
+                                }));
+                            }}
+                            unit="mmHg"
+                        />
+
+                        {/* MAP & MAP2 */}
+                        <Grid cols={2} gap={2} className="pt-0.5">
+                            <InputField
+                                label="MAP"
+                                unit="mmHg"
+                                size="sm"
+                                disabled
+                                inputClassName="text-center"
+                                value={formData.map || (formData.systolic && formData.diastolic ? calculateMAP(formData.systolic, formData.diastolic) : "")}
+                                onChange={(e) => setFormData(prev => ({ ...prev, map: e.target.value }))}
+                                placeholder="-"
+                            />
+                            <InputField
+                                disabled
+                                label="MAP2"
+                                unit="mmHg"
+                                size="sm"
+                                inputClassName="text-center"
+                                value={formData.map2 || (formData.systolic2 && formData.diastolic2 ? calculateMAP(formData.systolic2, formData.diastolic2) : "")}
+                                onChange={(e) => setFormData(prev => ({ ...prev, map2: e.target.value }))}
+                                placeholder="-"
+                            />
+                        </Grid>
+
+                        {/* PR1 & PR2 */}
+                        <Grid cols={2} gap={2} className="pt-0.5">
+                            <InputField
+                                label="PR"
+                                unit="bpm"
+                                size="sm"
+                                inputClassName="text-center"
+                                value={formData.pr || formData.pulse || ""}
+                                onChange={(e) => setFormData(prev => ({ ...prev, pr: e.target.value, pulse: e.target.value }))}
+                                placeholder="-"
+                            />
+                        </Grid>
+                    </div>
+                </div>
+
+                {/* Card 2: Respiration, Temperature & Oxygen (หายใจ ออกซิเจน อุณหภูมิ) */}
+                <div className="flex flex-col rounded-xl border border-sky-100/90 bg-gradient-to-b from-sky-50/30 via-white to-white p-3 sm:p-3.5 shadow-2xs transition-all hover:border-sky-200">
+                    <div className="flex items-center gap-2 pb-2 mb-2.5 border-b border-sky-100/60">
+                        <div className="flex size-6.5 items-center justify-center rounded-md bg-sky-100/80 text-sky-600">
+                            <Wind className="size-3.5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                            <h3 className="text-xs font-bold text-slate-800">
+                                การหายใจและอุณหภูมิ
+                            </h3>
+                        </div>
+                    </div>
+
+                    <div className="space-y-2.5 flex-1">
+                        {/* SpO2 */}
+                        <InputField
+                            label="O2sat"
+                            badge={formData.o2sat ? (
+                                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border ${Number(formData.o2sat) >= 95
+                                    ? "text-emerald-700 bg-emerald-50 border-emerald-200"
+                                    : "text-rose-700 bg-rose-50 border-rose-200"
+                                    }`}>
+                                    {Number(formData.o2sat) >= 95 ? "ปกติ" : "ต่ำ"}
+                                </span>
+                            ) : null}
+                            unit="%"
+                            size="sm"
+                            inputClassName="text-center"
+                            value={formData.o2sat || ""}
+                            onChange={(e) => setFormData(prev => ({ ...prev, o2sat: e.target.value }))}
+                            placeholder="-"
+                        />
+
+                        {/* BT */}
+                        <InputField
+                            label="BT"
+                            badge={formData.bodyTemperature ? (
+                                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border ${Number(formData.bodyTemperature) >= 37.5
+                                    ? "text-rose-700 bg-rose-50 border-rose-200"
+                                    : "text-emerald-700 bg-emerald-50 border-emerald-200"
+                                    }`}>
+                                    {Number(formData.bodyTemperature) >= 38.5 ? "ไข้สูง" : Number(formData.bodyTemperature) >= 37.5 ? "มีไข้" : "ปกติ"}
+                                </span>
+                            ) : null}
+                            unit="°C"
+                            size="sm"
+                            inputClassName="text-center"
+                            value={formData.bodyTemperature || ""}
+                            onChange={(e) => setFormData(prev => ({ ...prev, bodyTemperature: e.target.value }))}
+                            placeholder="-"
+                        />
+
+                        {/* RR */}
+                        <InputField
+                            label="RR"
+                            unit="/min"
+                            size="sm"
+                            inputClassName="text-center"
+                            value={formData.respiratory || ""}
+                            onChange={(e) => setFormData(prev => ({ ...prev, respiratory: e.target.value }))}
+                            placeholder="-"
+                        />
+                    </div>
+                </div>
+
+                {/* Card 3: Body Measurements & BMI / BSA (สัดส่วนร่างกาย & BMI / BSA) */}
+                <div className="flex flex-col rounded-xl border border-emerald-100/90 bg-gradient-to-b from-emerald-50/30 via-white to-white p-3 sm:p-3.5 shadow-2xs transition-all hover:border-emerald-200">
+                    <div className="flex items-center gap-2 pb-2 mb-2.5 border-b border-emerald-100/60">
+                        <div className="flex size-6.5 items-center justify-center rounded-md bg-emerald-100/80 text-emerald-600">
+                            <Scale className="size-3.5" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                            <h3 className="text-xs font-bold text-slate-800">
+                                สัดส่วนร่างกาย & BMI / BSA
+                            </h3>
+
+                        </div>
+                    </div>
+
+                    <div className="space-y-2.5 flex-1">
+                        {/* Weight & Height */}
+                        <Grid cols={2} gap={2}>
+                            <InputField
+                                label="น้ำหนัก"
+                                unit="kg"
+                                size="sm"
+                                inputClassName="text-center"
+                                value={formData.weight || ""}
+                                onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))}
+                                placeholder="-"
+                            />
+                            <InputField
+                                label="ส่วนสูง"
+                                unit="cm"
+                                size="sm"
+                                inputClassName="text-center"
+                                value={formData.height || ""}
+                                onChange={(e) => setFormData(prev => ({ ...prev, height: e.target.value }))}
+                                placeholder="-"
+                            />
+                        </Grid>
+
+                        {/* BMI & BSA (คำนวณอัตโนมัติ) */}
+                        <Grid cols={2} gap={2}>
+                            {(() => {
+                                const bmiInfo = calculateBMI(formData.weight, formData.height);
+                                return (
+                                    <InputField
+                                        label="BMI"
+                                        badge={bmiInfo ? (
+                                            <span className={`text-[9px] font-semibold px-1 py-0.2 rounded border ${bmiInfo.color}`}>
+                                                {bmiInfo.status.split(" ")[0]}
+                                            </span>
+                                        ) : null}
+                                        unit="kg/m²"
+                                        size="sm"
+                                        disabled
+                                        inputClassName="text-center"
+                                        value={formData.bmi !== "" ? formData.bmi : (bmiInfo?.value || "")}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, bmi: e.target.value }))}
+                                        placeholder="-"
+                                    />
+                                );
+                            })()}
+
+                            <InputField
+                                label="BSA"
+                                badge={calculateBSA(formData.weight, formData.height) ? (
+                                    <span className="text-[9px] font-medium text-slate-400">
+                                        Mosteller
+                                    </span>
+                                ) : null}
+                                unit="m²"
+                                size="sm"
+                                disabled
+                                inputClassName="text-center"
+                                value={formData.bsa !== "" ? formData.bsa : (calculateBSA(formData.weight, formData.height) || "")}
+                                onChange={(e) => setFormData(prev => ({ ...prev, bsa: e.target.value }))}
+                                placeholder="-"
+                            />
+                        </Grid>
+
+                        {/* รอบอก & รอบเอว */}
+                        <Grid cols={2} gap={2}>
+                            <InputField
+                                label="รอบอก"
+                                unit="cm"
+                                size="sm"
+                                inputClassName="text-center"
+                                value={formData.chest || ""}
+                                onChange={(e) => setFormData(prev => ({ ...prev, chest: e.target.value }))}
+                                placeholder="-"
+                            />
+                            <InputField
+                                label="รอบเอว"
+                                unit="cm"
+                                size="sm"
+                                inputClassName="text-center"
+                                value={formData.waist || ""}
+                                onChange={(e) => setFormData(prev => ({ ...prev, waist: e.target.value }))}
+                                placeholder="-"
+                            />
+                        </Grid>
+                    </div>
+                </div>
+
+            </Grid>
+
+            {/* Section 2: Clinical Scores & Triage (การประเมินคะแนนและความเร่งด่วน) */}
+            <Grid cols={{ default: 1, sm: 2 }} className="@[820px]:grid-cols-4 pt-0.5" gap={3}>
+
+                {/* Pain Score */}
+                <div className="flex flex-col rounded-xl border border-slate-200 bg-white p-3 shadow-2xs transition hover:border-slate-300">
+                    <ScoreBox
+                        title="Pain Score"
+                        values={["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]}
+                        value={formData.painScore}
+                        onChange={(val) => setFormData(prev => ({ ...prev, painScore: val }))}
+                    />
+                </div>
+
+                {/* ESI Triage */}
+                <div className="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-3 shadow-2xs transition hover:border-slate-300">
+                    <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                            <label className="text-xs font-bold text-slate-800">
+                                ESI
+                            </label>
+                        </div>
+                        <Select
+                            value={formData.esi || "ESI 3"}
+                            onValueChange={(val) => setFormData(prev => ({ ...prev, esi: val }))}
+                            placeholder="เลือก ESI"
+                            options={[
+                                { value: "ESI 1", label: "ESI 1 : แดง" },
+                                { value: "ESI 2", label: "ESI 2 : ชมพู" },
+                                { value: "ESI 3", label: "ESI 3 : เหลือง" },
+                                { value: "ESI 4", label: "ESI 4 : เขียว" },
+                                { value: "ESI 5", label: "ESI 5 : ขาว" },
+                            ]}
+                            className="h-8 w-full rounded-lg border-slate-200 bg-slate-50/50 px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-100/70"
+                        />
+                    </div>
+                </div>
+
+                {/* Barthel Index */}
+                <div className="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-3 shadow-2xs transition hover:border-slate-300">
+                    <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                            <label className="text-xs font-bold text-slate-800">
+                                Barthel Index
+                            </label>
+                        </div>
+                        <Select
+                            value={formData.barthelIndex || "20"}
+                            onValueChange={(val) => setFormData(prev => ({ ...prev, barthelIndex: val }))}
+                            placeholder="เลือก Barthel Index"
+                            options={Array.from({ length: 21 }, (_, i) => String(i))}
+                            className="h-8 w-full rounded-lg border-slate-200 bg-slate-50/50 px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-100/70"
+                        />
+                    </div>
+                </div>
+
+                {/* CVD Risk */}
+                <div className="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-3 shadow-2xs transition hover:border-slate-300">
+                    <div>
+                        <div className="flex items-center justify-between mb-1.5">
+                            <label className="text-xs font-bold text-slate-800">
+                                CVD Risk
+                            </label>
+                        </div>
+                        <Select
+                            value={formData.cvdRisk || "< 10%"}
+                            onValueChange={(val) => setFormData(prev => ({ ...prev, cvdRisk: val }))}
+                            placeholder="เลือก CVD Risk"
+                            options={[
+                                { value: "< 10%", label: "< 10% : เสี่ยงต่ำ" },
+                                { value: "10-20%", label: "10 - 20% : เสี่ยงปานกลาง" },
+                                { value: "20-30%", label: "20 - 30% : เสี่ยงสูง" },
+                                { value: "30-40%", label: "30 - 40% : เสี่ยงสูงมาก" },
+                                { value: ">= 40%", label: "≥ 40% : เสี่ยงสูงสุด" },
+                            ]}
+                            className="h-8 w-full rounded-lg border-slate-200 bg-slate-50/50 px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-100/70"
+                        />
+                    </div>
+                </div>
+
+            </Grid>
+        </div>
+    );
+}
