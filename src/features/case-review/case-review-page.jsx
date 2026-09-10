@@ -21,20 +21,10 @@ import { CodingReviewTab } from "./coding-review-tab"
 import { ClinicalSummaryTab } from "./clinical-summary-tab"
 import { ClaimDrgTab } from "./claim-drg-tab"
 import { AuditTrailTab } from "./audit-trail-tab"
-
-const patientSummary = [
-  [["AN", "670520-00123"], ["HN", "0012345"]],
-  [["ชื่อ-สกุล", "นางสาววันหน้า ใจดี"], ["อายุ / เพศ", "46 ปี 2 เดือน / หญิง"]],
-  [["วันที่ Admit - Discharge", "15 พ.ค. 2567 - 20 พ.ค. 2567"], ["LOS", "5 วัน"]],
-  [["สิทธิการรักษา", "บัตรทอง (UC)"], ["กองทุน", "UC"]],
-]
-
-const admissionDetails = [
-  ["แผนก/หอผู้ป่วย", "ศัลยกรรมหญิง 1 / 7102"],
-  ["แพทย์เจ้าของไข้", "นพ.วัชรพล ศิริกุล"],
-  ["แพทย์ผู้คัด", "นพ.วัชรพล ศิริกุล"],
-  ["DRG หลัก (คาดการณ์)", "I02Z Major Hip Joint Replacement"],
-]
+import {
+  PatientSearchBanner,
+  mockPatients,
+} from "@/features/speech-to-text/components/patient-search-banner"
 
 const alerts = [
   ["A1", "Dx supporting diagnosis ไม่สนับสนุน DRG", "สูง", "rose"],
@@ -48,6 +38,27 @@ export function CaseReviewPage({ initialTab }) {
   const searchTab = routerState?.search?.tab
 
   const [activeTab, setActiveTab] = useState(initialTab || searchTab || "patient")
+  const [selectedPatient, setSelectedPatient] = useState(mockPatients[0])
+
+  const patientSummary = [
+    [["AN", selectedPatient?.an || "-"], ["HN", selectedPatient?.hn || "-"]],
+    [
+      ["ชื่อ-สกุล", selectedPatient?.fullName || "-"],
+      ["อายุ / เพศ", `${selectedPatient?.age ? `${selectedPatient.age} ปี` : "-"} / ${selectedPatient?.gender || "-"}`],
+    ],
+    [["วันที่ Admit - Discharge", selectedPatient?.dateRange || "-"], ["ความเสี่ยง", selectedPatient?.risk || "-"]],
+    [
+      ["สิทธิการรักษา", selectedPatient?.rights || "บัตรทอง (UC)"],
+      ["กองทุน", selectedPatient?.rights?.includes("CS") ? "CS" : selectedPatient?.rights?.includes("SSO") ? "SSO" : "UC"],
+    ],
+  ]
+
+  const admissionDetails = [
+    ["แผนก/หอผู้ป่วย", selectedPatient?.department || "-"],
+    ["แพทย์เจ้าของไข้", selectedPatient?.doctor || "-"],
+    ["แพทย์ผู้คัด", selectedPatient?.doctor || "-"],
+    ["DRG หลัก (คาดการณ์)", selectedPatient?.drg ? `${selectedPatient.drg} ${selectedPatient.diagnosis || ""}` : "-"],
+  ]
 
   useEffect(() => {
     if (initialTab) {
@@ -61,7 +72,7 @@ export function CaseReviewPage({ initialTab }) {
     <div className="space-y-4 [&_[data-slot=card]]:!gap-2 [&_h2]:!mb-1 [&_h2+div]:!mt-1">
       {/* Header & Tabs Navigation */}
       <section className="flex flex-wrap items-center justify-between gap-3">
-        <div className="w-full">
+        <div className="w-full space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold text-foreground">Case Review</h1>
@@ -86,6 +97,13 @@ export function CaseReviewPage({ initialTab }) {
               </button>
             </div>
           </div>
+
+          {/* Patient Search Filter */}
+          <PatientSearchBanner
+            selectedPatient={selectedPatient}
+            onSelectPatient={setSelectedPatient}
+            showPatientCard={false}
+          />
 
           {/* Tab Navigation */}
           <div className="mt-3 flex flex-wrap gap-1 border-b border-border text-sm">

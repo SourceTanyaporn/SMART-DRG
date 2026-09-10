@@ -14,11 +14,29 @@ export const drgWorklistColumns = [
   {
     accessorKey: "an",
     header: "AN",
+    cell: ({ getValue }) => createElement("span", { className: "font-semibold text-foreground whitespace-nowrap" }, getValue()),
+  },
+  {
+    accessorKey: "hn",
+    header: "HN",
+    cell: ({ getValue }) => createElement("span", { className: "font-medium text-muted-foreground whitespace-nowrap" }, getValue() || "-"),
+  },
+  {
+    accessorKey: "date",
+    header: "วันที่",
+    cell: ({ getValue }) => {
+      const val = getValue()
+      return createElement(
+        "span",
+        { className: "text-xs font-medium text-muted-foreground whitespace-nowrap" },
+        val ? dayjs(val).format("D MMM BBBB") : "-"
+      )
+    },
   },
   {
     accessorKey: "patient",
     header: "ผู้ป่วย",
-    cell: ({ row }) => detailCell(row.original.patient, row.original.demographics, "font-medium text-foreground"),
+    cell: ({ row }) => detailCell(row.original.patient),
   },
   {
     accessorKey: "drg",
@@ -73,7 +91,8 @@ function detailCell(primary, secondary, primaryClassName) {
     "div",
     null,
     createElement("p", { className: primaryClassName }, primary),
-    createElement("p", { className: "mt-0.5 text-xs text-muted-foreground" }, secondary),
+    secondary ? createElement("p", { className: "mt-0.5 text-xs text-muted-foreground" }, secondary) : null,
   )
 }
 import { createElement } from "react"
+import dayjs from "@/lib/dayjs"

@@ -94,7 +94,7 @@ const notebookData = [
 function NotebookCard({ item, isCreate = false, onClick }) {
   if (isCreate) {
     return (
-      <Link to="/speech-to-text">
+      <Link to="/speech-to-text" search={{ mode: "new" }} className="w-full">
         <button
           type="button"
           onClick={onClick}
@@ -120,7 +120,6 @@ function NotebookCard({ item, isCreate = false, onClick }) {
           </span>
         </button>
       </Link>
-
     );
   }
 
@@ -310,14 +309,14 @@ export function DashboardConversation() {
   >
     <NotebookCard
       isCreate
-      onClick={() => navigate("/speech-to-text")}
+      onClick={() => navigate({ to: "/speech-to-text", search: { mode: "new" } })}
     />
 
     {filteredData.map((item) => (
       <NotebookCard
         key={item.id}
         item={item}
-        onClick={() => navigate("/speech-to-text")}
+        onClick={() => navigate({ to: "/speech-to-text" })}
       />
     ))}
   </div>
@@ -327,6 +326,7 @@ export function DashboardConversation() {
     {/* Create Notebook */}
     <Link
       to="/speech-to-text"
+      search={{ mode: "new" }}
       className="
         group flex h-[72px] w-full cursor-pointer
         items-center justify-center

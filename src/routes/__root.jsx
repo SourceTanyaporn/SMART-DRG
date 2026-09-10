@@ -1,11 +1,12 @@
 import { Link, Outlet, createRootRoute, useRouterState } from "@tanstack/react-router"
-import { BellIcon, CalendarDaysIcon, ChevronDownIcon } from "lucide-react"
+import { BellIcon, CalendarDaysIcon, ChevronDownIcon, ChevronLeftIcon } from "lucide-react"
 import { AppSidebar } from "@/components/app-sidebar"
 import { NavUser } from "@/components/nav-user"
 import { currentUser } from "@/lib/current-user"
 import {
   Breadcrumb,
   BreadcrumbItem,
+  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
@@ -18,6 +19,8 @@ import {
 } from "@/components/ui/sidebar"
 import { Toaster } from "@/components/ui/toast-notification"
 
+import { getBreadcrumb } from "@/config/navigation"
+
 export const Route = createRootRoute({
   component: RootLayout,
   notFoundComponent: NotFound,
@@ -25,28 +28,84 @@ export const Route = createRootRoute({
 
 function RootLayout() {
   const pathname = useRouterState({ select: (state) => state.location.pathname })
-  const breadcrumb = breadcrumbByPath[pathname] ?? breadcrumbByPath["/"]
+  const breadcrumb = getBreadcrumb(pathname)
+  const immediateParent = breadcrumb.parents && breadcrumb.parents.length > 0
+    ? breadcrumb.parents[breadcrumb.parents.length - 1]
+    : null
 
   return (
     <SidebarProvider>
       <Toaster />
       <AppSidebar />
       <SidebarInset className="bg-background">
-        <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center border-b border-border bg-white px-3 sm:px-4 md:px-6">
-          <SidebarTrigger className="mr-2 sm:mr-3 md:hidden" />
-          {/* <p className="text-lg sm:text-2xl font-bold tracking-tight text-primary truncate">
-            SMART DRG<span className="text-sky-500">+</span> AI
-          </p> */}
-          <Breadcrumb>
+        <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center border-b border-border bg-white px-2 sm:px-3 md:px-4">
+          <SidebarTrigger className="-ml-1 sm:-ml-1.5 mr-1.5 sm:mr-2.5 shrink-0" />
+
+          {/* ===== 1. Mobile & iPad View (< lg): Back-link + Current Page ===== */}
+          <div className="flex lg:hidden items-center gap-1.5 min-w-0 flex-1 mr-2 text-xs sm:text-sm">
+            {immediateParent ? (
+              <>
+                <Link
+                  to={immediateParent.to}
+                  className="flex items-center gap-0.5 text-muted-foreground hover:text-foreground shrink-0 max-w-[120px] sm:max-w-[200px] md:max-w-[300px] truncate font-medium transition active:opacity-70"
+                  title={`ย้อนกลับไป ${immediateParent.title}`}
+                >
+                  <ChevronLeftIcon className="size-3.5 sm:size-4 shrink-0 text-muted-foreground" />
+                  <span className="truncate">{immediateParent.title}</span>
+                </Link>
+                <span className="text-muted-foreground/40 shrink-0">/</span>
+              </>
+            ) : breadcrumb.section ? (
+              <>
+                <span className="text-muted-foreground/80 shrink-0 max-w-[100px] sm:max-w-[180px] truncate text-[11px] sm:text-xs">
+                  {breadcrumb.section}
+                </span>
+                <span className="text-muted-foreground/40 shrink-0">/</span>
+              </>
+            ) : null}
+
+            <span className="font-semibold text-foreground truncate max-w-[180px] sm:max-w-[280px] md:max-w-none">
+              {breadcrumb.page}
+            </span>
+          </div>
+
+          {/* ===== 2. Desktop View (>= lg): Full Breadcrumb Trail ===== */}
+          <Breadcrumb className="hidden lg:block">
             <BreadcrumbList className="normal-case text-xs sm:text-sm tracking-normal flex-nowrap whitespace-nowrap">
-              <BreadcrumbItem>หน้าหลัก</BreadcrumbItem>
+              <BreadcrumbItem>
+                <BreadcrumbLink render={<Link to="/" />}>
+                  หน้าหลัก
+                </BreadcrumbLink>
+              </BreadcrumbItem>
               <BreadcrumbSeparator />
+
+              {/* หมวดหมู่หลัก (ถ้ามี) */}
               {breadcrumb.section && (
                 <>
-                  <BreadcrumbItem>{breadcrumb.section}</BreadcrumbItem>
+                  <BreadcrumbItem className="text-muted-foreground font-normal">
+                    {breadcrumb.section}
+                  </BreadcrumbItem>
                   <BreadcrumbSeparator />
                 </>
               )}
+
+              {/* หน้าก่อนหน้าที่เชื่อมโยงมา (Parent Trails ที่คลิกย้อนกลับได้) */}
+              {breadcrumb.parents?.map((parent) => (
+                <span key={parent.to || parent.title} className="contents">
+                  <BreadcrumbItem>
+                    {parent.to ? (
+                      <BreadcrumbLink render={<Link to={parent.to} />}>
+                        {parent.title}
+                      </BreadcrumbLink>
+                    ) : (
+                      <span className="text-muted-foreground">{parent.title}</span>
+                    )}
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                </span>
+              ))}
+
+              {/* หน้าปัจจุบัน */}
               <BreadcrumbItem>
                 <BreadcrumbPage className="font-medium text-foreground">
                   {breadcrumb.page}
@@ -54,8 +113,10 @@ function RootLayout() {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <div className="ml-auto flex items-center gap-2 sm:gap-4">
-            <NavUser user={currentUser} className="w-auto max-w-[150px] sm:w-56 sm:max-w-none md:w-60" />
+
+          {/* Right: User Profile (Compact Avatar on Mobile, Name on iPad, Full on Desktop) */}
+          <div className="ml-auto flex items-center shrink-0">
+            <NavUser user={currentUser} className="w-auto md:w-auto lg:w-60 shrink-0" />
           </div>
         </header>
         <main className="flex-1 px-2 py-2 sm:px-2 sm:py-2 md:px-2">
@@ -64,20 +125,6 @@ function RootLayout() {
       </SidebarInset>
     </SidebarProvider>
   )
-}
-
-const breadcrumbByPath = {
-  "/": { section: "Dashboard", page: "ภาพรวมผู้ป่วยและความเสี่ยง" },
-  "/worklist": { page: "DRG Worklist" },
-  "/case-review": { section: "DRG Worklist", page: "Case Review" },
-  "/reports": { page: "Reports" },
-  "/emr-viewer": { section: "DRG Operations", page: "EMR Case Viewer" },
-  "/coding-review": { section: "DRG Operations", page: "Coding Review" },
-  "/claim-alerts": { section: "DRG Operations", page: "Claim & Alerts" },
-  "/revenue-risk": { section: "Insights", page: "Revenue & Risk" },
-  "/speech-to-text": { section: "Speech to text", page: "Speech to text" },
-  "/dashboard-conversation": { section: "Speech to text", page: "Dashboard Conversation" },
-  "/result-page": { section: "Speech to text", page: "Result" },
 }
 
 function NotFound() {

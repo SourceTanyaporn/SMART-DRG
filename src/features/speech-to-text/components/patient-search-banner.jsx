@@ -24,249 +24,39 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export const mockPatients = [
-    {
-        id: "P001",
-        hn: "67012345",
-        an: "670520-00123",
-        citizenId: "1-1002-00345-67-8",
-        prefix: "นาย",
-        firstName: "สมชาย",
-        lastName: "ใจดี",
-        fullName: "นายสมชาย ใจดี",
-        gender: "ชาย",
-        age: 65,
-        dob: "12 ม.ค. 2504",
-        rights: "บัตรทอง (UC)",
-        department: "OPD อายุรกรรม",
-        doctor: "นพ. กิตติพงศ์ วงศ์สมุทร (ว.45892)",
-        allergies: "Penicillin, Amoxicillin (ผื่นคัน, แน่นหน้าอก)",
-        allergyDetails: [
-            {
-                drug: "Penicillin G / V",
-                group: "Penicillins & Beta-lactams",
-                reaction: "ผื่นคันทั่วตัว, แน่นหน้าอก, หลอดลมหดเกร็ง (Anaphylaxis)",
-                severity: "Severe",
-                date: "12 ม.ค. 2562",
-                hospital: "รพ. ประจำจังหวัด",
-            },
-            {
-                drug: "Amoxicillin + Clavulanate",
-                group: "Aminopenicillins",
-                reaction: "Angioedema บวมริมฝีปากและรอบตา",
-                severity: "Severe",
-                date: "08 พ.ค. 2564",
-                hospital: "รพ. ชุมชน",
-            },
-        ],
-        underlying: "DM Type 2, HT, Dyslipidemia",
-        bloodGroup: "O+",
-        phone: "081-234-5678",
-        status: "รอตรวจ",
-    },
-    {
-        id: "P002",
-        hn: "67012346",
-        an: "670520-00124",
-        citizenId: "3-5012-00874-91-2",
-        prefix: "น.ส.",
-        firstName: "กุลธิดา",
-        lastName: "ชูมายงสี",
-        fullName: "น.ส. กุลธิดา ชูมายงสี",
-        gender: "หญิง",
-        age: 9,
-        dob: "05 ส.ค. 2560",
-        rights: "จ่ายตรงกรมบัญชีกลาง (CS)",
-        department: "OPD กุมารเวชศาสตร์",
-        doctor: "พญ. อัญชลี ศรีวิไล (ว.38910)",
-        allergies: "ไม่มีประวัติแพ้ยา",
-        allergyDetails: [],
-        underlying: "Asthma (หอบหืด)",
-        bloodGroup: "B+",
-        phone: "089-876-5432",
-        status: "กำลังตรวจ",
-    },
-    {
-        id: "P003",
-        hn: "66089123",
-        an: "670520-00125",
-        citizenId: "1-4099-00213-44-1",
-        prefix: "นางสาว",
-        firstName: "วิภาวดี",
-        lastName: "รุ่งเรือง",
-        fullName: "นางสาววิภาวดี รุ่งเรือง",
-        gender: "หญิง",
-        age: 72,
-        dob: "20 พ.ย. 2497",
-        rights: "ประกันสังคม (SSO)",
-        department: "IPD หอผู้ป่วยอายุรกรรมหญิง 3",
-        doctor: "นพ. กิตติพงศ์ วงศ์สมุทร (ว.45892)",
-        allergies: "Sulfa, Aspirin, Tramadol (3 รายการ)",
-        allergyDetails: [
-            {
-                drug: "Co-trimoxazole (Bactrim)",
-                group: "Sulfonamides",
-                reaction: "Stevens-Johnson Syndrome (SJS) มีแผลในปาก ผื่นลอก",
-                severity: "Life-threatening",
-                date: "04 ก.พ. 2560",
-                hospital: "รพ. ศูนย์",
-            },
-            {
-                drug: "Aspirin",
-                group: "NSAIDs / Salicylates",
-                reaction: "Urticaria ลมพิษ ตาบวม หอบเหนื่อย",
-                severity: "Moderate",
-                date: "19 ส.ค. 2563",
-                hospital: "รพ. เอกชน",
-            },
-            {
-                drug: "Tramadol",
-                group: "Opioid Analgesics",
-                reaction: "เวียนศีรษะรุนแรง คลื่นไส้อาเจียน เหงื่อแตก",
-                severity: "Mild",
-                date: "11 พ.ย. 2565",
-                hospital: "รพ. ทั่วไป",
-            },
-        ],
-        underlying: "Heart Failure, CKD Stage 3",
-        bloodGroup: "A+",
-        phone: "086-555-1234",
-        status: "Admitted",
-    },
-    {
-        id: "P004",
-        hn: "66045678",
-        an: "670520-00126",
-        citizenId: "2-1004-00192-33-0",
-        prefix: "นาย",
-        firstName: "ประสิทธิ์",
-        lastName: "พรหมมา",
-        fullName: "นายประสิทธิ์ พรหมมา",
-        gender: "ชาย",
-        age: 58,
-        dob: "14 ก.พ. 2511",
-        rights: "บัตรทอง (UC)",
-        department: "OPD ศัลยกรรม",
-        doctor: "นพ. ธีรภัทร เมธาวี (ว.51240)",
-        allergies: "ไม่มีประวัติแพ้ยา",
-        allergyDetails: [],
-        underlying: "GERD, Fatty Liver",
-        bloodGroup: "AB+",
-        phone: "083-999-8877",
-        status: "รอผลแล็บ",
-    },
-    {
-        id: "P005",
-        hn: "67023456",
-        an: "670520-00127",
-        citizenId: "1-5099-00384-72-9",
-        prefix: "นาง",
-        firstName: "บุญเรือน",
-        lastName: "คำแสน",
-        fullName: "นางบุญเรือน คำแสน",
-        gender: "หญิง",
-        age: 49,
-        dob: "30 เม.ย. 2520",
-        rights: "บัตรทอง (UC)",
-        department: "IPD หอผู้ป่วยอายุรกรรม 2",
-        doctor: "พญ. ณิชานันท์ เจริญพร (ว.48901)",
-        allergies: "ไม่มีประวัติแพ้ยา",
-        allergyDetails: [],
-        underlying: "Pneumonia",
-        bloodGroup: "O+",
-        phone: "087-112-2334",
-        status: "Admitted",
-    },
-    {
-        id: "P006",
-        hn: "65091234",
-        an: "670520-00128",
-        citizenId: "3-1007-00921-15-4",
-        prefix: "นาย",
-        firstName: "เอกชัย",
-        lastName: "มั่นคง",
-        fullName: "นายเอกชัย มั่นคง",
-        gender: "ชาย",
-        age: 70,
-        dob: "08 ต.ค. 2499",
-        rights: "จ่ายตรงกรมบัญชีกลาง (CS)",
-        department: "IPD CCU ชั้น 5",
-        doctor: "นพ. ธีรภัทร เมธาวี (ว.51240)",
-        allergies: "NSAIDs (Ibuprofen, Diclofenac)",
-        allergyDetails: [
-            {
-                drug: "Ibuprofen / Diclofenac",
-                group: "NSAIDs",
-                reaction: "หลอดลมหดเกร็ง หายใจไม่ออก แน่นหน้าอกเฉียบพลัน",
-                severity: "Severe",
-                date: "05 มิ.ย. 2561",
-                hospital: "รพ. ศิริราช",
-            },
-        ],
-        underlying: "Acute Myocardial Infarction (AMI)",
-        bloodGroup: "B+",
-        phone: "082-443-2211",
-        status: "ICU/CCU",
-    },
-    {
-        id: "P007",
-        hn: "67034567",
-        an: "670520-00129",
-        citizenId: "1-1015-00482-66-3",
-        prefix: "นาง",
-        firstName: "มาลี",
-        lastName: "ศรีสุข",
-        fullName: "นางมาลี ศรีสุข",
-        gender: "หญิง",
-        age: 61,
-        dob: "19 ก.ย. 2508",
-        rights: "บัตรทอง (UC)",
-        department: "OPD คลินิกเบาหวานและความดัน",
-        doctor: "นพ. กิตติพงศ์ วงศ์สมุทร (ว.45892)",
-        allergies: "ไม่มีประวัติแพ้ยา",
-        allergyDetails: [],
-        underlying: "Diabetes Mellitus, HT",
-        bloodGroup: "A+",
-        phone: "084-778-9900",
-        status: "รอตรวจ",
-    },
-    {
-        id: "P008",
-        hn: "66078901",
-        an: "670520-00130",
-        citizenId: "3-1020-00745-88-2",
-        prefix: "นาย",
-        firstName: "องอาจ",
-        lastName: "มองทางไกล",
-        fullName: "นายองอาจ มองทางไกล",
-        gender: "ชาย",
-        age: 54,
-        dob: "25 ธ.ค. 2515",
-        rights: "ประกันสังคม (SSO)",
-        department: "OPD อายุรกรรมทั่วไป",
-        doctor: "พญ. ปิยะดา เกษมสุข (ว.42199)",
-        allergies: "ไม่มีประวัติแพ้ยา",
-        underlying: "Fatigue, Suspected DM",
-        bloodGroup: "O+",
-        phone: "085-332-1144",
-        status: "กำลังตรวจ",
-    },
-];
+import { mockPatients } from "@/features/drg-worklist/data";
+import dayjs from "@/lib/dayjs";
+
+export { mockPatients };
 
 export function PatientSearchBanner({
     selectedPatient,
     onSelectPatient,
     className = "",
+    showPatientCard = true,
 }) {
     const [searchQuery, setSearchQuery] = useState("");
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [isEditingMode, setIsEditingMode] = useState(!selectedPatient);
+    const [isEditingMode, setIsEditingMode] = useState(!selectedPatient || !showPatientCard);
     const [filterCategory, setFilterCategory] = useState("ทั้งหมด");
     const [copiedField, setCopiedField] = useState(null);
     const [isAllergyModalOpen, setIsAllergyModalOpen] = useState(false);
     const containerRef = useRef(null);
     const inputRef = useRef(null);
     const allergyCardRef = useRef(null);
+
+    // Sync editing mode and search query when selectedPatient or showPatientCard changes
+    useEffect(() => {
+        if (!selectedPatient) {
+            setIsEditingMode(true);
+            setSearchQuery("");
+        } else if (!showPatientCard) {
+            setIsEditingMode(true);
+            setSearchQuery(`${selectedPatient.hn} - ${selectedPatient.fullName}`);
+        } else {
+            setIsEditingMode(false);
+        }
+    }, [showPatientCard, selectedPatient]);
 
     // Close dropdown & allergy popover on click outside
     useEffect(() => {
@@ -282,74 +72,73 @@ export function PatientSearchBanner({
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-    // Filter patient database based on query
+    const todayStr = dayjs().format("YYYY-MM-DD");
+    const yesterdayStr = dayjs().subtract(1, "day").format("YYYY-MM-DD");
+
+    // Filter patient database based on query and quick category
     const filteredPatients = mockPatients.filter((p) => {
         const q = searchQuery.trim().toLowerCase();
-        if (!q) {
-            if (filterCategory === "ทั้งหมด") return true;
-            if (filterCategory === "OPD") return p.department.includes("OPD");
-            if (filterCategory === "IPD") return p.department.includes("IPD");
-            return true;
-        }
 
-        const cleanQ = q.replace(/[-\s]/g, "");
-        const cleanCitizen = p.citizenId.replace(/[-\s]/g, "");
-        const cleanHn = p.hn.toLowerCase().replace(/[-\s]/g, "");
-        const cleanAn = p.an.toLowerCase().replace(/[-\s]/g, "");
-
-        // Match HN
-        const matchHn = cleanHn.includes(cleanQ) || p.hn.toLowerCase().includes(q);
-
-        // Match AN
-        const matchAn = cleanAn.includes(cleanQ) || p.an.toLowerCase().includes(q);
-
-        // Match Citizen ID (เลขบัตร ปชช)
-        const matchCitizen = cleanCitizen.includes(cleanQ) || p.citizenId.includes(q);
-
-        // Match Name (ชื่อ - นามสกุล)
-        const matchName =
-            p.fullName.toLowerCase().includes(q) ||
-            p.firstName.toLowerCase().includes(q) ||
-            p.lastName.toLowerCase().includes(q);
-
-        // Match Doctor Name (ชื่อแพทย์ผู้ตรวจ)
-        const matchDoctor = p.doctor && p.doctor.toLowerCase().includes(q);
-
-        // Category filter
+        // Quick category filter
         const matchCategory =
             filterCategory === "ทั้งหมด" ||
-            (filterCategory === "OPD" && p.department.includes("OPD")) ||
-            (filterCategory === "IPD" && p.department.includes("IPD"));
+            (filterCategory === "วันนี้" && (p.isToday || p.date === todayStr)) ||
+            (filterCategory === "เมื่อวาน" && (p.isYesterday || p.date === yesterdayStr)) ||
+            (filterCategory === "OPD" && p.department?.includes("OPD")) ||
+            (filterCategory === "IPD" && p.department?.includes("IPD"));
 
-        return (matchHn || matchAn || matchCitizen || matchName || matchDoctor) && matchCategory;
+        if (!matchCategory) return false;
+        if (!q) return true;
+
+        const cleanQ = q.replace(/[-\s]/g, "");
+        const cleanCitizen = (p.citizenId || "").replace(/[-\s]/g, "");
+        const cleanHn = (p.hn || "").toLowerCase().replace(/[-\s]/g, "");
+        const cleanAn = (p.an || "").toLowerCase().replace(/[-\s]/g, "");
+
+        // Match HN, AN, Citizen ID, Name, Doctor, Date, Diagnosis
+        const matchHn = cleanHn.includes(cleanQ) || (p.hn && p.hn.toLowerCase().includes(q));
+        const matchAn = cleanAn.includes(cleanQ) || (p.an && p.an.toLowerCase().includes(q));
+        const matchCitizen = cleanCitizen.includes(cleanQ) || (p.citizenId && p.citizenId.includes(q));
+        const matchName =
+            (p.fullName && p.fullName.toLowerCase().includes(q)) ||
+            (p.firstName && p.firstName.toLowerCase().includes(q)) ||
+            (p.lastName && p.lastName.toLowerCase().includes(q));
+        const matchDoctor = p.doctor && p.doctor.toLowerCase().includes(q);
+        const matchDiagnosis = (p.diagnosis && p.diagnosis.toLowerCase().includes(q)) || (p.drg && p.drg.toLowerCase().includes(q));
+        const matchDate = (p.date && p.date.includes(q)) || (q === "วันนี้" && (p.isToday || p.date === todayStr)) || (q === "เมื่อวาน" && (p.isYesterday || p.date === yesterdayStr));
+
+        return matchHn || matchAn || matchCitizen || matchName || matchDoctor || matchDiagnosis || matchDate;
     });
 
     const getMatchReason = (p, query) => {
         if (!query) return null;
         const q = query.trim().toLowerCase();
         const cleanQ = q.replace(/[-\s]/g, "");
-        const cleanCitizen = p.citizenId.replace(/[-\s]/g, "");
-        const cleanHn = p.hn.toLowerCase().replace(/[-\s]/g, "");
-        const cleanAn = p.an.toLowerCase().replace(/[-\s]/g, "");
+        const cleanCitizen = (p.citizenId || "").replace(/[-\s]/g, "");
+        const cleanHn = (p.hn || "").toLowerCase().replace(/[-\s]/g, "");
+        const cleanAn = (p.an || "").toLowerCase().replace(/[-\s]/g, "");
 
-        if (cleanHn.includes(cleanQ) || p.hn.toLowerCase().includes(q)) {
+        if (cleanHn.includes(cleanQ) || (p.hn && p.hn.toLowerCase().includes(q))) {
             return { label: "HN", value: p.hn, color: "bg-blue-50 text-blue-700 border-blue-200" };
         }
-        if (cleanAn.includes(cleanQ) || p.an.toLowerCase().includes(q)) {
+        if (cleanAn.includes(cleanQ) || (p.an && p.an.toLowerCase().includes(q))) {
             return { label: "AN", value: p.an, color: "bg-indigo-50 text-indigo-700 border-indigo-200" };
         }
-        if (cleanCitizen.includes(cleanQ) || p.citizenId.includes(q)) {
+        if (cleanCitizen.includes(cleanQ) || (p.citizenId && p.citizenId.includes(q))) {
             return { label: "เลขบัตร ปชช", value: p.citizenId, color: "bg-purple-50 text-purple-700 border-purple-200" };
         }
         if (
-            p.fullName.toLowerCase().includes(q) ||
-            p.firstName.toLowerCase().includes(q) ||
-            p.lastName.toLowerCase().includes(q)
+            (p.fullName && p.fullName.toLowerCase().includes(q)) ||
+            (p.firstName && p.firstName.toLowerCase().includes(q)) ||
+            (p.lastName && p.lastName.toLowerCase().includes(q))
         ) {
             return { label: "ชื่อ-สกุล", value: p.fullName, color: "bg-emerald-50 text-emerald-700 border-emerald-200" };
         }
         if (p.doctor && p.doctor.toLowerCase().includes(q)) {
             return { label: "แพทย์ผู้ตรวจ", value: p.doctor, color: "bg-teal-50 text-teal-700 border-teal-200" };
+        }
+        if (p.drg && p.drg.toLowerCase().includes(q)) {
+            return { label: "DRG", value: p.drg, color: "bg-amber-50 text-amber-700 border-amber-200" };
         }
         return null;
     };
@@ -362,15 +151,19 @@ export function PatientSearchBanner({
 
     const handleSelect = (patient) => {
         onSelectPatient(patient);
-        setIsEditingMode(false);
         setIsDropdownOpen(false);
-        setSearchQuery("");
+        if (showPatientCard) {
+            setIsEditingMode(false);
+            setSearchQuery("");
+        } else {
+            setSearchQuery(`${patient.hn} - ${patient.fullName}`);
+        }
     };
 
     return (
         <div ref={containerRef} className={`relative z-30 w-full ${className}`}>
             {/* When patient is selected & not in editing search mode */}
-            {selectedPatient && !isEditingMode ? (
+            {showPatientCard && selectedPatient && !isEditingMode ? (
                 <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-xl border border-[#dfe3eb] bg-white px-3.5 py-2.5 shadow-2xs transition-all">
                     {/* Left: Patient Avatar & Demographics */}
                     <div className="flex items-center gap-3 min-w-0">
@@ -459,6 +252,12 @@ export function PatientSearchBanner({
                                     {selectedPatient.rights}
                                 </span>
 
+                                {selectedPatient.date && (
+                                    <span className="rounded bg-slate-100 border border-slate-200 px-1.5 py-0.5 text-[10px] font-medium text-slate-700">
+                                        วันที่ : {selectedPatient.isToday ? "วันนี้" : selectedPatient.isYesterday ? "เมื่อวาน" : dayjs(selectedPatient.date).format("D MMM BBBB")}
+                                    </span>
+                                )}
+
                                 {selectedPatient.allergies && selectedPatient.allergies !== "ไม่มีประวัติแพ้ยา" && (
                                     <div className="relative inline-block" ref={allergyCardRef}>
                                         <button
@@ -470,21 +269,26 @@ export function PatientSearchBanner({
                                                 }`}
                                             title="คลิกเพื่อดูรายละเอียดประวัติการแพ้ยาแบบครบถ้วน"
                                         >
-                                            <AlertTriangle size={11} className={isAllergyModalOpen ? "text-white" : "text-rose-600 animate-pulse"} />
-                                            <span>
-                                                แพ้ยา
+                                            <AlertTriangle size={11} className={isAllergyModalOpen ? "text-white" : "text-rose-600 shrink-0 animate-pulse"} />
+                                            <span className="shrink-0">แพ้ยา:</span>
+                                            <span
+                                                className="max-w-[130px] sm:max-w-[190px] md:max-w-[240px] truncate text-left"
+                                                title={selectedPatient.allergyDetails && selectedPatient.allergyDetails.length > 0
+                                                    ? selectedPatient.allergyDetails.map((d) => d.drug).join(", ")
+                                                    : selectedPatient.allergies}
+                                            >
                                                 {selectedPatient.allergyDetails && selectedPatient.allergyDetails.length > 0
-                                                    ? ` (${selectedPatient.allergyDetails.length} รายการ)`
-                                                    : `: ${selectedPatient.allergies.split(",")[0]}`}
+                                                    ? selectedPatient.allergyDetails.map((d) => d.drug).join(", ")
+                                                    : selectedPatient.allergies}
                                             </span>
-                                            <span className="rounded bg-rose-200/70 text-rose-900 px-1 py-0.2 text-[9px] font-extrabold">
+                                            <span className="rounded bg-rose-200/70 text-rose-900 px-1 py-0.2 text-[9px] font-extrabold shrink-0">
                                                 ดูข้อมูล
                                             </span>
                                         </button>
 
                                         {/* Drug Allergy Popover Card (แบบกระชับ มีระดับความรุนแรงชัดเจน ไม่กวนสายตา) */}
                                         {isAllergyModalOpen && (
-                                            <div className="absolute top-full left-0 mt-1.5 z-50 w-80 sm:w-96 rounded-xl border border-rose-200 bg-white p-3 shadow-xl animate-in fade-in zoom-in-95 duration-150">
+                                            <div className="absolute top-full left-0 mt-1.5 z-50 w-80 sm:w-96 max-w-[calc(100vw-2rem)] rounded-xl border border-rose-200 bg-white p-3 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
                                                 {/* Header */}
                                                 <div className="flex items-center justify-between border-b border-rose-100 pb-2 mb-2">
                                                     <div className="flex items-center gap-1.5 text-rose-700">
@@ -629,7 +433,12 @@ export function PatientSearchBanner({
                             {searchQuery && (
                                 <button
                                     type="button"
-                                    onClick={() => setSearchQuery("")}
+                                    onClick={() => {
+                                        setSearchQuery("");
+                                        if (!showPatientCard) {
+                                            onSelectPatient(null);
+                                        }
+                                    }}
                                     className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 cursor-pointer"
                                 >
                                     <X size={14} />
@@ -648,8 +457,8 @@ export function PatientSearchBanner({
                         </div>
 
                         {/* Quick filter chips */}
-                        <div className="flex items-center gap-1 text-xs shrink-0">
-                            {["ทั้งหมด", "OPD", "IPD"].map((cat) => (
+                        <div className="flex flex-wrap items-center gap-1 text-xs shrink-0">
+                            {["ทั้งหมด", "วันนี้", "เมื่อวาน", "OPD", "IPD"].map((cat) => (
                                 <button
                                     key={cat}
                                     type="button"
@@ -667,7 +476,7 @@ export function PatientSearchBanner({
                             ))}
                         </div>
 
-                        {selectedPatient && (
+                        {selectedPatient && showPatientCard && (
                             <Button
                                 type="button"
                                 size="sm"
@@ -745,6 +554,10 @@ export function PatientSearchBanner({
 
                                                         {/* Details Row */}
                                                         <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
+                                                            <span className={`rounded px-1.5 py-0.2 text-[10px] font-semibold ${patient.isToday ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : patient.isYesterday ? "bg-amber-50 text-amber-700 border border-amber-200" : "bg-slate-100 text-slate-600"}`}>
+                                                                {patient.isToday ? "วันนี้" : patient.isYesterday ? "เมื่อวาน" : (patient.date ? dayjs(patient.date).format("D MMM BBBB") : "-")}
+                                                            </span>
+                                                            <span>•</span>
                                                             <span>
                                                                 <strong className="text-blue-600">HN:</strong> {patient.hn}
                                                             </span>

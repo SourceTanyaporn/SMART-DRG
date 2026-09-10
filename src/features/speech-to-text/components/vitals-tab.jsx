@@ -68,9 +68,14 @@ export function ScoreBox({ title, values, value, onChange }) {
     };
 
     return (
-        <div className="flex flex-col justify-between h-full space-y-1.5">
+        <div className="flex flex-col justify-between h-full space-y-1">
             <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-slate-800">{title}</span>
+                {value !== "" && value !== undefined && (
+                    <span className="text-[10px] font-semibold text-slate-500 truncate max-w-[90px]">
+                        {value} ({getPainLabel(value)})
+                    </span>
+                )}
             </div>
 
             <div className="flex w-full items-center gap-0.5 pt-0.5">
@@ -81,7 +86,7 @@ export function ScoreBox({ title, values, value, onChange }) {
                             key={v}
                             type="button"
                             onClick={() => onChange?.(v)}
-                            className={`cursor-pointer flex-1 h-7 min-w-0 flex items-center justify-center rounded text-[9px] font-bold text-white transition-all ${painColors[index]} ${isSelected
+                            className={`cursor-pointer flex-1 h-6 sm:h-6.5 min-w-0 flex items-center justify-center rounded-xs sm:rounded text-[8px] sm:text-[9px] font-bold text-white transition-all ${painColors[index]} ${isSelected
                                 ? "ring-2 ring-blue-600 ring-offset-1 scale-105 z-10 shadow-xs font-black"
                                 : "opacity-85 hover:opacity-100 hover:scale-105"
                                 }`}
@@ -96,86 +101,158 @@ export function ScoreBox({ title, values, value, onChange }) {
     );
 }
 
-export function VitalsTab({ formData, setFormData }) {
+export function DiffBadge({ label = "คัดกรอง", originalValue, unit = "", onRevert, className = "" }) {
+    if (originalValue === null || originalValue === undefined || originalValue === "") return null;
     return (
-        <div className="flex h-full flex-col space-y-3.5">
+        <div className={`mt-1 flex items-center justify-between gap-1 rounded bg-amber-50/95 border border-amber-200/90 px-1.5 py-0.5 text-[9.5px] sm:text-[10px] text-amber-800 animate-in fade-in duration-200 ${className}`}>
+            <span className="truncate">
+                {label}: <strong className="font-semibold text-amber-950">{originalValue}</strong> {unit}
+            </span>
+            {onRevert && (
+                <button
+                    type="button"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onRevert();
+                    }}
+                    className="cursor-pointer shrink-0 font-semibold text-blue-600 hover:text-blue-800 hover:underline ml-1 text-[9.5px]"
+                    title="คลิกเพื่อคืนค่าเป็นค่าเดิมจากจุดคัดกรอง"
+                >
+                    คืนค่าเดิม
+                </button>
+            )}
+        </div>
+    );
+}
+
+export function VitalsTab({ formData, setFormData, triageBaseline = {}, onRevertField }) {
+    const hasBp1Conflict = Boolean(
+        (triageBaseline.systolic && formData.systolic && formData.systolic !== triageBaseline.systolic) ||
+        (triageBaseline.diastolic && formData.diastolic && formData.diastolic !== triageBaseline.diastolic)
+    );
+
+    const hasBp2Conflict = Boolean(
+        (triageBaseline.systolic2 && formData.systolic2 && formData.systolic2 !== triageBaseline.systolic2) ||
+        (triageBaseline.diastolic2 && formData.diastolic2 && formData.diastolic2 !== triageBaseline.diastolic2)
+    );
+
+    const currentPr = formData.pr || formData.pulse || "";
+    const baselinePr = triageBaseline.pr || triageBaseline.pulse || "";
+    const hasPrConflict = Boolean(baselinePr && currentPr && currentPr !== baselinePr);
+
+    const hasO2Conflict = Boolean(triageBaseline.o2sat && formData.o2sat && formData.o2sat !== triageBaseline.o2sat);
+    const hasBtConflict = Boolean(triageBaseline.bodyTemperature && formData.bodyTemperature && formData.bodyTemperature !== triageBaseline.bodyTemperature);
+    const hasRrConflict = Boolean(triageBaseline.respiratory && formData.respiratory && formData.respiratory !== triageBaseline.respiratory);
+
+    const hasWeightConflict = Boolean(triageBaseline.weight && formData.weight && formData.weight !== triageBaseline.weight);
+    const hasHeightConflict = Boolean(triageBaseline.height && formData.height && formData.height !== triageBaseline.height);
+    const hasChestConflict = Boolean(triageBaseline.chest && formData.chest && formData.chest !== triageBaseline.chest);
+    const hasWaistConflict = Boolean(triageBaseline.waist && formData.waist && formData.waist !== triageBaseline.waist);
+
+    const hasPainConflict = Boolean(triageBaseline.painScore !== undefined && triageBaseline.painScore !== "" && formData.painScore !== "" && formData.painScore !== triageBaseline.painScore);
+    const hasEsiConflict = Boolean(triageBaseline.esi && formData.esi && formData.esi !== triageBaseline.esi);
+    const hasBarthelConflict = Boolean(triageBaseline.barthelIndex && formData.barthelIndex && formData.barthelIndex !== triageBaseline.barthelIndex);
+    const hasCvdConflict = Boolean(triageBaseline.cvdRisk && formData.cvdRisk && formData.cvdRisk !== triageBaseline.cvdRisk);
+
+    return (
+        <div className="flex h-full flex-col space-y-2.5 sm:space-y-3">
             {/* 3 Main Medical Category Cards Grid */}
-            <Grid cols={{ default: 1 }} className="@[700px]:grid-cols-3" gap={3}>
+            <div className="grid grid-cols-1 @[420px]:grid-cols-3 gap-2 sm:gap-2.5">
 
                 {/* Card 1: Circulation & Heart (ความดันและชีพจร) */}
-                <div className="flex flex-col rounded-xl border border-blue-100/90 bg-gradient-to-b from-blue-50/30 via-white to-white p-3 sm:p-3.5 shadow-2xs transition-all hover:border-blue-200">
-                    <div className="flex items-center gap-2 pb-2 mb-2.5 border-b border-blue-100/60">
-                        <div className="flex size-6.5 items-center justify-center rounded-md bg-blue-100/80 text-blue-600">
-                            <HeartPulse className="size-3.5" />
+                <div className="flex flex-col rounded-xl border border-blue-100/90 bg-gradient-to-b from-blue-50/30 via-white to-white p-2.5 sm:p-3 shadow-2xs transition-all hover:border-blue-200">
+                    <div className="flex items-center gap-1.5 pb-1.5 mb-2 border-b border-blue-100/60">
+                        <div className="flex size-5.5 sm:size-6 shrink-0 items-center justify-center rounded-md bg-blue-100/80 text-blue-600">
+                            <HeartPulse className="size-3 sm:size-3.5" />
                         </div>
                         <div className="min-w-0 flex-1">
-                            <h3 className="text-xs font-bold text-slate-800">
+                            <h3 className="text-[11px] sm:text-xs font-bold text-slate-800 truncate">
                                 ความดันโลหิตและชีพจร
                             </h3>
                         </div>
                     </div>
 
-                    <div className="space-y-2.5 flex-1">
+                    <div className="space-y-2 flex-1">
                         {/* BP1 */}
-                        <DualInput
-                            label="BP1"
-                            size="sm"
-                            value1={formData.systolic || ""}
-                            value2={formData.diastolic || ""}
-                            onChange1={(val) => {
-                                const mapVal = calculateMAP(val, formData.diastolic);
-                                setFormData(prev => ({
-                                    ...prev,
-                                    systolic: val,
-                                    bp: `${val}/${prev.diastolic || ""}`,
-                                    map: mapVal || prev.map
-                                }));
-                            }}
-                            onChange2={(val) => {
-                                const mapVal = calculateMAP(formData.systolic, val);
-                                setFormData(prev => ({
-                                    ...prev,
-                                    diastolic: val,
-                                    bp: `${prev.systolic || ""}/${val}`,
-                                    map: mapVal || prev.map
-                                }));
-                            }}
-                            unit="mmHg"
-                        />
+                        <div>
+                            <DualInput
+                                label="BP1"
+                                size="sm"
+                                value1={formData.systolic || ""}
+                                value2={formData.diastolic || ""}
+                                onChange1={(val) => {
+                                    const mapVal = calculateMAP(val, formData.diastolic);
+                                    setFormData(prev => ({
+                                        ...prev,
+                                        systolic: val,
+                                        bp: `${val}/${prev.diastolic || ""}`,
+                                        map: mapVal || prev.map
+                                    }));
+                                }}
+                                onChange2={(val) => {
+                                    const mapVal = calculateMAP(formData.systolic, val);
+                                    setFormData(prev => ({
+                                        ...prev,
+                                        diastolic: val,
+                                        bp: `${prev.systolic || ""}/${val}`,
+                                        map: mapVal || prev.map
+                                    }));
+                                }}
+                                unit="mmHg"
+                            />
+                            {hasBp1Conflict && (
+                                <DiffBadge
+                                    label="คัดกรอง"
+                                    originalValue={`${triageBaseline.systolic || "-"}/${triageBaseline.diastolic || "-"}`}
+                                    unit="mmHg"
+                                    onRevert={() => onRevertField?.(['systolic', 'diastolic', 'bp', 'map'])}
+                                />
+                            )}
+                        </div>
 
                         {/* BP2 */}
-                        <DualInput
-                            label="BP2"
-                            size="sm"
-                            value1={formData.systolic2 || ""}
-                            value2={formData.diastolic2 || ""}
-                            onChange1={(val) => {
-                                const mapVal = calculateMAP(val, formData.diastolic2);
-                                setFormData(prev => ({
-                                    ...prev,
-                                    systolic2: val,
-                                    map2: mapVal || prev.map2
-                                }));
-                            }}
-                            onChange2={(val) => {
-                                const mapVal = calculateMAP(formData.systolic2, val);
-                                setFormData(prev => ({
-                                    ...prev,
-                                    diastolic2: val,
-                                    map2: mapVal || prev.map2
-                                }));
-                            }}
-                            unit="mmHg"
-                        />
+                        <div>
+                            <DualInput
+                                label="BP2"
+                                size="sm"
+                                value1={formData.systolic2 || ""}
+                                value2={formData.diastolic2 || ""}
+                                onChange1={(val) => {
+                                    const mapVal = calculateMAP(val, formData.diastolic2);
+                                    setFormData(prev => ({
+                                        ...prev,
+                                        systolic2: val,
+                                        map2: mapVal || prev.map2
+                                    }));
+                                }}
+                                onChange2={(val) => {
+                                    const mapVal = calculateMAP(formData.systolic2, val);
+                                    setFormData(prev => ({
+                                        ...prev,
+                                        diastolic2: val,
+                                        map2: mapVal || prev.map2
+                                    }));
+                                }}
+                                unit="mmHg"
+                            />
+                            {hasBp2Conflict && (
+                                <DiffBadge
+                                    label="คัดกรอง"
+                                    originalValue={`${triageBaseline.systolic2 || "-"}/${triageBaseline.diastolic2 || "-"}`}
+                                    unit="mmHg"
+                                    onRevert={() => onRevertField?.(['systolic2', 'diastolic2', 'map2'])}
+                                />
+                            )}
+                        </div>
 
                         {/* MAP & MAP2 */}
-                        <Grid cols={2} gap={2} className="pt-0.5">
+                        <div className="grid grid-cols-2 gap-1.5 pt-0.5">
                             <InputField
                                 label="MAP"
                                 unit="mmHg"
                                 size="sm"
                                 disabled
-                                inputClassName="text-center"
+                                inputClassName="text-center text-[11px]"
                                 value={formData.map || (formData.systolic && formData.diastolic ? calculateMAP(formData.systolic, formData.diastolic) : "")}
                                 onChange={(e) => setFormData(prev => ({ ...prev, map: e.target.value }))}
                                 placeholder="-"
@@ -185,146 +262,203 @@ export function VitalsTab({ formData, setFormData }) {
                                 label="MAP2"
                                 unit="mmHg"
                                 size="sm"
-                                inputClassName="text-center"
+                                inputClassName="text-center text-[11px]"
                                 value={formData.map2 || (formData.systolic2 && formData.diastolic2 ? calculateMAP(formData.systolic2, formData.diastolic2) : "")}
                                 onChange={(e) => setFormData(prev => ({ ...prev, map2: e.target.value }))}
                                 placeholder="-"
                             />
-                        </Grid>
+                        </div>
 
-                        {/* PR1 & PR2 */}
-                        <Grid cols={2} gap={2} className="pt-0.5">
+                        {/* PR */}
+                        <div>
                             <InputField
                                 label="PR"
                                 unit="bpm"
                                 size="sm"
-                                inputClassName="text-center"
+                                inputClassName="text-center text-[11px]"
                                 value={formData.pr || formData.pulse || ""}
                                 onChange={(e) => setFormData(prev => ({ ...prev, pr: e.target.value, pulse: e.target.value }))}
                                 placeholder="-"
                             />
-                        </Grid>
+                            {hasPrConflict && (
+                                <DiffBadge
+                                    label="คัดกรอง"
+                                    originalValue={baselinePr}
+                                    unit="bpm"
+                                    onRevert={() => onRevertField?.(['pr', 'pulse'])}
+                                />
+                            )}
+                        </div>
                     </div>
                 </div>
 
                 {/* Card 2: Respiration, Temperature & Oxygen (หายใจ ออกซิเจน อุณหภูมิ) */}
-                <div className="flex flex-col rounded-xl border border-sky-100/90 bg-gradient-to-b from-sky-50/30 via-white to-white p-3 sm:p-3.5 shadow-2xs transition-all hover:border-sky-200">
-                    <div className="flex items-center gap-2 pb-2 mb-2.5 border-b border-sky-100/60">
-                        <div className="flex size-6.5 items-center justify-center rounded-md bg-sky-100/80 text-sky-600">
-                            <Wind className="size-3.5" />
+                <div className="flex flex-col rounded-xl border border-sky-100/90 bg-gradient-to-b from-sky-50/30 via-white to-white p-2.5 sm:p-3 shadow-2xs transition-all hover:border-sky-200">
+                    <div className="flex items-center gap-1.5 pb-1.5 mb-2 border-b border-sky-100/60">
+                        <div className="flex size-5.5 sm:size-6 shrink-0 items-center justify-center rounded-md bg-sky-100/80 text-sky-600">
+                            <Wind className="size-3 sm:size-3.5" />
                         </div>
                         <div className="min-w-0 flex-1">
-                            <h3 className="text-xs font-bold text-slate-800">
+                            <h3 className="text-[11px] sm:text-xs font-bold text-slate-800 truncate">
                                 การหายใจและอุณหภูมิ
                             </h3>
                         </div>
                     </div>
 
-                    <div className="space-y-2.5 flex-1">
+                    <div className="space-y-2 flex-1">
                         {/* SpO2 */}
-                        <InputField
-                            label="O2sat"
-                            badge={formData.o2sat ? (
-                                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border ${Number(formData.o2sat) >= 95
-                                    ? "text-emerald-700 bg-emerald-50 border-emerald-200"
-                                    : "text-rose-700 bg-rose-50 border-rose-200"
-                                    }`}>
-                                    {Number(formData.o2sat) >= 95 ? "ปกติ" : "ต่ำ"}
-                                </span>
-                            ) : null}
-                            unit="%"
-                            size="sm"
-                            inputClassName="text-center"
-                            value={formData.o2sat || ""}
-                            onChange={(e) => setFormData(prev => ({ ...prev, o2sat: e.target.value }))}
-                            placeholder="-"
-                        />
+                        <div>
+                            <InputField
+                                label="O2sat"
+                                badge={formData.o2sat ? (
+                                    <span className={`text-[9px] font-semibold px-1 py-0.2 rounded border ${Number(formData.o2sat) >= 95
+                                        ? "text-emerald-700 bg-emerald-50 border-emerald-200"
+                                        : "text-rose-700 bg-rose-50 border-rose-200"
+                                        }`}>
+                                        {Number(formData.o2sat) >= 95 ? "ปกติ" : "ต่ำ"}
+                                    </span>
+                                ) : null}
+                                unit="%"
+                                size="sm"
+                                inputClassName="text-center text-[11px]"
+                                value={formData.o2sat || ""}
+                                onChange={(e) => setFormData(prev => ({ ...prev, o2sat: e.target.value }))}
+                                placeholder="-"
+                            />
+                            {hasO2Conflict && (
+                                <DiffBadge
+                                    label="คัดกรอง"
+                                    originalValue={triageBaseline.o2sat}
+                                    unit="%"
+                                    onRevert={() => onRevertField?.('o2sat')}
+                                />
+                            )}
+                        </div>
 
                         {/* BT */}
-                        <InputField
-                            label="BT"
-                            badge={formData.bodyTemperature ? (
-                                <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border ${Number(formData.bodyTemperature) >= 37.5
-                                    ? "text-rose-700 bg-rose-50 border-rose-200"
-                                    : "text-emerald-700 bg-emerald-50 border-emerald-200"
-                                    }`}>
-                                    {Number(formData.bodyTemperature) >= 38.5 ? "ไข้สูง" : Number(formData.bodyTemperature) >= 37.5 ? "มีไข้" : "ปกติ"}
-                                </span>
-                            ) : null}
-                            unit="°C"
-                            size="sm"
-                            inputClassName="text-center"
-                            value={formData.bodyTemperature || ""}
-                            onChange={(e) => setFormData(prev => ({ ...prev, bodyTemperature: e.target.value }))}
-                            placeholder="-"
-                        />
+                        <div>
+                            <InputField
+                                label="BT"
+                                badge={formData.bodyTemperature ? (
+                                    <span className={`text-[9px] font-semibold px-1 py-0.2 rounded border ${Number(formData.bodyTemperature) >= 37.5
+                                        ? "text-rose-700 bg-rose-50 border-rose-200"
+                                        : "text-emerald-700 bg-emerald-50 border-emerald-200"
+                                        }`}>
+                                        {Number(formData.bodyTemperature) >= 38.5 ? "ไข้สูง" : Number(formData.bodyTemperature) >= 37.5 ? "มีไข้" : "ปกติ"}
+                                    </span>
+                                ) : null}
+                                unit="°C"
+                                size="sm"
+                                inputClassName="text-center text-[11px]"
+                                value={formData.bodyTemperature || ""}
+                                onChange={(e) => setFormData(prev => ({ ...prev, bodyTemperature: e.target.value }))}
+                                placeholder="-"
+                            />
+                            {hasBtConflict && (
+                                <DiffBadge
+                                    label="คัดกรอง"
+                                    originalValue={triageBaseline.bodyTemperature}
+                                    unit="°C"
+                                    onRevert={() => onRevertField?.('bodyTemperature')}
+                                />
+                            )}
+                        </div>
 
                         {/* RR */}
-                        <InputField
-                            label="RR"
-                            unit="/min"
-                            size="sm"
-                            inputClassName="text-center"
-                            value={formData.respiratory || ""}
-                            onChange={(e) => setFormData(prev => ({ ...prev, respiratory: e.target.value }))}
-                            placeholder="-"
-                        />
+                        <div>
+                            <InputField
+                                label="RR"
+                                unit="/min"
+                                size="sm"
+                                inputClassName="text-center text-[11px]"
+                                value={formData.respiratory || ""}
+                                onChange={(e) => setFormData(prev => ({ ...prev, respiratory: e.target.value }))}
+                                placeholder="-"
+                            />
+                            {hasRrConflict && (
+                                <DiffBadge
+                                    label="คัดกรอง"
+                                    originalValue={triageBaseline.respiratory}
+                                    unit="/min"
+                                    onRevert={() => onRevertField?.('respiratory')}
+                                />
+                            )}
+                        </div>
                     </div>
                 </div>
 
                 {/* Card 3: Body Measurements & BMI / BSA (สัดส่วนร่างกาย & BMI / BSA) */}
-                <div className="flex flex-col rounded-xl border border-emerald-100/90 bg-gradient-to-b from-emerald-50/30 via-white to-white p-3 sm:p-3.5 shadow-2xs transition-all hover:border-emerald-200">
-                    <div className="flex items-center gap-2 pb-2 mb-2.5 border-b border-emerald-100/60">
-                        <div className="flex size-6.5 items-center justify-center rounded-md bg-emerald-100/80 text-emerald-600">
-                            <Scale className="size-3.5" />
+                <div className="flex flex-col rounded-xl border border-emerald-100/90 bg-gradient-to-b from-emerald-50/30 via-white to-white p-2.5 sm:p-3 shadow-2xs transition-all hover:border-emerald-200">
+                    <div className="flex items-center gap-1.5 pb-1.5 mb-2 border-b border-emerald-100/60">
+                        <div className="flex size-5.5 sm:size-6 shrink-0 items-center justify-center rounded-md bg-emerald-100/80 text-emerald-600">
+                            <Scale className="size-3 sm:size-3.5" />
                         </div>
                         <div className="min-w-0 flex-1">
-                            <h3 className="text-xs font-bold text-slate-800">
+                            <h3 className="text-[11px] sm:text-xs font-bold text-slate-800 truncate">
                                 สัดส่วนร่างกาย & BMI / BSA
                             </h3>
-
                         </div>
                     </div>
 
-                    <div className="space-y-2.5 flex-1">
+                    <div className="space-y-2 flex-1">
                         {/* Weight & Height */}
-                        <Grid cols={2} gap={2}>
-                            <InputField
-                                label="น้ำหนัก"
-                                unit="kg"
-                                size="sm"
-                                inputClassName="text-center"
-                                value={formData.weight || ""}
-                                onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))}
-                                placeholder="-"
-                            />
-                            <InputField
-                                label="ส่วนสูง"
-                                unit="cm"
-                                size="sm"
-                                inputClassName="text-center"
-                                value={formData.height || ""}
-                                onChange={(e) => setFormData(prev => ({ ...prev, height: e.target.value }))}
-                                placeholder="-"
-                            />
-                        </Grid>
+                        <div className="grid grid-cols-2 gap-1.5">
+                            <div>
+                                <InputField
+                                    label="น้ำหนัก"
+                                    unit="kg"
+                                    size="sm"
+                                    inputClassName="text-center text-[11px]"
+                                    value={formData.weight || ""}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))}
+                                    placeholder="-"
+                                />
+                                {hasWeightConflict && (
+                                    <DiffBadge
+                                        label="คัดกรอง"
+                                        originalValue={triageBaseline.weight}
+                                        unit="kg"
+                                        onRevert={() => onRevertField?.('weight')}
+                                    />
+                                )}
+                            </div>
+                            <div>
+                                <InputField
+                                    label="ส่วนสูง"
+                                    unit="cm"
+                                    size="sm"
+                                    inputClassName="text-center text-[11px]"
+                                    value={formData.height || ""}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, height: e.target.value }))}
+                                    placeholder="-"
+                                />
+                                {hasHeightConflict && (
+                                    <DiffBadge
+                                        label="คัดกรอง"
+                                        originalValue={triageBaseline.height}
+                                        unit="cm"
+                                        onRevert={() => onRevertField?.('height')}
+                                    />
+                                )}
+                            </div>
+                        </div>
 
                         {/* BMI & BSA (คำนวณอัตโนมัติ) */}
-                        <Grid cols={2} gap={2}>
+                        <div className="grid grid-cols-2 gap-1.5">
                             {(() => {
                                 const bmiInfo = calculateBMI(formData.weight, formData.height);
                                 return (
                                     <InputField
                                         label="BMI"
                                         badge={bmiInfo ? (
-                                            <span className={`text-[9px] font-semibold px-1 py-0.2 rounded border ${bmiInfo.color}`}>
+                                            <span className={`text-[8px] font-semibold px-1 py-0.2 rounded border ${bmiInfo.color}`}>
                                                 {bmiInfo.status.split(" ")[0]}
                                             </span>
                                         ) : null}
                                         unit="kg/m²"
                                         size="sm"
                                         disabled
-                                        inputClassName="text-center"
+                                        inputClassName="text-center text-[11px]"
                                         value={formData.bmi !== "" ? formData.bmi : (bmiInfo?.value || "")}
                                         onChange={(e) => setFormData(prev => ({ ...prev, bmi: e.target.value }))}
                                         placeholder="-"
@@ -335,63 +469,90 @@ export function VitalsTab({ formData, setFormData }) {
                             <InputField
                                 label="BSA"
                                 badge={calculateBSA(formData.weight, formData.height) ? (
-                                    <span className="text-[9px] font-medium text-slate-400">
+                                    <span className="text-[8px] font-medium text-slate-400">
                                         Mosteller
                                     </span>
                                 ) : null}
                                 unit="m²"
                                 size="sm"
                                 disabled
-                                inputClassName="text-center"
+                                inputClassName="text-center text-[11px]"
                                 value={formData.bsa !== "" ? formData.bsa : (calculateBSA(formData.weight, formData.height) || "")}
                                 onChange={(e) => setFormData(prev => ({ ...prev, bsa: e.target.value }))}
                                 placeholder="-"
                             />
-                        </Grid>
+                        </div>
 
                         {/* รอบอก & รอบเอว */}
-                        <Grid cols={2} gap={2}>
-                            <InputField
-                                label="รอบอก"
-                                unit="cm"
-                                size="sm"
-                                inputClassName="text-center"
-                                value={formData.chest || ""}
-                                onChange={(e) => setFormData(prev => ({ ...prev, chest: e.target.value }))}
-                                placeholder="-"
-                            />
-                            <InputField
-                                label="รอบเอว"
-                                unit="cm"
-                                size="sm"
-                                inputClassName="text-center"
-                                value={formData.waist || ""}
-                                onChange={(e) => setFormData(prev => ({ ...prev, waist: e.target.value }))}
-                                placeholder="-"
-                            />
-                        </Grid>
+                        <div className="grid grid-cols-2 gap-1.5">
+                            <div>
+                                <InputField
+                                    label="รอบอก"
+                                    unit="cm"
+                                    size="sm"
+                                    inputClassName="text-center text-[11px]"
+                                    value={formData.chest || ""}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, chest: e.target.value }))}
+                                    placeholder="-"
+                                />
+                                {hasChestConflict && (
+                                    <DiffBadge
+                                        label="คัดกรอง"
+                                        originalValue={triageBaseline.chest}
+                                        unit="cm"
+                                        onRevert={() => onRevertField?.('chest')}
+                                    />
+                                )}
+                            </div>
+                            <div>
+                                <InputField
+                                    label="รอบเอว"
+                                    unit="cm"
+                                    size="sm"
+                                    inputClassName="text-center text-[11px]"
+                                    value={formData.waist || ""}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, waist: e.target.value }))}
+                                    placeholder="-"
+                                />
+                                {hasWaistConflict && (
+                                    <DiffBadge
+                                        label="คัดกรอง"
+                                        originalValue={triageBaseline.waist}
+                                        unit="cm"
+                                        onRevert={() => onRevertField?.('waist')}
+                                    />
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-            </Grid>
+            </div>
 
             {/* Section 2: Clinical Scores & Triage (การประเมินคะแนนและความเร่งด่วน) */}
-            <Grid cols={{ default: 1, sm: 2 }} className="@[820px]:grid-cols-4 pt-0.5" gap={3}>
+            <div className="grid grid-cols-1 @[320px]:grid-cols-2 @[560px]:grid-cols-4 gap-2 sm:gap-2.5 pt-0.5">
 
                 {/* Pain Score */}
-                <div className="flex flex-col rounded-xl border border-slate-200 bg-white p-3 shadow-2xs transition hover:border-slate-300">
+                <div className="flex flex-col rounded-xl border border-slate-200 bg-white p-2.5 sm:p-3 shadow-2xs transition hover:border-slate-300">
                     <ScoreBox
                         title="Pain Score"
                         values={["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]}
                         value={formData.painScore}
                         onChange={(val) => setFormData(prev => ({ ...prev, painScore: val }))}
                     />
+                    {hasPainConflict && (
+                        <DiffBadge
+                            label="คัดกรอง"
+                            originalValue={`${triageBaseline.painScore}/10`}
+                            onRevert={() => onRevertField?.('painScore')}
+                        />
+                    )}
                 </div>
 
                 {/* ESI Triage */}
-                <div className="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-3 shadow-2xs transition hover:border-slate-300">
+                <div className="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-2.5 sm:p-3 shadow-2xs transition hover:border-slate-300">
                     <div>
-                        <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex items-center justify-between mb-1">
                             <label className="text-xs font-bold text-slate-800">
                                 ESI
                             </label>
@@ -407,15 +568,22 @@ export function VitalsTab({ formData, setFormData }) {
                                 { value: "ESI 4", label: "ESI 4 : เขียว" },
                                 { value: "ESI 5", label: "ESI 5 : ขาว" },
                             ]}
-                            className="h-8 w-full rounded-lg border-slate-200 bg-slate-50/50 px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-100/70"
+                            className="h-7.5 sm:h-8 w-full rounded-lg border-slate-200 bg-slate-50/50 px-2 text-[11px] sm:text-xs font-semibold text-slate-700 hover:bg-slate-100/70"
                         />
+                        {hasEsiConflict && (
+                            <DiffBadge
+                                label="คัดกรอง"
+                                originalValue={triageBaseline.esi}
+                                onRevert={() => onRevertField?.('esi')}
+                            />
+                        )}
                     </div>
                 </div>
 
                 {/* Barthel Index */}
-                <div className="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-3 shadow-2xs transition hover:border-slate-300">
+                <div className="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-2.5 sm:p-3 shadow-2xs transition hover:border-slate-300">
                     <div>
-                        <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex items-center justify-between mb-1">
                             <label className="text-xs font-bold text-slate-800">
                                 Barthel Index
                             </label>
@@ -425,15 +593,22 @@ export function VitalsTab({ formData, setFormData }) {
                             onValueChange={(val) => setFormData(prev => ({ ...prev, barthelIndex: val }))}
                             placeholder="เลือก Barthel Index"
                             options={Array.from({ length: 21 }, (_, i) => String(i))}
-                            className="h-8 w-full rounded-lg border-slate-200 bg-slate-50/50 px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-100/70"
+                            className="h-7.5 sm:h-8 w-full rounded-lg border-slate-200 bg-slate-50/50 px-2 text-[11px] sm:text-xs font-semibold text-slate-700 hover:bg-slate-100/70"
                         />
+                        {hasBarthelConflict && (
+                            <DiffBadge
+                                label="คัดกรอง"
+                                originalValue={triageBaseline.barthelIndex}
+                                onRevert={() => onRevertField?.('barthelIndex')}
+                            />
+                        )}
                     </div>
                 </div>
 
                 {/* CVD Risk */}
-                <div className="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-3 shadow-2xs transition hover:border-slate-300">
+                <div className="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-2.5 sm:p-3 shadow-2xs transition hover:border-slate-300">
                     <div>
-                        <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex items-center justify-between mb-1">
                             <label className="text-xs font-bold text-slate-800">
                                 CVD Risk
                             </label>
@@ -449,12 +624,19 @@ export function VitalsTab({ formData, setFormData }) {
                                 { value: "30-40%", label: "30 - 40% : เสี่ยงสูงมาก" },
                                 { value: ">= 40%", label: "≥ 40% : เสี่ยงสูงสุด" },
                             ]}
-                            className="h-8 w-full rounded-lg border-slate-200 bg-slate-50/50 px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-100/70"
+                            className="h-7.5 sm:h-8 w-full rounded-lg border-slate-200 bg-slate-50/50 px-2 text-[11px] sm:text-xs font-semibold text-slate-700 hover:bg-slate-100/70"
                         />
+                        {hasCvdConflict && (
+                            <DiffBadge
+                                label="คัดกรอง"
+                                originalValue={triageBaseline.cvdRisk}
+                                onRevert={() => onRevertField?.('cvdRisk')}
+                            />
+                        )}
                     </div>
                 </div>
 
-            </Grid>
+            </div>
         </div>
     );
 }

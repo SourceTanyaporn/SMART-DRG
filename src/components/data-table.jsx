@@ -29,7 +29,7 @@ export function DataTable({ columns, data, searchPlaceholder, onRowSelect, selec
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    initialState: { pagination: { pageSize: 5 } },
+    initialState: { pagination: { pageSize: 10 } },
   })
 
   return (
@@ -65,17 +65,17 @@ export function DataTable({ columns, data, searchPlaceholder, onRowSelect, selec
                 const isSelected = selectedRowId === row.original.an
 
                 return (
-              <TableRow
-                key={row.id}
-                onClick={() => onRowSelect?.(row.original)}
-                className={`border-[#edf0f5] ${onRowSelect ? "cursor-pointer hover:bg-primary/[0.035]" : ""} ${isSelected ? "bg-primary/[0.045] hover:bg-primary/[0.06]" : ""}`}
-              >
-                  {row.getVisibleCells().map((cell, index) => (
-                    <TableCell key={cell.id} className={`px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm text-foreground whitespace-nowrap ${isSelected && index === 0 ? "border-l-[3px] border-l-primary pl-[11px] sm:pl-[13px]" : ""}`}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                  <TableRow
+                    key={row.id}
+                    onClick={() => onRowSelect?.(row.original)}
+                    className={`border-[#edf0f5] ${onRowSelect ? "cursor-pointer hover:bg-primary/[0.035]" : ""} ${isSelected ? "bg-primary/[0.045] hover:bg-primary/[0.06]" : ""}`}
+                  >
+                    {row.getVisibleCells().map((cell, index) => (
+                      <TableCell key={cell.id} className={`px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm text-foreground whitespace-nowrap ${isSelected && index === 0 ? "border-l-[3px] border-l-primary pl-[11px] sm:pl-[13px]" : ""}`}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
                 )
               })
             ) : (

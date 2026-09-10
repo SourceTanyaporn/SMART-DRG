@@ -8,19 +8,33 @@ const alertTemplates = [
 ]
 
 export function CaseReviewPanel({ caseData }) {
+  if (!caseData) {
+    return (
+      <aside className="space-y-3 sm:space-y-4">
+        <section className="rounded-xl border border-[#edf0f5] bg-card p-6 text-center">
+          <ClipboardListIcon className="mx-auto size-8 text-muted-foreground/50 mb-2" />
+          <h3 className="text-sm font-semibold text-foreground">ไม่พบข้อมูลเคสผู้ป่วย</h3>
+          <p className="mt-1 text-xs text-muted-foreground">
+            กรุณาเลือกเคสจากรายการ หรือปรับช่วงเวลาตัวกรอง
+          </p>
+        </section>
+      </aside>
+    )
+  }
+
   const suggestedAdjrw = (caseData.adjrw * 1.25).toFixed(4)
   const estimatedGain = Math.round(caseData.cost * 0.16)
-  const alerts = alertTemplates.slice(0, caseData.alerts)
+  const alerts = alertTemplates.slice(0, caseData.alerts || 0)
   const details = [
-    ["ผู้ป่วย", `${caseData.patient} (${caseData.demographics})`],
+    ["ผู้ป่วย", `${caseData.patient} (${caseData.demographics || "-"})`],
     ["AN", `${caseData.an}`],
-    ["HN", "00012345"],
-    ["วันที่ Admit - Discharge", "15 พ.ค. 2567 - 20 พ.ค. 2567 (5 วัน)"],
-    ["สิทธิการรักษา", "บัตรทอง (UC)"],
-    ["Principal Dx", caseData.diagnosis],
-    ["DRG", `${caseData.drg}  ${caseData.diagnosis}`],
-    ["AdjRW", caseData.adjrw.toFixed(4)],
-    ["ค่าใช้จ่ายรวม", `${caseData.cost.toLocaleString("en-US", { minimumFractionDigits: 2 })} บาท`],
+    ["HN", caseData.hn || "-"],
+    ["วันที่ Admit - Discharge", caseData.dateRange || "-"],
+    ["สิทธิการรักษา", caseData.rights || "บัตรทอง (UC)"],
+    ["Principal Dx", caseData.diagnosis || "-"],
+    ["DRG", `${caseData.drg || "-"}  ${caseData.diagnosis || ""}`],
+    ["AdjRW", caseData.adjrw ? caseData.adjrw.toFixed(4) : "-"],
+    ["ค่าใช้จ่ายรวม", caseData.cost ? `${caseData.cost.toLocaleString("en-US", { minimumFractionDigits: 2 })} บาท` : "-"],
   ]
 
   return (

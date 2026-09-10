@@ -1,60 +1,19 @@
 import { Link, useRouterState } from "@tanstack/react-router"
 import {
-  BookOpenIcon,
-  BriefcaseMedicalIcon,
   Building2Icon,
-  ChevronLeftIcon,
-  CircleDollarSignIcon,
-  ClipboardListIcon,
-  FileBarChartIcon,
-  HistoryIcon,
-  LayoutDashboardIcon,
-  MessageCircle,
-  SettingsIcon,
-  ShieldAlertIcon,
-  StethoscopeIcon,
 } from "lucide-react"
 
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-  useSidebar,
 } from "@/components/ui/sidebar"
-
-const operationsNavigation = [
-  { title: "Dashboard", to: "/", icon: LayoutDashboardIcon },
-  { title: "DRG Worklist", to: "/worklist", icon: ClipboardListIcon },
-  { title: "Case Review", to: "/case-review", icon: FileBarChartIcon },
-  // { title: "EMR Case Viewer", to: "/emr-viewer", icon: StethoscopeIcon, badge: "Draft" },
-  // { title: "Coding Review", to: "/coding-review", icon: BriefcaseMedicalIcon, badge: "Draft" },
-  // { title: "Claim & Alerts", to: "/claim-alerts", icon: ShieldAlertIcon, badge: "12" },
-
-]
-
-const speechtotextNavigation = [
-  { title: "Dashboard Conversation", to: "/dashboard-conversation", icon: LayoutDashboardIcon },
-  // { title: "Speech to text", to: "/speech-to-text", icon: MessageCircle },
-  // { title: "Result", to: "/result-page", icon: LayoutDashboardIcon },
-
-]
-
-const insightNavigation = [
-  { title: "Revenue & Risk", to: "/revenue-risk", icon: CircleDollarSignIcon, badge: "Draft" },
-  { title: "Reports", to: "/reports", icon: FileBarChartIcon },
-]
-
-const administrationNavigation = [
-  { title: "Coding Knowledge Base", icon: BookOpenIcon },
-  { title: "Audit Log", icon: HistoryIcon },
-  { title: "Settings", icon: SettingsIcon },
-]
+import { navigationGroups } from "@/config/navigation"
 
 export function AppSidebar(props) {
   const pathname = useRouterState({ select: (state) => state.location.pathname })
@@ -106,14 +65,14 @@ export function AppSidebar(props) {
       </SidebarHeader>
 
       <SidebarContent className="gap-0 px-2 py-4">
-        <NavigationMenu label="DRG Operations" items={operationsNavigation} pathname={pathname} />
-        <NavigationMenu label="Speech to text" items={speechtotextNavigation} pathname={pathname} />
-        <NavigationMenu label="Insights" items={insightNavigation} pathname={pathname} />
-        <div className="my-4 border-t border-sidebar-border" />
-        <NavigationMenu label="Administration" items={administrationNavigation} pathname={pathname} />
+        {navigationGroups.map((group) => (
+          <div key={group.label}>
+            {group.isDividerBefore && <div className="my-4 border-t border-sidebar-border" />}
+            <NavigationMenu label={group.label} items={group.items} pathname={pathname} />
+          </div>
+        ))}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border p-2"><CollapseButton /></SidebarFooter>
       <SidebarRail />
     </Sidebar>
   )
@@ -132,9 +91,4 @@ function NavigationMenu({ label, items, pathname }) {
       </SidebarMenu>
     </div>
   )
-}
-
-function CollapseButton() {
-  const { toggleSidebar } = useSidebar()
-  return <SidebarMenu><SidebarMenuItem><SidebarMenuButton tooltip="ย่อเมนู" onClick={toggleSidebar} className="h-10 rounded-lg px-3 text-muted-foreground"><ChevronLeftIcon className="size-5" /><span>ย่อเมนู</span></SidebarMenuButton></SidebarMenuItem></SidebarMenu>
 }

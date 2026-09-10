@@ -31,17 +31,17 @@ export function NavUser({
         <DropdownMenu>
           <DropdownMenuTrigger
             render={
-              <SidebarMenuButton size="lg" className="aria-expanded:bg-muted" />
+              <SidebarMenuButton size="lg" className="aria-expanded:bg-muted p-1 sm:p-2" />
             }>
-            <Avatar>
+            <Avatar className="size-8 shrink-0">
               <AvatarImage src={user.avatar} alt={user.name} />
               <AvatarFallback>พก</AvatarFallback>
             </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight">
+            <div className="hidden md:grid flex-1 text-left text-sm leading-tight min-w-0">
               <span className="truncate font-medium">{user.name}</span>
-              <span className="truncate text-xs">{user.email}</span>
+              <span className="hidden lg:inline truncate text-xs text-muted-foreground">{user.email}</span>
             </div>
-            <ChevronsUpDownIcon className="ml-auto size-4" />
+            <ChevronsUpDownIcon className="hidden lg:block ml-auto size-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="w-fit"

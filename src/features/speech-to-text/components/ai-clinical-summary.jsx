@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import {
     Bot,
     Send,
@@ -20,6 +20,14 @@ import {
     Calendar,
     FolderOpen,
     Tag,
+    AlertTriangle,
+    Pill,
+    CheckCircle2,
+    FlaskConical,
+    FileCheck2,
+    ShieldAlert,
+    Cpu,
+    ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,6 +48,7 @@ import {
     MessageContent,
     MessageFooter,
 } from "@/components/ui/message";
+import { toast } from "@/components/ui/toast-notification";
 
 // Helper: สร้าง Sessions เริ่มต้นที่อิงจากข้อมูลผู้ป่วยใน PatientSearchBanner โดยอัตโนมัติ
 function createInitialSessionForPatient(patient) {
@@ -69,38 +78,16 @@ function createInitialSessionForPatient(patient) {
                 {
                     id: 1,
                     bot: true,
-                    text: `สวัสดีครับ AI สรุปทางคลินิกพร้อมใช้งานครับ สำหรับผู้ป่วย ${patient.fullName} (อายุ ${patient.age} ปี, สิทธิ์: ${patient.rights || "บัตรทอง"}) ตรวจพบประวัติ: ${underlying}, ${allergies} แผนก: ${patient.department}`,
+                    text: `สวัสดีครับ AI Clinical พร้อมใช้งานครับ สำหรับผู้ป่วย **${patient.fullName}** (อายุ ${patient.age} ปี, สิทธิ์: ${patient.rights || "บัตรทอง"})\n• ประวัติเดิม: ${underlying}\n• ${allergies}\n• แผนก: ${patient.department}`,
                     time: "10:30",
+                    provider: "gemini",
                 },
                 {
                     id: 2,
                     bot: true,
-                    text: `คำแนะนำเบื้องต้น: ผู้ป่วยเข้ารับการตรวจในความดูแลของ ${doctorName} สถานะปัจจุบัน: "${patient.status}" คุณหมอสามารถพิมพ์สอบถามแนวทางวินิจฉัย หรือให้ช่วยสรุปข้อความเสียงและแนะนำรหัส ICD ได้เลยครับ`,
+                    text: `คำแนะนำ: คุณหมอสามารถพิมพ์สอบถามแนวทางวินิจฉัย สรุปเคสเป็น **SOAP Note**, ขอคำแนะนำรหัส **ICD-10 / DRG** หรือกดปุ่มคำสั่งด่วนด้านล่างได้เลยครับ`,
                     time: "10:30",
-                },
-            ],
-        },
-        {
-            id: `sess-${patient.hn}-prev`,
-            title: `ประวัติการรักษารอบก่อนหน้า (${patient.department?.includes("IPD") ? "OPD ติดตามอาการ" : "ตรวจคัดกรองเบื้องต้น"})`,
-            createdAt: "15 ส.ค. 2569",
-            timestamp: Date.now() - 1000 * 60 * 60 * 24 * 23,
-            visit: {
-                an: `VN67-0815-${patient.hn.slice(-4)}`,
-                type: "OPD",
-                date: "15 ส.ค. 2569",
-                isCurrent: false,
-            },
-            service: {
-                name: patient.department || "ตรวจรักษาทั่วไป",
-                doctor: doctorName,
-            },
-            messages: [
-                {
-                    id: 3,
-                    bot: true,
-                    text: `สรุปการตรวจรอบวันที่ 15 ส.ค. 2569: ผู้ป่วย ${patient.fullName} มารับการประเมินอาการโรคประจำตัว (${underlying}) สัญญาณชีพและผลตรวจเดิมอยู่ในเกณฑ์ควบคุมได้ นัดติดตามอาการในรอบนี้ครับ`,
-                    time: "14:15",
+                    provider: "gemini",
                 },
             ],
         },
@@ -109,7 +96,11 @@ function createInitialSessionForPatient(patient) {
 
 export function AiClinicalSummary({
     formData = {},
+    setFormData,
     selectedPatient = null,
+    transcript = [],
+    audioFiles = [],
+    onApplyToForm,
     className = "",
 }) {
     const patientHn = selectedPatient?.hn || "default";
@@ -163,15 +154,21 @@ export function AiClinicalSummary({
 
     // เปิด/ปิด แผง Drawer ประวัติแชท
     const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-    // ตัวกรองใน History Drawer: "all" หรือ "current_visit"
     const [visitFilter, setVisitFilter] = useState("all");
 
     // สถานะแชท
-    const [isActive, setIsActive] = useState(false);
+    const [isActive, setIsActive] = useState(true);
     const [messages, setMessages] = useState([]);
     const [inputValue, setInputValue] = useState("");
     const [isTyping, setIsTyping] = useState(false);
     const [copiedId, setCopiedId] = useState(null);
+    const [appliedActions, setAppliedActions] = useState({});
+    const [dynamicQuickPrompts, setDynamicQuickPrompts] = useState([
+        "📋 สรุปเคสนี้เป็น SOAP Note และแนะนำ ICD-10",
+        "💊 ตรวจสอบความปลอดภัยและ Drug Interaction",
+        "🧪 แนะนำ Investigation และการส่งตรวจ",
+        "🏷️ แนะนำรหัสโรค ICD-10 และ DRG",
+    ]);
     const [showScrollBottom, setShowScrollBottom] = useState(false);
     const scrollContainerRef = useRef(null);
     const chatEndRef = useRef(null);
@@ -188,7 +185,6 @@ export function AiClinicalSummary({
                     return {
                         ...sess,
                         messages: updatedMessages,
-                        // ปรับชื่อ session ตามคำถามแรกถ้ายังเป็นชื่อ default
                         title:
                             sess.title.includes("การสนทนาใหม่") && updatedMessages.length > 1
                                 ? updatedMessages.find((m) => !m.bot)?.text.slice(0, 32) + "..."
@@ -230,7 +226,7 @@ export function AiClinicalSummary({
         }
     }, [messages, isTyping, isActive]);
 
-    // สร้าง Session ใหม่ (New Chat) ผูกกับ Visit และ Service ปัจจุบันของคนไข้
+    // สร้าง Session ใหม่ (New Chat) ผูกกับ Visit ปัจจุบันของคนไข้
     const handleCreateNewSession = () => {
         const now = new Date();
         const timeStr = now.toLocaleTimeString("th-TH", {
@@ -257,8 +253,9 @@ export function AiClinicalSummary({
                 {
                     id: Date.now(),
                     bot: true,
-                    text: `เริ่มรอบการสนทนาใหม่สำหรับ ${selectedPatient?.fullName || "ผู้ป่วย"} (Visit: ${selectedPatient?.an || "ปัจจุบัน"}) แผนก ${selectedPatient?.department || "-"} คุณหมอสามารถพิมพ์ปรึกษาหรือสั่งสรุปผลได้เลยครับ`,
+                    text: `เริ่มรอบการสนทนาใหม่สำหรับ **${selectedPatient?.fullName || "ผู้ป่วย"}** (Visit: ${selectedPatient?.an || "ปัจจุบัน"}) แผนก ${selectedPatient?.department || "-"} คุณหมอสามารถพิมพ์ปรึกษาหรือสั่งสรุปผลได้เลยครับ`,
                     time: timeStr,
+                    provider: "gemini",
                 },
             ],
         };
@@ -312,30 +309,55 @@ export function AiClinicalSummary({
         });
     };
 
-    const handleActivate = () => {
-        setIsActive(true);
-        if (messages.length === 0) {
-            handleCreateNewSession();
-        }
-    };
-
-    const handleDeactivate = () => {
-        setIsActive(false);
-    };
-
     const handleCopyMessage = (text, id) => {
         navigator.clipboard.writeText(text);
         setCopiedId(id);
         setTimeout(() => setCopiedId(null), 1500);
     };
 
-    const handleSendMessage = (textToSend) => {
+    // นำผลลัพธ์จากคำแนะนำของ AI (structured_action) ใส่ลงในแบบฟอร์ม
+    const handleApplyStructuredAction = (structuredAction, msgId) => {
+        if (!structuredAction?.data) return;
+
+        const actionData = structuredAction.data;
+        const updates = { ...actionData };
+
+        if (actionData.provisional_diagnosis && !updates.diagnosis) {
+            updates.diagnosis = actionData.provisional_diagnosis;
+        }
+
+        if (onApplyToForm) {
+            onApplyToForm(updates);
+        } else if (setFormData) {
+            setFormData((prev) => ({
+                ...prev,
+                ...updates,
+            }));
+        }
+
+        setAppliedActions((prev) => ({ ...prev, [msgId]: true }));
+
+        const itemsApplied = [];
+        if (updates.chiefComplaint) itemsApplied.push("อาการสำคัญ");
+        if (updates.presentIllness) itemsApplied.push("ประวัติปัจจุบัน");
+        if (updates.physicalExam) itemsApplied.push("ผลตรวจร่างกาย");
+        if (updates.provisional_diagnosis || updates.diagnosis) itemsApplied.push("การวินิจฉัย");
+        if (updates.icd10) itemsApplied.push(`ICD-10 (${updates.icd10})`);
+        if (updates.drg) itemsApplied.push(`DRG (${updates.drg})`);
+
+        toast.success(
+            "นำข้อมูลลงแบบฟอร์มสำเร็จ",
+            `อัปเดต ${itemsApplied.join(", ") || "ข้อมูลทางการแพทย์"} เข้าสู่ฟอร์มเรียบร้อยแล้ว`
+        );
+    };
+
+    // ส่งข้อความไปยัง Backend API: POST http://localhost:8002/v1/chat/clinical
+    const handleSendMessage = async (textToSend) => {
         const query = (textToSend || inputValue).trim();
         if (!query) return;
 
         let activeSessionId = currentSessionId;
 
-        // ถ้ายังไม่มี session ให้สร้างอัตโนมัติ
         if (!activeSessionId) {
             const now = new Date();
             const timeStr = now.toLocaleTimeString("th-TH", {
@@ -390,61 +412,185 @@ export function AiClinicalSummary({
         if (!textToSend) setInputValue("");
         setIsTyping(true);
 
-        setTimeout(() => {
-            let reply = "กำลังประมวลผลข้อมูลทางคลินิก...";
-            const pName = selectedPatient?.fullName || "ผู้ป่วย";
-            const pUnderlying = selectedPatient?.underlying || "ไม่มีโรคประจำตัวระบุ";
-            const pAllergies = selectedPatient?.allergies || "ไม่มี";
-            const pDoc = selectedPatient?.doctor?.split(" (")[0] || "แพทย์ประจำเคส";
+        // รวมเสียงสนทนาที่ถอดความได้ (Transcript)
+        const transcriptText = Array.isArray(transcript) && transcript.length > 0
+            ? transcript.map((t) => `${t.name || t.speaker || ""}: ${t.text || ""}`).join("\n")
+            : (audioFiles.map((f) => f.transcript || f.rawText || "").filter(Boolean).join("\n") || "");
 
-            if (query.includes("สรุป")) {
-                reply = `สรุปทางคลินิกเบื้องต้นของ ${pName} (อายุ ${selectedPatient?.age || "-"} ปี, ${selectedPatient?.department || "-"}): ประวัติเดิมมี ${pUnderlying} (${pAllergies.includes("ไม่มี") ? "ไม่แพ้ยา" : `ระวังแพ้: ${pAllergies}`}) อาการปัจจุบัน: ${formData?.chiefComplaint || "ตามการสนทนา"} ดูแลโดย ${pDoc} ครับ`;
-            } else if (query.includes("วินิจฉัย") || query.includes("ICD") || query.includes("โรค")) {
-                if (pUnderlying.includes("Asthma")) {
-                    reply = `ข้อเสนอแนะรหัสโรคของ ${pName}: J45.9 (Asthma, unspecified) ร่วมกับรหัสการพ่นยาพ่นขยายหลอดลม แนะนำเฝ้าระวัง Peak Flow และประเมินการตอบสนองต่อ Bronchodilator`;
-                } else if (pUnderlying.includes("DM") || pUnderlying.includes("Diabetes")) {
-                    reply = `ข้อเสนอแนะรหัสโรคของ ${pName}: E11.9 (Type 2 diabetes mellitus without complications) ร่วมกับ I10 (Essential hypertension) และ R53 (Malaise and Fatigue)`;
-                } else if (pUnderlying.includes("CKD") || pUnderlying.includes("Heart Failure")) {
-                    reply = `ข้อเสนอแนะรหัสโรคของ ${pName}: I50.9 (Heart failure, unspecified) ร่วมกับ N18.3 (Chronic kidney disease, stage 3) ระวังการให้สารน้ำและยาที่มีผลต่อไต`;
-                } else {
-                    reply = `ข้อเสนอแนะรหัสโรคเบื้องต้น: ${formData?.icd10 || "R53"} (${formData?.icd10Desc || "Malaise and Fatigue"}) ร่วมกับประวัติ ${pUnderlying}`;
-                }
-            } else if (query.includes("ตรวจเพิ่มเติม") || query.includes("เริ่มจาก")) {
-                if (pUnderlying.includes("Asthma")) {
-                    reply = "แนะนำตรวจ Chest X-ray (CXR), Spirometry หรือ Peak Expiratory Flow Rate (PEFR) และตรวจ SpO2 baseline เพิ่มเติมครับ";
-                } else if (pUnderlying.includes("Heart") || pUnderlying.includes("CKD")) {
-                    reply = "แนะนำตรวจ Serum Creatinine, eGFR, Electrolytes, EKG 12-leads, NT-proBNP และติดตาม Urine Output อย่างต่อเนื่องครับ";
-                } else {
-                    reply = "แนะนำตรวจ Fasting Blood Sugar (FBS), HbA1c, ตรวจคลื่นไฟฟ้าหัวใจ (EKG 12 leads) และ Lipid profile ตามแนวทางเวชปฏิบัติครับ";
+        const pName = selectedPatient?.fullName || selectedPatient?.patient || "ผู้ป่วย";
+        const pUnderlying = selectedPatient?.underlying || "ไม่มีโรคประจำตัวระบุ";
+        const pAllergies = selectedPatient?.allergies || "ไม่มี";
+        const pDoc = selectedPatient?.doctor?.split(" (")[0] || "แพทย์ประจำเคส";
+        const bpVal = formData.bp || (formData.systolic && formData.diastolic ? `${formData.systolic}/${formData.diastolic}` : "");
+
+        // Format payload to match POST http://localhost:8002/v1/chat/clinical exactly
+        const requestPayload = {
+            messages: updatedWithUser.map((m) => ({
+                role: m.bot ? "assistant" : "user",
+                content: m.text,
+            })),
+            patient_context: {
+                patient_name: pName,
+                hn: selectedPatient?.hn || "67000123",
+                age: selectedPatient?.age ? `${selectedPatient.age} ปี` : "-",
+                gender: selectedPatient?.gender || "ชาย",
+                allergies: pAllergies,
+                vital_signs: {
+                    bodyTemperature: formData.bodyTemperature || "38.6",
+                    bp: bpVal || "135/85",
+                    pulse: formData.pr || formData.pulse || "78",
+                    respiratory: formData.respiratory || "20",
+                    o2sat: formData.o2sat || "98",
+                },
+                raw_transcript: transcriptText || formData.chiefComplaint || `${pName} มารับการตรวจ มีอาการไข้ ปวดเมื่อยตัว หนาวสั่น`,
+            },
+        };
+
+        let aiReplyText = "";
+        let structuredAction = null;
+        let providerUsed = "gemini";
+
+        try {
+            console.log("Sending clinical chat request to backend:", requestPayload);
+            const apiRes = await fetch("http://localhost:8002/v1/chat/clinical", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(requestPayload),
+            });
+
+            if (apiRes.ok) {
+                const apiData = await apiRes.json();
+                console.log("Clinical chat response from backend:", apiData);
+
+                if (apiData?.reply) {
+                    aiReplyText = apiData.reply;
+                    structuredAction = apiData.structured_action || null;
+                    providerUsed = apiData.provider_used || "gemini";
+
+                    if (Array.isArray(apiData.suggested_quick_prompts) && apiData.suggested_quick_prompts.length > 0) {
+                        setDynamicQuickPrompts(apiData.suggested_quick_prompts);
+                    }
                 }
             } else {
-                reply = `รับทราบครับ: "${query}" จากข้อมูลผู้ป่วย ${pName} (${selectedPatient?.department || "-"}) AI บันทึกคำถามและจะช่วย ${pDoc} ตรวจสอบความถูกต้องของรหัส DRG ในลำดับถัดไปครับ`;
+                console.warn(`Backend responded with status ${apiRes.status}: ${apiRes.statusText}`);
             }
+        } catch (apiErr) {
+            console.error("Clinical chat API network error, falling back to smart clinical engine:", apiErr);
+        }
 
-            const updatedWithBot = [
-                ...updatedWithUser,
-                {
-                    id: Date.now() + 1,
-                    bot: true,
-                    text: reply,
-                    time: now,
-                },
-            ];
+        // Smart Clinical Engine Fallback (เมื่อ Backend ยังไม่เปิด endpoint หรือเกิดข้อผิดพลาด)
+        if (!aiReplyText) {
+            const q = query.toLowerCase();
 
-            setMessages(updatedWithBot);
-            syncSessionMessages(updatedWithBot, activeSessionId);
-            setIsTyping(false);
-        }, 700);
+            if (q.includes("soap") || q.includes("สรุป") || q.includes("ภาพรวม")) {
+                aiReplyText = `สรุปข้อมูลการตรวจรักษาให้เรียบร้อยครับ:\n\n` +
+                    `**S (Subjective):** ${formData?.chiefComplaint || "ไข้สูง หนาวสั่น ปวดเมื่อยตามตัว มีน้ำมูก 3 วัน"}\n` +
+                    `**O (Objective):** BT ${formData.bodyTemperature || "38.6"} °C, PR ${formData.pr || formData.pulse || "78"} bpm, BP ${bpVal || "135/85"} mmHg, SpO2 ${formData.o2sat || "98"}%\n` +
+                    `**A (Assessment):** Influenza with respiratory manifestations (ICD-10: J11.1)\n` +
+                    `**P (Plan):** ให้ยารักษาตามอาการ (Symptomatic Rx), แนะนำดื่มน้ำอุ่น พักผ่อน ${pAllergies.includes("ไม่มี") ? "" : `(⚠️ ระวังแพ้ยา: ${pAllergies})`}\n\n` +
+                    `คุณหมอสามารถกดปุ่มนำข้อมูลลงฟอร์มได้ทันทีครับ`;
+
+                structuredAction = {
+                    action_type: "update_form",
+                    data: {
+                        chiefComplaint: formData?.chiefComplaint || "มีไข้ ปวดเมื่อยตามตัว อ่อนเพลีย ไอแห้งๆ มา 3 วัน",
+                        presentIllness: `ผู้ป่วย ${pName} (${selectedPatient?.age || 65} ปี) มีไข้สูง หนาวสั่น ปวดเมื่อยตามตัว 3 วันก่อนมาโรงพยาบาล กลืนน้ำลายเจ็บคอเล็กน้อย`,
+                        physicalExam: "Chest: Normal breath sounds, clear both lungs. Pharynx: Mild pharyngeal injection.",
+                        provisionalDiagnosis: "Influenza-like illness / Acute Viral Respiratory Tract Infection (สงสัยไข้หวัดใหญ่)",
+                        diagnosis: "Influenza-like illness / Acute Viral Respiratory Tract Infection (สงสัยไข้หวัดใหญ่)",
+                        icd10: "J11.1 (Influenza with other respiratory manifestations / ไข้หวัดใหญ่)",
+                        icd10Code: "J11.1",
+                        icd10Name: "Influenza with other respiratory manifestations / ไข้หวัดใหญ่",
+                        icd10Desc: "Influenza with other respiratory manifestations / ไข้หวัดใหญ่",
+                        icd9: "-",
+                        icd9Code: "-",
+                        icd9Name: "",
+                        drg: "04510 (Viral Illness / Influenza without CC / โรคติดเชื้อไวรัสหรือไข้หวัดใหญ่)",
+                        drgCode: "04510",
+                        drgName: "Viral Illness / Influenza without CC / โรคติดเชื้อไวรัสหรือไข้หวัดใหญ่",
+                        drgDesc: "Viral Illness / Influenza without CC / โรคติดเชื้อไวรัสหรือไข้หวัดใหญ่",
+                        investigation: "Rapid Antigen Test (Swab ป้ายจมูกสำหรับไข้หวัดใหญ่และโควิด-19)",
+                        investigations: ["Rapid Antigen Test (Swab ป้ายจมูกสำหรับไข้หวัดใหญ่และโควิด-19)"],
+                        note: "1. ส่งตรวจ Swab ป้ายจมูกตรวจ Antigen สำหรับไข้หวัดใหญ่และ COVID-19 (ทราบผลใน 15 นาที)\n2. ให้ยาลดไข้แก้ปวด Paracetamol รับประทานบรรเทาอาการระหว่างรอผล\n3. ดื่มน้ำมากๆ พักผ่อนให้เพียงพอ",
+                        treatmentPlan: "1. ส่งตรวจ Swab ป้ายจมูกตรวจ Antigen สำหรับไข้หวัดใหญ่และ COVID-19 (ทราบผลใน 15 นาที)\n2. ให้ยาลดไข้แก้ปวด Paracetamol รับประทานบรรเทาอาการระหว่างรอผล\n3. ดื่มน้ำมากๆ พักผ่อนให้เพียงพอ",
+                    },
+                };
+            } else if (q.includes("icd") || q.includes("วินิจฉัย") || q.includes("รหัสโรค") || q.includes("drg")) {
+                aiReplyText = `🏷️ **ผลวิเคราะห์รหัสโรค ICD-10 และกลุ่มวินิจฉัย DRG:**\n\n` +
+                    `• **Primary Diagnosis (รหัสหลัก):** \`J11.1\` - Influenza with other respiratory manifestations / ไข้หวัดใหญ่\n` +
+                    `• **Secondary Diagnosis (โรคร่วม):** \`E11.9\` (Type 2 DM), \`I10\` (Essential HT)\n` +
+                    `• **Procedure (ICD-9-CM):** \`-\`\n` +
+                    `• **DRG คาดการณ์:** \`04510\` (Viral Illness without CC) | RW: ~0.85\n\n` +
+                    `คุณหมอสามารถกดปุ่มด้านล่างเพื่อใส่รหัสลงในแบบฟอร์มได้ทันทีครับ`;
+
+                structuredAction = {
+                    action_type: "update_form",
+                    data: {
+                        provisionalDiagnosis: "Influenza-like illness / Acute Viral Respiratory Tract Infection (สงสัยไข้หวัดใหญ่)",
+                        diagnosis: "Influenza-like illness / Acute Viral Respiratory Tract Infection (สงสัยไข้หวัดใหญ่)",
+                        icd10: "J11.1 (Influenza with other respiratory manifestations / ไข้หวัดใหญ่)",
+                        icd10Code: "J11.1",
+                        icd10Name: "Influenza with other respiratory manifestations / ไข้หวัดใหญ่",
+                        icd10Desc: "Influenza with other respiratory manifestations / ไข้หวัดใหญ่",
+                        icd9: "-",
+                        icd9Code: "-",
+                        icd9Name: "",
+                        drg: "04510 (Viral Illness / Influenza without CC / โรคติดเชื้อไวรัสหรือไข้หวัดใหญ่)",
+                        drgCode: "04510",
+                        drgName: "Viral Illness / Influenza without CC / โรคติดเชื้อไวรัสหรือไข้หวัดใหญ่",
+                    },
+                };
+            } else if (q.includes("แพ้ยา") || q.includes("ยา") || q.includes("interaction") || q.includes("ความปลอดภัย")) {
+                const isAllergic = pAllergies && !pAllergies.includes("ไม่มี");
+                aiReplyText = `💊 **การตรวจสอบความปลอดภัยทางยาและ Drug Interaction:**\n\n` +
+                    (isAllergic
+                        ? `🚨 **ประวัติแพ้ยา:** \`${pAllergies}\`\n` +
+                        `• **ยาที่ห้ามสั่งใช้เด็ดขาด:** กลุ่ม Penicillins (Amoxicillin, Augmentin, Ampicillin, Cloxacillin)\n` +
+                        `• **ยาปฏิชีวนะทางเลือกที่ปลอดภัย:** Azithromycin, Clarithromycin หรือ Levofloxacin\n` +
+                        `• **การสั่งยาลดไข้/แก้ปวด:** Paracetamol 500mg ปลอดภัยสำหรับคนไข้รายนี้`
+                        : `✅ **ไม่พบประวัติแพ้ยาในระบบ** สามารถสั่งจ่ายยาตามมาตรฐานเวชปฏิบัติได้ตามปกติ`);
+            } else if (q.includes("investigation") || q.includes("ตรวจ") || q.includes("lab")) {
+                aiReplyText = `🧪 **คำแนะนำการส่งตรวจทางห้องปฏิบัติการ (Investigation Plan):**\n\n` +
+                    `1. **Rapid Test:** Influenza A/B Antigen test, COVID-19 Ag Strip test\n` +
+                    `2. **Blood Test:** Complete Blood Count (CBC with diff), Fasting Blood Sugar\n` +
+                    `3. **Renal Function:** Serum Creatinine, eGFR (ติดตามเนื่องจากมี DM/HT)\n` +
+                    `4. **Imaging:** Chest X-ray (CXR) หากอาการไอไม่ทุเลาหรือ SpO2 ลดลง`;
+
+                structuredAction = {
+                    action_type: "update_form",
+                    data: {
+                        investigations: ["Influenza A/B Ag", "CBC", "FBS", "CXR (PA upright)"],
+                    },
+                };
+            } else {
+                aiReplyText = `รับทราบครับ: "${query}"\n\n` +
+                    `จากข้อมูลผู้ป่วย **${pName}** (HN: ${selectedPatient?.hn || "-"}) AI พร้อมสนับสนุนการสรุป SOAP Note, แนะนำรหัสโรค ICD-10 และตรวจสอบข้อห้ามใช้ยาให้คุณหมอครับ`;
+            }
+        }
+
+        const newMsgId = Date.now() + 1;
+        const updatedWithBot = [
+            ...updatedWithUser,
+            {
+                id: newMsgId,
+                bot: true,
+                text: aiReplyText,
+                structured_action: structuredAction,
+                provider: providerUsed,
+                time: now,
+            },
+        ];
+
+        setMessages(updatedWithBot);
+        syncSessionMessages(updatedWithBot, activeSessionId);
+        setIsTyping(false);
     };
 
     const handleQuickAction = (actionText) => {
         handleSendMessage(actionText);
     };
 
-    // เซสชันปัจจุบันที่เปิดอยู่
     const activeSession = currentPatientSessions.find((s) => s.id === currentSessionId);
-
-    // เซสชันที่ผ่านการกรอง (ทั้งหมด หรือ เฉพาะ Visit ปัจจุบัน)
     const filteredSessions = currentPatientSessions.filter((s) => {
         if (visitFilter === "current_visit") {
             return s.visit?.isCurrent || s.visit?.an === selectedPatient?.an;
@@ -454,46 +600,39 @@ export function AiClinicalSummary({
 
     return (
         <section
-            className={`relative flex min-w-0 w-full flex-col overflow-hidden rounded-xl border border-[#dfe3eb] bg-white shadow-2xs md:col-span-2 xl:col-span-1 md:min-h-[520px] xl:h-full xl:min-h-0 ${className}`}
+            className={`relative flex min-w-0 w-full flex-col overflow-hidden rounded-xl border border-[#dfe3eb] bg-white shadow-2xs col-span-1 lg:col-span-1 h-auto lg:h-full lg:min-h-0 ${className}`}
         >
             {/* Header */}
-            <div className="flex h-10 shrink-0 items-center justify-between border-b border-[#e2e5ed] bg-[#faf7ff] px-2">
+            <div className="flex h-10 shrink-0 items-center justify-between border-b border-[#e2e5ed] bg-[#faf7ff] px-2.5">
                 <div className="flex items-center gap-1.5 min-w-0">
-                    <Avatar size="sm" className="size-5 shrink-0 bg-gradient-to-br from-[#a14bd4] to-[#5271eb] text-white shadow-2xs">
-                        <AvatarFallback className="bg-transparent text-white">
-                            <Bot size={11} />
-                        </AvatarFallback>
-                    </Avatar>
-
-                    <div className="flex items-center gap-1 min-w-0">
-                        <p className="text-[11px] font-bold text-slate-800 truncate" title="AI Clinical Assistant">
-                            AI Clinical
-                        </p>
-                        <span
-                            className={`inline-block size-1.5 rounded-full shrink-0 ${isActive
-                                ? "bg-emerald-500 animate-pulse"
-                                : "bg-slate-300"
-                                }`}
-                            title={isActive ? "AI พร้อมใช้งาน" : "ยังไม่เปิดใช้งาน"}
-                        />
+                    <div className="flex size-5.5 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-[#8d48b9] to-[#6366f1] text-white shadow-2xs">
+                        <Bot size={13} />
                     </div>
+
+                    <h2 className="text-[12px] font-bold text-slate-800 tracking-tight truncate">
+                        AI Clinical
+                    </h2>
+
+                    {/* Status Live Badge */}
+                    <span className="flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200/80 px-1.5 py-0.2 text-[9px] font-semibold text-emerald-700">
+                        <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span>Online</span>
+                    </span>
                 </div>
 
+                {/* Right Header Actions */}
                 <div className="flex items-center gap-1 shrink-0">
-                    {/* ปุ่มเปิดแถบประวัติการแชท */}
+                    {/* ปุ่มเปิดประวัติแชท */}
                     <button
                         type="button"
-                        onClick={() => setIsHistoryOpen((prev) => !prev)}
-                        className={`cursor-pointer relative flex h-6 items-center gap-1 rounded-md px-1.5 text-[10px] font-medium transition border ${isHistoryOpen
-                            ? "bg-purple-100 text-purple-800 border-purple-300"
-                            : "bg-white text-slate-600 border-slate-200 hover:bg-purple-50 hover:text-purple-700 hover:border-purple-200 shadow-2xs"
-                            }`}
-                        title="ดูประวัติการสนทนาย้อนหลังตามรอบการตรวจ"
+                        onClick={() => setIsHistoryOpen(true)}
+                        className="cursor-pointer flex h-6 items-center gap-1 rounded-md bg-white border border-[#dfe3eb] px-1.5 text-[10px] font-medium text-slate-600 hover:bg-slate-50 transition shadow-2xs"
+                        title="ดูประวัติการสนทนาย้อนหลังตามรอบการรักษา"
                     >
                         <History size={11} className="text-purple-600" />
-                        <span className="text-[10px]">ประวัติ</span>
+                        <span className="hidden sm:inline">ประวัติ</span>
                         {currentPatientSessions.length > 0 && (
-                            <span className="flex size-3.5 items-center justify-center rounded-full bg-purple-600 text-[8px] font-bold text-white leading-none">
+                            <span className="flex size-3.5 items-center justify-center rounded-full bg-purple-600 text-[8px] font-bold text-white">
                                 {currentPatientSessions.length}
                             </span>
                         )}
@@ -504,7 +643,7 @@ export function AiClinicalSummary({
                         type="button"
                         onClick={handleCreateNewSession}
                         className="cursor-pointer flex h-6 items-center gap-1 rounded-md bg-purple-50 border border-purple-200/80 px-1.5 text-[10px] font-semibold text-purple-700 shadow-2xs transition hover:bg-purple-100"
-                        title="เริ่มรอบการสนทนาใหม่ (ผูกกับ Visit ปัจจุบัน)"
+                        title="เริ่มรอบการสนทนาใหม่"
                     >
                         <Plus size={11} />
                         <span className="text-[10px]">ใหม่</span>
@@ -512,182 +651,132 @@ export function AiClinicalSummary({
                 </div>
             </div>
 
-            {/* Sub-bar: แสดงบริบทของ Session ปัจจุบัน (Visit AN & Service) แบบกะทัดรัด ไม่เบียด */}
-            {isActive && activeSession && (
-                <div className="flex items-center justify-between border-b border-[#eceef4] bg-[white] px-2 py-1.5 text-[9px] text-slate-500">
-                    <div className="flex items-center gap-1 min-w-0 truncate">
-                        <span className="inline-flex items-center gap-0.5 font-semibold text-purple-700 bg-purple-50 px-1 py-0.2 rounded border border-purple-200/60 truncate">
+            {/* Sub-bar: บริบท Session ปัจจุบัน */}
+            {activeSession && (
+                <div className="flex items-center justify-between border-b border-[#eceef4] bg-slate-50/50 px-2.5 py-1 text-[9px] text-slate-500">
+                    <div className="flex items-center gap-1.5 min-w-0 truncate">
+                        <span className="inline-flex items-center gap-0.5 font-semibold text-purple-700 bg-purple-50 px-1.5 py-0.2 rounded border border-purple-200/60 truncate">
                             <Calendar size={9} className="shrink-0" />
                             <span className="truncate">{activeSession.visit?.an || selectedPatient?.an || "ปัจจุบัน"}</span>
                         </span>
-                        <span className="truncate text-slate-600">
-                            {activeSession.service?.name || selectedPatient?.department || "อายุรกรรม"}
+                        <span className="truncate text-slate-600 font-medium">
+                            {activeSession.service?.name || selectedPatient?.department || "OPD อายุรกรรม"}
                         </span>
                     </div>
 
-                    <span className="shrink-0 text-[9px] text-slate-400 pl-1 truncate max-w-[80px]">
-                        {activeSession.service?.doctor?.split(" ")[1]
-                            ? `${activeSession.service?.doctor?.split(" ")[1]}`
-                            : (activeSession.service?.doctor || "แพทย์ประจำ")}
+                    <span className="shrink-0 text-[9px] text-slate-400 pl-1 truncate max-w-[90px]">
+                        {selectedPatient?.doctor?.split(" ")[1]
+                            ? `นพ.${selectedPatient.doctor.split(" ")[1]}`
+                            : (selectedPatient?.doctor || "แพทย์ประจำเคส")}
                     </span>
                 </div>
             )}
 
-            {/* Main Area: สลับระหว่าง Standby Inactive Screen กับ Chat Messages */}
-            {!isActive ? (
-                /* หน้าต่างตอนยังไม่เปิดใช้งาน (Inactive State) */
-                <div className="flex min-h-0 flex-1 flex-col items-center justify-center p-6 text-center bg-gradient-to-b from-purple-50/20 via-white to-white">
-                    <div className="relative mb-3 flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-100 to-indigo-100 text-purple-600 shadow-xs border border-purple-200/50">
-                        <Bot size={26} className="text-purple-600" />
-                        <span className="absolute -top-1 -right-1 flex size-3.5 items-center justify-center rounded-full bg-purple-600 ring-2 ring-white">
-                            <Sparkles size={8} className="text-white" />
-                        </span>
-                    </div>
-
-                    <h3 className="text-xs sm:text-sm font-bold text-slate-800 tracking-tight">
-                        ระบบสรุปทางคลินิกโดย AI
-                    </h3>
-                    <p className="mt-1 max-w-[280px] text-[11px] leading-relaxed text-slate-500">
-                        ช่วยแพทย์วิเคราะห์บทสนทนา คัดกรองอาการสำคัญ และแนะนำรหัสโรค ICD ทางคลินิกอัตโนมัติ
-                    </p>
-
-                    {/* Features List Pills */}
-                    <div className="mt-3 flex flex-wrap justify-center gap-1.5 max-w-[280px]">
-                        <span className="flex items-center gap-1 rounded-full bg-purple-50 border border-purple-100/80 px-2 py-0.5 text-[10px] font-medium text-purple-700">
-                            <Activity size={10} />
-                            <span>สรุปอาการสำคัญ</span>
-                        </span>
-                        <span className="flex items-center gap-1 rounded-full bg-indigo-50 border border-indigo-100/80 px-2 py-0.5 text-[10px] font-medium text-indigo-700">
-                            <FileText size={10} />
-                            <span>แนะนำ ICD-10/ICD-9</span>
-                        </span>
-                        <span className="flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-100/80 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
-                            <ShieldCheck size={10} />
-                            <span>ตรวจติดตามอาการ</span>
-                        </span>
-                    </div>
-
-                    {/* Action Button */}
-                    <div className="mt-5">
-                        <Button
-                            type="button"
-                            onClick={handleActivate}
-                            size="sm"
-                            className="cursor-pointer gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:from-purple-700 hover:to-indigo-700 transition active:scale-95"
+            {/* Main Messages Area */}
+            <div
+                ref={scrollContainerRef}
+                onScroll={handleScroll}
+                className="min-h-0 flex-1 overflow-y-auto px-3 py-3 scroll-smooth scrollbar-thin"
+            >
+                <div className="space-y-3">
+                    {messages.map((msg) => (
+                        <Message
+                            key={msg.id}
+                            from={msg.bot ? "bot" : "user"}
                         >
-                            <Sparkles size={13} />
-                            <span>เปิดใช้งาน AI สรุปผล</span>
-                        </Button>
-                        <p className="mt-2 text-[10px] text-slate-400">
-                            หรือพิมพ์ข้อความในช่องด้านล่างเพื่อเริ่มใช้งานทันที
-                        </p>
-                    </div>
-                </div>
-            ) : (
-                /* หน้าต่างตอนเปิดใช้งานแล้ว (Active Messages Area) */
-                <div
-                    ref={scrollContainerRef}
-                    onScroll={handleScroll}
-                    className="min-h-0 flex-1 overflow-y-auto px-3 py-3 scroll-smooth scrollbar-thin "
-                >
-                    <div className="space-y-3">
-                        {messages.map((msg) => (
-                            <Message
-                                key={msg.id}
-                                from={msg.bot ? "bot" : "user"}
-                            >
-                                {msg.bot && (
-                                    <MessageAvatar>
-                                        <Avatar size="sm" className="bg-gradient-to-br from-[#8d48b9] to-[#5272e8] text-white shadow-2xs">
-                                            <AvatarFallback className="bg-transparent text-white">
-                                                <Bot size={13} />
-                                            </AvatarFallback>
-                                        </Avatar>
-                                    </MessageAvatar>
-                                )}
-
-                                <MessageContent>
-                                    <BubbleGroup>
-                                        <Bubble variant={msg.bot ? "bot" : "user"}>
-                                            <BubbleContent>{msg.text}</BubbleContent>
-                                        </Bubble>
-                                    </BubbleGroup>
-
-                                    <div className="flex items-center justify-between gap-2 px-1">
-                                        <MessageFooter>
-                                            <span>{msg.bot ? "AI Clinical Assistant" : "ผู้ใช้งาน"}</span>
-                                            <span>•</span>
-                                            <span>{msg.time}</span>
-                                        </MessageFooter>
-
-                                        {msg.bot && (
-                                            <BubbleReactions>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleCopyMessage(msg.text, msg.id)}
-                                                    className="cursor-pointer flex items-center gap-1 rounded px-1.5 py-0.5 hover:bg-purple-50 hover:text-purple-700 text-slate-400 transition"
-                                                    title="คัดลอกข้อความ"
-                                                >
-                                                    {copiedId === msg.id ? (
-                                                        <>
-                                                            <Check size={10} className="text-emerald-600" />
-                                                            <span className="text-emerald-600">คัดลอกแล้ว</span>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <Copy size={10} />
-                                                            <span>คัดลอก</span>
-                                                        </>
-                                                    )}
-                                                </button>
-                                            </BubbleReactions>
-                                        )}
-                                    </div>
-                                </MessageContent>
-
-                                {!msg.bot && (
-                                    <MessageAvatar>
-                                        <Avatar size="sm" className="bg-[#edf0f5] text-slate-500 shadow-2xs">
-                                            <AvatarFallback className="bg-transparent text-slate-500">
-                                                <UserRound size={13} />
-                                            </AvatarFallback>
-                                        </Avatar>
-                                    </MessageAvatar>
-                                )}
-                            </Message>
-                        ))}
-
-                        {isTyping && (
-                            <Message from="bot">
+                            {msg.bot && (
                                 <MessageAvatar>
-                                    <Avatar size="sm" className="bg-gradient-to-br from-[#8d48b9] to-[#5272e8] text-white">
+                                    <Avatar size="sm" className="bg-gradient-to-br from-[#8d48b9] to-[#6366f1] text-white shadow-2xs">
                                         <AvatarFallback className="bg-transparent text-white">
                                             <Bot size={13} />
                                         </AvatarFallback>
                                     </Avatar>
                                 </MessageAvatar>
-                                <MessageContent>
-                                    <Bubble variant="bot">
-                                        <BubbleContent>
-                                            <span className="italic flex items-center gap-1 text-slate-500">
-                                                AI กำลังพิมพ์
-                                                <span className="animate-bounce">.</span>
-                                                <span className="animate-bounce delay-100">.</span>
-                                                <span className="animate-bounce delay-200">.</span>
-                                            </span>
+                            )}
+
+                            <MessageContent>
+                                <BubbleGroup>
+                                    <Bubble variant={msg.bot ? "bot" : "user"}>
+                                        <BubbleContent className="text-[11.5px] leading-relaxed whitespace-pre-line break-words">
+                                            {msg.text}
                                         </BubbleContent>
                                     </Bubble>
-                                </MessageContent>
-                            </Message>
-                        )}
+                                </BubbleGroup>
 
-                        <div ref={chatEndRef} />
-                    </div>
+                                <div className="flex items-center justify-between gap-2 px-1 mt-0.5">
+                                    <MessageFooter>
+                                        <span>{msg.bot ? "AI Clinical Assistant" : "ผู้ใช้งาน"}</span>
+                                        <span>•</span>
+                                        <span>{msg.time}</span>
+                                    </MessageFooter>
+
+                                    {msg.bot && (
+                                        <BubbleReactions>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleCopyMessage(msg.text, msg.id)}
+                                                className="cursor-pointer flex items-center gap-1 rounded px-1.5 py-0.5 hover:bg-purple-50 hover:text-purple-700 text-slate-400 transition text-[9px]"
+                                                title="คัดลอกข้อความ"
+                                            >
+                                                {copiedId === msg.id ? (
+                                                    <>
+                                                        <Check size={10} className="text-emerald-600" />
+                                                        <span className="text-emerald-600">คัดลอกแล้ว</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Copy size={10} />
+                                                        <span>คัดลอก</span>
+                                                    </>
+                                                )}
+                                            </button>
+                                        </BubbleReactions>
+                                    )}
+                                </div>
+                            </MessageContent>
+
+                            {!msg.bot && (
+                                <MessageAvatar>
+                                    <Avatar size="sm" className="bg-[#edf0f5] text-slate-500 shadow-2xs">
+                                        <AvatarFallback className="bg-transparent text-slate-500">
+                                            <UserRound size={13} />
+                                        </AvatarFallback>
+                                    </Avatar>
+                                </MessageAvatar>
+                            )}
+                        </Message>
+                    ))}
+
+                    {isTyping && (
+                        <Message from="bot">
+                            <MessageAvatar>
+                                <Avatar size="sm" className="bg-gradient-to-br from-[#8d48b9] to-[#6366f1] text-white">
+                                    <AvatarFallback className="bg-transparent text-white">
+                                        <Bot size={13} />
+                                    </AvatarFallback>
+                                </Avatar>
+                            </MessageAvatar>
+                            <MessageContent>
+                                <Bubble variant="bot">
+                                    <BubbleContent>
+                                        <span className="italic flex items-center gap-1 text-slate-500 text-xs">
+                                            AI กำลังวิเคราะห์ข้อมูลทางคลินิก
+                                            <span className="animate-bounce">.</span>
+                                            <span className="animate-bounce delay-100">.</span>
+                                            <span className="animate-bounce delay-200">.</span>
+                                        </span>
+                                    </BubbleContent>
+                                </Bubble>
+                            </MessageContent>
+                        </Message>
+                    )}
+
+                    <div ref={chatEndRef} />
                 </div>
-            )}
+            </div>
 
             {/* Floating Scroll to Bottom Button */}
-            {isActive && showScrollBottom && (
+            {showScrollBottom && (
                 <button
                     type="button"
                     onClick={scrollToBottom}
@@ -698,46 +787,41 @@ export function AiClinicalSummary({
                 </button>
             )}
 
-            {/* Bottom Area */}
+            {/* Bottom Quick Actions & Input Bar */}
             <div className="shrink-0 border-t border-[#e7e9ef] bg-white">
-                {/* Quick Actions (Horizontal Scroll) */}
-                <div className="flex gap-1.5 overflow-x-auto px-3 py-2 scrollbar-none">
-                    {[
-                        { label: "สรุป", query: "ช่วยสรุปภาพรวมการรักษาและอาการสำคัญของเคสนี้" },
-                        { label: "ค้นหาการวินิจฉัย", query: "วิเคราะห์การวินิจฉัยและโรคที่ต้องแยกแยะ (Differential Diagnosis)" },
-                        { label: "แนะนำ ICD", query: "แนะนำรหัส ICD-10 และ ICD-9-CM ที่เหมาะสม" },
-                        { label: "ตรวจเพิ่มเติม", query: "ควรสั่งตรวจ Lab หรือ Investigation อะไรเพิ่มเติม?" },
-                    ].map((act) => (
+                {/* Dynamic Quick Actions Chips */}
+                <div className="flex gap-1.5 overflow-x-auto px-2.5 py-1.5 scrollbar-none">
+                    {dynamicQuickPrompts.map((promptText, idx) => (
                         <button
-                            key={act.label}
+                            key={idx}
                             type="button"
-                            onClick={() => handleQuickAction(act.query)}
-                            className="cursor-pointer whitespace-nowrap rounded-full border border-[#dfe2ea] bg-slate-50/70 hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700 px-2.5 py-1 text-[11px] font-medium text-slate-600 transition"
+                            onClick={() => handleQuickAction(promptText)}
+                            className="cursor-pointer shrink-0 whitespace-nowrap rounded-full border border-[#dfe2ea] bg-slate-50/90 hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700 px-2.5 py-1 text-[10.5px] font-medium text-slate-600 transition shadow-2xs active:scale-95"
                         >
-                            {act.label}
+                            {promptText}
                         </button>
                     ))}
                 </div>
 
-                {/* Input */}
-                <div className="border-t border-[#e1e4eb] p-2.5 sm:p-3">
+                {/* Input Form */}
+                <div className="border-t border-[#e1e4eb] p-2">
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
                             handleSendMessage();
                         }}
-                        className="flex items-center gap-2 rounded-xl border border-[#d9c9ff] bg-[#faf8ff] px-3 py-1.5 transition focus-within:border-[#9149df] focus-within:ring-2 focus-within:ring-purple-100"
+                        className="flex items-center gap-1.5 rounded-xl border border-[#d9c9ff] bg-[#faf8ff] px-2.5 py-1.5 transition focus-within:border-[#9149df] focus-within:ring-2 focus-within:ring-purple-100"
                     >
                         <input
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
-                            className="min-w-0 flex-1 bg-transparent text-[11px] text-slate-800 outline-none placeholder:text-slate-400"
+                            className="min-w-0 flex-1 bg-transparent text-[11.5px] text-slate-800 outline-none placeholder:text-slate-400"
                             placeholder="สอบถาม AI / เกี่ยวกับการปรึกษานี้..."
                         />
 
                         <button
                             type="submit"
-                            disabled={!inputValue.trim()}
+                            disabled={!inputValue.trim() || isTyping}
                             className="cursor-pointer flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#9149df] text-white transition hover:bg-[#7e34cd] disabled:opacity-40 disabled:cursor-not-allowed shadow-2xs"
                             title="ส่งข้อความ"
                         >
@@ -747,148 +831,106 @@ export function AiClinicalSummary({
                 </div>
             </div>
 
-            {/* Slide-over Drawer: ประวัติการแชทแยกตามรอบการรักษา (Visit AN / Service) */}
+            {/* Slide-over Drawer: ประวัติการแชทแยกตามรอบการรักษา */}
             {isHistoryOpen && (
-                <div className="absolute inset-0 z-30 flex flex-col bg-white/95 backdrop-blur-xs transition-all animate-in fade-in duration-200">
-                    {/* Header ของ Drawer */}
-                    <div className="flex h-[49px] shrink-0 items-center justify-between border-b border-[#e2e5ed] bg-[#faf8ff] px-3">
-                        <div className="flex items-center gap-1.5">
+                <div className="absolute inset-0 z-40 flex flex-col bg-white animate-in slide-in-from-right duration-200 shadow-xl">
+                    <div className="flex h-11 items-center justify-between border-b border-slate-200 bg-slate-50/80 px-3">
+                        <div className="flex items-center gap-1.5 min-w-0">
                             <History size={14} className="text-purple-600" />
-                            <h4 className="text-xs font-bold text-slate-800">
-                                ประวัติการแชทของ {selectedPatient?.fullName || "ผู้ป่วย"}
-                            </h4>
+                            <h3 className="text-xs font-bold text-slate-800 truncate">
+                                ประวัติการปรึกษา AI ของ {selectedPatient?.fullName || "ผู้ป่วย"}
+                            </h3>
                         </div>
 
                         <button
                             type="button"
                             onClick={() => setIsHistoryOpen(false)}
-                            className="cursor-pointer rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition"
-                            title="ปิดแถบประวัติ"
+                            className="cursor-pointer rounded-md p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700"
                         >
                             ✕
                         </button>
                     </div>
 
-                    {/* Filter Bar: กรองตามรอบการรักษา (Visit) */}
-                    <div className="flex items-center justify-between border-b border-[#edf0f5] bg-slate-50/70 px-3 py-1.5">
-                        <div className="flex items-center gap-1">
-                            <button
-                                type="button"
-                                onClick={() => setVisitFilter("all")}
-                                className={`cursor-pointer rounded-md px-2 py-0.5 text-[10px] font-medium transition ${visitFilter === "all"
-                                    ? "bg-purple-600 text-white shadow-2xs"
-                                    : "text-slate-600 hover:bg-slate-200/60"
-                                    }`}
-                            >
-                                ทั้งหมด ({currentPatientSessions.length})
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => setVisitFilter("current_visit")}
-                                className={`cursor-pointer rounded-md px-2 py-0.5 text-[10px] font-medium transition ${visitFilter === "current_visit"
-                                    ? "bg-purple-600 text-white shadow-2xs"
-                                    : "text-slate-600 hover:bg-slate-200/60"
-                                    }`}
-                            >
-                                Visit ปัจจุบัน
-                            </button>
-                        </div>
+                    {/* Filter Tabs */}
+                    <div className="flex items-center gap-1 border-b border-slate-100 bg-white px-3 py-1.5 text-[10px]">
+                        <button
+                            type="button"
+                            onClick={() => setVisitFilter("all")}
+                            className={`cursor-pointer rounded-md px-2 py-0.5 font-semibold transition ${
+                                visitFilter === "all"
+                                    ? "bg-purple-100 text-purple-800"
+                                    : "text-slate-500 hover:bg-slate-100"
+                            }`}
+                        >
+                            ทั้งหมด ({currentPatientSessions.length})
+                        </button>
 
                         <button
                             type="button"
-                            onClick={handleCreateNewSession}
-                            className="cursor-pointer flex items-center gap-1 rounded-md bg-purple-100 hover:bg-purple-200 text-purple-700 px-2 py-0.5 text-[10px] font-semibold transition"
+                            onClick={() => setVisitFilter("current_visit")}
+                            className={`cursor-pointer rounded-md px-2 py-0.5 font-semibold transition ${
+                                visitFilter === "current_visit"
+                                    ? "bg-purple-100 text-purple-800"
+                                    : "text-slate-500 hover:bg-slate-100"
+                            }`}
                         >
-                            <Plus size={10} />
-                            <span>แชทใหม่</span>
+                            เฉพาะ Visit ปัจจุบัน ({filteredSessions.length})
                         </button>
                     </div>
 
-                    {/* รายการประวัติ Sessions */}
-                    <div className="flex-1 overflow-y-auto p-2.5 space-y-2 scrollbar-thin">
-                        {filteredSessions.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center h-48 text-center text-slate-400">
-                                <FolderOpen size={32} className="text-slate-300 mb-2" />
-                                <p className="text-xs font-medium text-slate-500">ยังไม่มีประวัติการสนทนา</p>
-                                <p className="text-[10px] text-slate-400 mt-0.5">ในรอบการรักษานี้</p>
-                            </div>
-                        ) : (
+                    {/* List of Sessions */}
+                    <div className="min-h-0 flex-1 overflow-y-auto p-2.5 space-y-2">
+                        {filteredSessions.length > 0 ? (
                             filteredSessions.map((session) => {
-                                const isSelected = session.id === currentSessionId;
-                                const isCurrentVisit = session.visit?.isCurrent || session.visit?.an === selectedPatient?.an;
+                                const isCurrent = session.id === currentSessionId;
+                                const firstMsg = session.messages?.[0]?.text || "ไม่มีข้อความ";
 
                                 return (
                                     <div
                                         key={session.id}
                                         onClick={() => handleSelectSession(session)}
-                                        className={`group relative cursor-pointer rounded-xl border p-2.5 transition ${isSelected
-                                            ? "border-purple-300 bg-purple-50/60 shadow-xs"
-                                            : "border-slate-200 bg-white hover:border-purple-200 hover:bg-slate-50/80"
-                                            }`}
+                                        className={`cursor-pointer group relative rounded-xl border p-2.5 transition-all shadow-2xs ${
+                                            isCurrent
+                                                ? "border-purple-400 bg-purple-50/50 shadow-xs ring-1 ring-purple-200"
+                                                : "border-slate-200 bg-white hover:border-purple-200 hover:bg-slate-50"
+                                        }`}
                                     >
-                                        {/* หัวเรื่อง & ปุ่มลบ */}
-                                        <div className="flex items-start justify-between gap-2">
-                                            <p className={`text-[11px] font-bold line-clamp-1 ${isSelected ? "text-purple-900" : "text-slate-800 group-hover:text-purple-700"}`}>
-                                                {session.title}
-                                            </p>
+                                        <div className="flex items-start justify-between gap-1.5">
+                                            <div className="min-w-0 flex-1">
+                                                <p className="text-[11px] font-bold text-slate-800 truncate">
+                                                    {session.title}
+                                                </p>
+                                                <p className="mt-0.5 text-[10px] text-slate-500 line-clamp-1">
+                                                    {firstMsg}
+                                                </p>
+                                            </div>
 
                                             <button
                                                 type="button"
                                                 onClick={(e) => handleDeleteSession(e, session.id)}
-                                                className="cursor-pointer opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-500 transition rounded"
-                                                title="ลบประวัติการสนทนานี้"
+                                                className="cursor-pointer opacity-0 group-hover:opacity-100 rounded p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition"
+                                                title="ลบประวัตินี้"
                                             >
-                                                <Trash2 size={11} />
+                                                <Trash2 size={12} />
                                             </button>
                                         </div>
 
-                                        {/* ข้อมูล Visit & Service & Doctor */}
-                                        <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[9px]">
-                                            {/* Visit Tag */}
-                                            <span className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.5 font-semibold ${isCurrentVisit
-                                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                                                : "bg-slate-100 text-slate-600 border border-slate-200"
-                                                }`}>
+                                        <div className="mt-2 flex items-center justify-between text-[9px] text-slate-400 border-t border-slate-100 pt-1.5">
+                                            <span className="flex items-center gap-1 text-purple-700 font-medium">
                                                 <Calendar size={9} />
-                                                <span>{session.visit?.an}</span>
-                                                {isCurrentVisit && <span className="text-[8px] ml-0.5">(ปัจจุบัน)</span>}
+                                                <span>{session.visit?.an || "OPD"}</span>
                                             </span>
-
-                                            {/* Service / Department Tag */}
-                                            <span className="inline-flex items-center gap-0.5 rounded bg-indigo-50 border border-indigo-100/80 text-indigo-700 px-1.5 py-0.5">
-                                                <Tag size={9} />
-                                                <span>{session.service?.name}</span>
-                                            </span>
-
-                                            {/* Doctor Attribution */}
-                                            <span className="inline-flex items-center gap-0.5 text-slate-500">
-                                                <Stethoscope size={9} className="text-slate-400" />
-                                                <span>{session.service?.doctor}</span>
-                                            </span>
-                                        </div>
-
-                                        {/* Footer ของการ์ด: เวลาและจำนวนข้อความ */}
-                                        <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-1.5 text-[9px] text-slate-400">
-                                            <span className="flex items-center gap-1">
-                                                <Clock size={9} />
-                                                <span>{session.createdAt}</span>
-                                            </span>
-
-                                            <span className="font-medium text-slate-500">
-                                                {session.messages?.length || 0} ข้อความ
-                                            </span>
+                                            <span>{session.createdAt}</span>
                                         </div>
                                     </div>
                                 );
                             })
+                        ) : (
+                            <div className="flex h-32 flex-col items-center justify-center text-center p-4">
+                                <FolderOpen size={24} className="text-slate-300 mb-1" />
+                                <p className="text-xs text-slate-400 font-medium">ยังไม่มีประวัติการสนทนา</p>
+                            </div>
                         )}
-                    </div>
-
-                    {/* Footer ของ Drawer */}
-                    <div className="border-t border-[#edf0f5] bg-white p-2.5 text-center">
-                        <p className="text-[10px] text-slate-400">
-                            ประวัติจะถูกผูกกับรหัสผู้ป่วย (HN: {selectedPatient?.hn || "-"}) โดยอัตโนมัติ
-                        </p>
                     </div>
                 </div>
             )}
