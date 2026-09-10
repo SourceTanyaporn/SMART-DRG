@@ -35,7 +35,7 @@ import {
     X,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { TranscribeService } from "@/api/transcribe-service";
+import { TranscribeService } from "@/api/transcribe-service.js";
 import { toast } from "@/components/ui/toast-notification";
 import { VitalsTab } from "./components/vitals-tab";
 import { ChiefComplaintTab } from "./components/chief-complaint-tab";
