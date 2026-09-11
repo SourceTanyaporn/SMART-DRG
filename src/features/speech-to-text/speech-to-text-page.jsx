@@ -170,20 +170,32 @@ export function SpeechToTextPage() {
     const navigate = useNavigate();
     const routerState = useRouterState({ select: (s) => s.location });
     const isNew = routerState?.search?.mode === "new" || routerState?.search?.isNew === "true" || routerState?.search?.new === "true";
+    const searchHn = routerState?.search?.hn;
+    const searchPatientId = routerState?.search?.patientId || routerState?.search?.id;
 
-    const [selectedPatient, setSelectedPatient] = useState(() => {
+    const findInitialPatient = () => {
         if (isNew) return null;
+        if (searchHn) {
+            const found = mockPatients.find((p) => p.hn === searchHn);
+            if (found) return found;
+        }
+        if (searchPatientId) {
+            const found = mockPatients.find((p) => p.id === searchPatientId);
+            if (found) return found;
+        }
         return mockPatients[0];
-    });
+    };
+
+    const [selectedPatient, setSelectedPatient] = useState(() => findInitialPatient());
 
     const [triageBaseline, setTriageBaseline] = useState(() => {
-        if (isNew) return buildFormDataFromPatient(null);
-        return buildFormDataFromPatient(mockPatients[0]);
+        const p = findInitialPatient();
+        return buildFormDataFromPatient(p);
     });
 
     const [formData, setFormData] = useState(() => {
-        if (isNew) return buildFormDataFromPatient(null);
-        return buildFormDataFromPatient(mockPatients[0]);
+        const p = findInitialPatient();
+        return buildFormDataFromPatient(p);
     });
 
     useEffect(() => {
@@ -192,8 +204,16 @@ export function SpeechToTextPage() {
             const emptyData = buildFormDataFromPatient(null);
             setFormData(emptyData);
             setTriageBaseline(emptyData);
+        } else if (searchHn || searchPatientId) {
+            const found = mockPatients.find((p) => (searchHn && p.hn === searchHn) || (searchPatientId && p.id === searchPatientId));
+            if (found) {
+                setSelectedPatient(found);
+                const data = buildFormDataFromPatient(found);
+                setFormData(data);
+                setTriageBaseline(data);
+            }
         }
-    }, [isNew]);
+    }, [isNew, searchHn, searchPatientId]);
 
     const handleSelectPatient = (patient) => {
         setSelectedPatient(patient);
