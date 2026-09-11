@@ -139,12 +139,12 @@ export function ResultPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white p-2 sm:p-3 text-[12px] text-slate-700">
+    <div className="min-h-screen bg-background p-2 sm:p-3 text-[12px] text-foreground">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <Link to="/speech-to-text">
           <button
             type="button"
-            className="cursor-pointer flex h-8 items-center gap-1.5 rounded-lg border border-blue-500 bg-white px-3 text-blue-600 font-medium hover:bg-blue-50 transition"
+            className="cursor-pointer flex h-8 items-center gap-1.5 rounded-lg border border-primary bg-card px-3 text-primary font-medium hover:bg-primary/10 transition"
           >
             <ArrowLeft size={15} />
             ย้อนกลับ
@@ -154,7 +154,7 @@ export function ResultPage() {
           <button
             type="button"
             onClick={handleSave}
-            className="cursor-pointer flex h-8 items-center gap-1 rounded-lg border border-blue-500 px-3 text-blue-600 font-medium hover:bg-blue-50 transition"
+            className="cursor-pointer flex h-8 items-center gap-1 rounded-lg border border-primary bg-card px-3 text-primary font-medium hover:bg-primary/10 transition"
           >
             <Save size={14} />
             บันทึก
@@ -163,7 +163,7 @@ export function ResultPage() {
           <button
             type="button"
             onClick={() => window.print()}
-            className="cursor-pointer flex h-8 items-center gap-1 rounded-lg border border-blue-500 px-3 text-blue-600 font-medium hover:bg-blue-50 transition"
+            className="cursor-pointer flex h-8 items-center gap-1 rounded-lg border border-primary bg-card px-3 text-primary font-medium hover:bg-primary/10 transition"
           >
             <FileText size={14} />
             ส่งออก PDF
@@ -172,7 +172,7 @@ export function ResultPage() {
           <button
             type="button"
             onClick={() => window.print()}
-            className="cursor-pointer flex h-8 items-center gap-1 rounded-lg border border-blue-500 px-3 text-blue-600 font-medium hover:bg-blue-50 transition"
+            className="cursor-pointer flex h-8 items-center gap-1 rounded-lg border border-primary bg-card px-3 text-primary font-medium hover:bg-primary/10 transition"
           >
             <Printer size={14} />
             พิมพ์
@@ -181,7 +181,7 @@ export function ResultPage() {
           <button
             type="button"
             onClick={() => toast.success("ส่งออกไปยัง HIS สำเร็จ", "ส่งข้อมูลการรักษาและสัญญาณชีพเรียบร้อย")}
-            className="cursor-pointer flex h-8 items-center gap-1.5 rounded-lg bg-gradient-to-r from-fuchsia-500 to-blue-600 px-4 text-white font-medium hover:opacity-90 transition shadow-xs"
+            className="cursor-pointer flex h-8 items-center gap-1.5 rounded-lg bg-primary px-4 text-primary-foreground font-medium hover:opacity-90 transition shadow-xs"
           >
             <Share2 size={14} />
             ส่งออกไปยัง HIS
@@ -192,17 +192,17 @@ export function ResultPage() {
       {/* ================= Patient + Vitals ================= */}
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
         {/* Patient Card */}
-        <section className="relative z-20 w-full rounded-xl border border-slate-200 bg-white">
+        <section className="relative z-20 w-full rounded-xl border border-border bg-card">
           <div className="p-3">
             {/* ================= Patient Info ================= */}
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-3">
                   {/* Avatar */}
-                  <div className="relative flex size-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold shadow-2xs">
+                  <div className="relative flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold shadow-2xs">
                     <User size={22} />
                     <span
-                      className={`absolute -bottom-1 -right-1 flex size-4 items-center justify-center rounded-full text-[9px] font-bold text-white border-2 border-white ${
+                      className={`absolute -bottom-1 -right-1 flex size-4 items-center justify-center rounded-full text-[9px] font-bold text-white border-2 border-card ${
                         patient?.gender === "ชาย" ? "bg-blue-600" : "bg-pink-500"
                       }`}
                       title={`เพศ${patient?.gender || "ไม่ระบุ"}`}
@@ -213,20 +213,20 @@ export function ResultPage() {
 
                   {/* Patient Info */}
                   <div>
-                    <div className="text-lg font-bold text-slate-800 flex items-center gap-1.5">
+                    <div className="text-lg font-bold text-foreground flex items-center gap-1.5">
                       <span>{patient?.fullName || patient?.name || "น.ส. กุลธิดา ชูมายงสี"}</span>
                       <span className={`text-base font-semibold ${patient?.gender === "หญิง" ? "text-pink-500" : "text-blue-500"}`}>
                         {patient?.gender === "หญิง" ? "♀" : "♂"}
                       </span>
                     </div>
 
-                    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
+                    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                       <span>HN: {patient?.hn || "67012345"}</span>
                       <span>•</span>
                       <span>อายุ {patient?.age || "46"} ปี</span>
                       <span>•</span>
-                      <span className="inline-flex items-center gap-1 font-medium text-teal-700">
-                        <Stethoscope size={13} className="text-teal-600" />
+                      <span className="inline-flex items-center gap-1 font-medium text-primary">
+                        <Stethoscope size={13} className="text-primary" />
                         แพทย์: {patient?.doctor || "พญ. อัญชลี ศรีวิไล (ว.38910)"}
                       </span>
                     </div>
@@ -238,7 +238,7 @@ export function ResultPage() {
                 <button
                   type="button"
                   title="แก้ไขข้อมูล"
-                  className="cursor-pointer flex h-9 w-9 items-center justify-center rounded-xl border border-purple-100 text-purple-400 hover:bg-purple-50 hover:text-purple-600 transition"
+                  className="cursor-pointer flex h-9 w-9 items-center justify-center rounded-xl border border-primary/20 text-primary hover:bg-primary/10 transition"
                 >
                   <Edit3 size={18} />
                 </button>
@@ -246,19 +246,19 @@ export function ResultPage() {
             </div>
 
             {/* ================= Hx ================= */}
-            <div className="my-3 border-t border-slate-100" />
+            <div className="my-3 border-t border-border" />
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50">
-                  <HeartPulse size={20} className="text-red-400" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-500/10 text-rose-500">
+                  <HeartPulse size={20} className="text-rose-500" />
                 </div>
 
                 <div>
-                  <span className="font-semibold text-red-500 mr-2">
+                  <span className="font-semibold text-rose-500 mr-2">
                     ประวัติโรคประจำตัว (Hx):
                   </span>
-                  <span className="text-xs text-slate-600">
+                  <span className="text-xs text-foreground/80">
                     {patient?.underlying || formData.pastHistory || "ปฏิเสธโรคประจำตัวเดิม"}
                   </span>
                 </div>
@@ -266,15 +266,15 @@ export function ResultPage() {
             </div>
 
             {/* ================= Allergy ================= */}
-            <div className="my-3 border-t border-slate-100" />
+            <div className="my-3 border-t border-border" />
 
             <div className="flex items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-purple-50">
-                  <Pill size={20} className="text-purple-400" />
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <Pill size={20} className="text-primary" />
                 </div>
 
-                <span className="shrink-0 font-semibold text-red-500">
+                <span className="shrink-0 font-semibold text-rose-500">
                   แพ้ยา :
                 </span>
 
@@ -288,7 +288,7 @@ export function ResultPage() {
                       className={`cursor-pointer flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-bold transition shadow-2xs border ${
                         isAllergyModalOpen
                           ? "bg-rose-600 text-white border-rose-700 ring-2 ring-rose-200"
-                          : "bg-rose-50 border-rose-300/80 text-rose-700 hover:bg-rose-100 hover:border-rose-400"
+                          : "bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20"
                       }`}
                       title="คลิกเพื่อดูรายละเอียดประวัติการแพ้ยาแบบครบถ้วน"
                     >
@@ -306,33 +306,33 @@ export function ResultPage() {
                           ? patient.allergyDetails.map((d) => d.drug).join(", ")
                           : patient.allergies}
                       </span>
-                      <span className="rounded bg-rose-200/70 text-rose-900 px-1.5 py-0.5 text-[9px] font-extrabold shrink-0">
+                      <span className="rounded bg-rose-500/20 text-rose-700 dark:text-rose-300 px-1.5 py-0.5 text-[9px] font-extrabold shrink-0">
                         ดูข้อมูล
                       </span>
                     </button>
 
                     {/* Drug Allergy Popover Card */}
                     {isAllergyModalOpen && (
-                      <div className="absolute top-full left-0 mt-1.5 z-50 w-80 sm:w-96 max-w-[calc(100vw-2rem)] rounded-xl border border-rose-200 bg-white p-3 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+                      <div className="absolute top-full left-0 mt-1.5 z-50 w-80 sm:w-96 max-w-[calc(100vw-2rem)] rounded-xl border border-rose-500/30 bg-card p-3 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
                         {/* Header */}
-                        <div className="flex items-center justify-between border-b border-rose-100 pb-2 mb-2">
-                          <div className="flex items-center gap-1.5 text-rose-700">
-                            <ShieldAlert size={16} className="text-rose-600" />
-                            <h4 className="text-xs font-bold text-slate-800">
+                        <div className="flex items-center justify-between border-b border-border pb-2 mb-2">
+                          <div className="flex items-center gap-1.5 text-rose-600 dark:text-rose-400">
+                            <ShieldAlert size={16} className="text-rose-600 shrink-0" />
+                            <h4 className="text-xs font-bold text-foreground">
                               ประวัติการแพ้ยา (Drug Allergy Profile)
                             </h4>
                           </div>
                           <button
                             type="button"
                             onClick={() => setIsAllergyModalOpen(false)}
-                            className="cursor-pointer rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                            className="cursor-pointer rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
                           >
                             ✕
                           </button>
                         </div>
 
                         {/* Patient Info Sub-header */}
-                        <div className="mb-2.5 flex items-center justify-between rounded-lg bg-rose-50/60 px-2.5 py-1.5 text-[10px] text-rose-800 border border-rose-100">
+                        <div className="mb-2.5 flex items-center justify-between rounded-lg bg-rose-500/10 px-2.5 py-1.5 text-[10px] text-rose-700 dark:text-rose-300 border border-rose-500/20">
                           <span className="font-semibold">{patient?.fullName || patient?.name} (HN: {patient?.hn})</span>
                           <span className="text-[9px] text-rose-600">ข้อควรระวังพิเศษทางคลินิก</span>
                         </div>
@@ -346,21 +346,21 @@ export function ResultPage() {
                               const badgeColor = isLifeThreatening
                                 ? "bg-red-600 text-white"
                                 : isSevere
-                                  ? "bg-rose-100 text-rose-800 border border-rose-300"
-                                  : "bg-amber-100 text-amber-800 border border-amber-300";
+                                  ? "bg-rose-500/20 text-rose-600 dark:text-rose-300 border border-rose-500/30"
+                                  : "bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/30";
 
                               return (
                                 <div
                                   key={idx}
-                                  className="rounded-lg border border-slate-200/80 bg-slate-50/40 p-2 text-[10px] transition hover:bg-rose-50/30"
+                                  className="rounded-lg border border-border bg-muted/30 p-2 text-[10px] transition hover:bg-rose-500/10"
                                 >
                                   <div className="flex items-start justify-between gap-1.5">
                                     <div className="min-w-0">
-                                      <p className="font-bold text-slate-900 flex items-center gap-1">
+                                      <p className="font-bold text-foreground flex items-center gap-1">
                                         <Pill size={11} className="text-rose-600 shrink-0" />
                                         <span>{item.drug}</span>
                                       </p>
-                                      <p className="text-[9px] text-slate-500">{item.group}</p>
+                                      <p className="text-[9px] text-muted-foreground">{item.group}</p>
                                     </div>
 
                                     <span className={`rounded px-1.5 py-0.5 text-[8px] font-bold shrink-0 ${badgeColor}`}>
@@ -368,12 +368,12 @@ export function ResultPage() {
                                     </span>
                                   </div>
 
-                                  <div className="mt-1.5 rounded bg-white p-1.5 border border-slate-100 text-slate-700">
-                                    <p className="font-semibold text-rose-700 text-[9px] mb-0.5">อาการที่แพ้ / อาการแสดง:</p>
-                                    <p className="text-slate-600 leading-relaxed text-[10px]">{item.reaction}</p>
+                                  <div className="mt-1.5 rounded bg-card p-1.5 border border-border text-foreground">
+                                    <p className="font-semibold text-rose-600 dark:text-rose-400 text-[9px] mb-0.5">อาการที่แพ้ / อาการแสดง:</p>
+                                    <p className="text-muted-foreground leading-relaxed text-[10px]">{item.reaction}</p>
                                   </div>
 
-                                  <div className="mt-1 flex items-center justify-between text-[8px] text-slate-400">
+                                  <div className="mt-1 flex items-center justify-between text-[8px] text-muted-foreground">
                                     <span>บันทึกเมื่อ: {item.date}</span>
                                     <span>{item.hospital}</span>
                                   </div>
@@ -381,8 +381,8 @@ export function ResultPage() {
                               );
                             })
                           ) : (
-                            <div className="rounded-lg border border-slate-200 p-2.5 text-[11px] text-slate-700 bg-rose-50/20">
-                              <p className="font-bold text-rose-700 mb-1">ยาที่ระบุในบันทึก:</p>
+                            <div className="rounded-lg border border-border p-2.5 text-[11px] text-foreground bg-rose-500/10">
+                              <p className="font-bold text-rose-600 dark:text-rose-400 mb-1">ยาที่ระบุในบันทึก:</p>
                               <p>{patient?.allergies}</p>
                             </div>
                           )}
@@ -391,7 +391,7 @@ export function ResultPage() {
                     )}
                   </div>
                 ) : (
-                  <span className="truncate rounded-lg border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-500 font-medium">
+                  <span className="truncate rounded-lg border border-border bg-muted/40 px-3 py-1 text-xs text-muted-foreground font-medium">
                     {patient?.allergies || "ไม่มีประวัติแพ้ยา"}
                   </span>
                 )}
@@ -399,16 +399,16 @@ export function ResultPage() {
             </div>
 
             {/* ================= Rights ================= */}
-            <div className="my-3 border-t border-slate-100" />
+            <div className="my-3 border-t border-border" />
 
             <div className="flex items-center gap-3 overflow-x-auto">
               {/* สิทธิ */}
               <div className="flex shrink-0 items-center gap-2">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-teal-50">
-                  <ShieldCheck size={20} className="text-teal-500" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <ShieldCheck size={20} className="text-primary" />
                 </div>
 
-                <span className="font-semibold text-slate-700">
+                <span className="font-semibold text-foreground/90">
                   สิทธิ
                 </span>
 
@@ -416,7 +416,7 @@ export function ResultPage() {
                   <select
                     value={patient?.rights || "บัตรทอง (UC)"}
                     onChange={() => { }}
-                    className="h-8 appearance-none rounded-lg border border-slate-200 bg-white px-2.5 pr-6 text-xs text-slate-700 outline-none"
+                    className="h-8 appearance-none rounded-lg border border-input bg-card px-2.5 pr-6 text-xs text-foreground outline-none focus:border-primary"
                   >
                     <option value={patient?.rights || "บัตรทอง (UC)"}>{patient?.rights || "บัตรทอง (UC)"}</option>
                     <option value="ประกันสังคม">ประกันสังคม</option>
@@ -425,53 +425,53 @@ export function ResultPage() {
 
                   <ChevronDown
                     size={14}
-                    className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400"
+                    className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground"
                   />
                 </div>
               </div>
 
               {/* จำนวนเงิน */}
-              <div className="flex shrink-0 items-center gap-2 border-l border-slate-200 pl-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-purple-50">
-                  <WalletCards size={18} className="text-purple-400" />
+              <div className="flex shrink-0 items-center gap-2 border-l border-border pl-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <WalletCards size={18} className="text-primary" />
                 </div>
 
                 <div className="text-xs">
-                  <div className="font-semibold text-slate-700">
+                  <div className="font-semibold text-foreground/90">
                     จำนวนเงิน
                   </div>
-                  <div className="text-slate-600">-</div>
+                  <div className="text-muted-foreground">-</div>
                 </div>
               </div>
 
               {/* เบิกได้ */}
-              <div className="flex shrink-0 items-center gap-2 border-l border-slate-200 pl-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-50">
+              <div className="flex shrink-0 items-center gap-2 border-l border-border pl-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500">
                   <ChartNoAxesColumnIncreasing
                     size={18}
-                    className="text-blue-500"
+                    className="text-emerald-500"
                   />
                 </div>
 
                 <div className="text-xs">
-                  <div className="font-semibold text-slate-700">
+                  <div className="font-semibold text-foreground/90">
                     เบิกได้
                   </div>
-                  <div className="text-slate-600">-</div>
+                  <div className="text-muted-foreground">-</div>
                 </div>
               </div>
 
               {/* เบิกไม่ได้ */}
-              <div className="flex shrink-0 items-center gap-2 border-l border-slate-200 pl-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-50">
-                  <Wallet size={18} className="text-orange-400" />
+              <div className="flex shrink-0 items-center gap-2 border-l border-border pl-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/10 text-amber-500">
+                  <Wallet size={18} className="text-amber-500" />
                 </div>
 
                 <div className="text-xs">
-                  <div className="font-semibold text-slate-700">
+                  <div className="font-semibold text-foreground/90">
                     เบิกไม่ได้
                   </div>
-                  <div className="text-slate-600">-</div>
+                  <div className="text-muted-foreground">-</div>
                 </div>
               </div>
             </div>
@@ -479,9 +479,9 @@ export function ResultPage() {
         </section>
 
         {/* Vitalsign Card */}
-        <section className="rounded-xl border border-slate-200 bg-white">
+        <section className="rounded-xl border border-border bg-card">
           <div className="p-3">
-            <div className="border-b border-slate-200 pb-2 font-bold text-slate-700 text-base flex items-center justify-between">
+            <div className="border-b border-border pb-2 font-bold text-foreground text-base flex items-center justify-between">
               <span>Vitalsign (สัญญาณชีพ)</span>
             </div>
 
@@ -594,7 +594,7 @@ export function ResultPage() {
             </div>
 
             {/* Scores & Risks */}
-            <div className="mt-3 flex flex-wrap items-end gap-3 border-t border-slate-100 pt-2.5">
+            <div className="mt-3 flex flex-wrap items-end gap-3 border-t border-border pt-2.5">
               <ScoreBox
                 title="Pain Score"
                 selectedValue={formData.painScore || "0"}
@@ -616,8 +616,8 @@ export function ResultPage() {
               />
 
               <div className="pb-1">
-                <div className="text-[11px] text-slate-500">
-                  CVD Risk: <span className="font-semibold text-blue-600">{formData.cvdRisk || "< 10%"}</span>
+                <div className="text-[11px] text-muted-foreground">
+                  CVD Risk: <span className="font-semibold text-primary">{formData.cvdRisk || "< 10%"}</span>
                 </div>
               </div>
             </div>
@@ -626,7 +626,7 @@ export function ResultPage() {
       </div>
 
       {/* Diagnosis & Coding Section */}
-      <section className="mt-3 rounded-xl border border-slate-200 bg-white">
+      <section className="mt-3 rounded-xl border border-border bg-card">
         <div className="p-3">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
             <DiagnosisCard
@@ -651,9 +651,9 @@ export function ResultPage() {
       </section>
 
       {/* Clinical Notes Section (อาการของผู้ป่วย) */}
-      <section className="mt-3 rounded-xl border border-slate-200 bg-white">
+      <section className="mt-3 rounded-xl border border-border bg-card">
         <div className="p-3">
-          <div className="border-b border-slate-200 pb-2 font-bold text-slate-800 text-base">
+          <div className="border-b border-border pb-2 font-bold text-foreground text-base">
             บันทึกข้อมูลทางคลินิก (Clinical Notes)
           </div>
 
@@ -661,50 +661,50 @@ export function ResultPage() {
             <NoteCard
               title="อาการสำคัญ"
               icon={ClipboardList}
-              iconColor="text-blue-600"
-              iconBg="bg-blue-100"
-              bgColor="from-blue-50/70 to-white"
-              borderColor="border-blue-200/80"
+              iconColor="text-primary"
+              iconBg="bg-primary/10"
+              bgColor="from-primary/5 to-card"
+              borderColor="border-primary/20"
               text={formData.chiefComplaint || "ไม่มีข้อมูลอาการสำคัญ"}
             />
 
             <NoteCard
               title="การเจ็บป่วยในปัจจุบัน"
               icon={ClipboardList}
-              iconColor="text-emerald-600"
-              iconBg="bg-emerald-100"
-              bgColor="from-emerald-50/70 to-white"
-              borderColor="border-emerald-200/80"
+              iconColor="text-emerald-500"
+              iconBg="bg-emerald-500/10"
+              bgColor="from-emerald-500/5 to-card"
+              borderColor="border-emerald-500/20"
               text={formData.presentIllness || "ไม่มีข้อมูลการเจ็บป่วยในปัจจุบัน"}
             />
 
             <NoteCard
               title="การตรวจร่างกาย"
               icon={UserRound}
-              iconColor="text-amber-600"
-              iconBg="bg-amber-100"
-              bgColor="from-amber-50/70 to-white"
-              borderColor="border-amber-200/80"
+              iconColor="text-amber-500"
+              iconBg="bg-amber-500/10"
+              bgColor="from-amber-500/5 to-card"
+              borderColor="border-amber-500/20"
               text={formData.physicalExam || "ไม่มีข้อมูลการตรวจร่างกาย"}
             />
 
             <NoteCard
               title="การแปลผลทางคลินิก"
               icon={BarChart3}
-              iconColor="text-purple-600"
-              iconBg="bg-purple-100"
-              bgColor="from-purple-50/70 to-white"
-              borderColor="border-purple-200/80"
+              iconColor="text-purple-500"
+              iconBg="bg-purple-500/10"
+              bgColor="from-purple-500/5 to-card"
+              borderColor="border-purple-500/20"
               text={formData.diagnosis || "ไม่มีข้อมูลการแปลผลทางคลินิก"}
             />
 
             <NoteCard
               title="Doctor Note & แผนการรักษา"
               icon={FilePenLine}
-              iconColor="text-indigo-600"
-              iconBg="bg-indigo-100"
-              bgColor="from-indigo-50/70 to-white"
-              borderColor="border-indigo-200/80"
+              iconColor="text-sky-500"
+              iconBg="bg-sky-500/10"
+              bgColor="from-sky-500/5 to-card"
+              borderColor="border-sky-500/20"
               text={formData.treatmentPlan || formData.note || "ไม่มีข้อมูล Doctor Note"}
             />
           </div>
@@ -728,16 +728,16 @@ function VitalInput({
 }) {
   return (
     <div className="flex items-center gap-1.5">
-      <span className="w-9 shrink-0 text-[11px] font-semibold text-slate-600">
+      <span className="w-9 shrink-0 text-[11px] font-semibold text-muted-foreground">
         {label}
       </span>
 
-      <div className="flex h-7 min-w-0 flex-1 items-center rounded-md border border-slate-200 bg-white">
+      <div className="flex h-7 min-w-0 flex-1 items-center rounded-md border border-input bg-card">
         <input
           value={value !== null && value !== undefined ? value : ""}
           onChange={onChange}
           placeholder={unit}
-          className="min-w-0 flex-1 bg-transparent px-2 text-[11px] outline-none text-slate-800"
+          className="min-w-0 flex-1 bg-transparent px-2 text-[11px] outline-none text-foreground placeholder:text-muted-foreground/50"
         />
       </div>
     </div>
@@ -761,11 +761,11 @@ function ScoreBox({ title, values, selectedValue, onSelect }) {
 
   return (
     <div>
-      <div className="mb-1 text-[11px] font-medium text-blue-600">
+      <div className="mb-1 text-[11px] font-medium text-primary">
         {title} (เลือก: {selectedValue || "0"})
       </div>
 
-      <div className="flex overflow-hidden rounded-md border border-slate-200">
+      <div className="flex overflow-hidden rounded-md border border-border">
         {values.map((value, index) => {
           const isSelected = String(selectedValue) === String(value);
           return (
@@ -774,7 +774,7 @@ function ScoreBox({ title, values, selectedValue, onSelect }) {
               type="button"
               onClick={() => onSelect?.(value)}
               className={`flex h-6 w-5.5 cursor-pointer flex-col items-center justify-center border-r border-white/40 text-[9px] font-bold transition ${scoreColors[index]
-                } ${isSelected ? "ring-2 ring-slate-900 ring-inset opacity-100 scale-105 z-10" : "opacity-80 hover:opacity-100"}`}
+                } ${isSelected ? "ring-2 ring-primary ring-inset opacity-100 scale-105 z-10" : "opacity-80 hover:opacity-100"}`}
             >
               <span className="text-white drop-shadow-xs">{value}</span>
             </button>
@@ -793,7 +793,7 @@ function ScoreSelect({
 }) {
   return (
     <div className="w-32">
-      <div className="mb-1 text-[11px] font-medium text-blue-600">
+      <div className="mb-1 text-[11px] font-medium text-primary">
         {title}
       </div>
 
@@ -801,7 +801,7 @@ function ScoreSelect({
         <select
           value={value}
           onChange={onChange}
-          className="h-7 w-full appearance-none rounded-md border border-slate-200 bg-white px-2 pr-6 text-[10px] text-slate-700 outline-none"
+          className="h-7 w-full appearance-none rounded-md border border-input bg-card px-2 pr-6 text-[10px] text-foreground outline-none focus:border-primary"
         >
           {options.length > 0 ? (
             options.map(opt => (
@@ -813,7 +813,7 @@ function ScoreSelect({
         </select>
         <ChevronDown
           size={12}
-          className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400"
+          className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground"
         />
       </div>
     </div>
@@ -828,22 +828,22 @@ function DiagnosisCard({
   return (
     <div>
       <div className="mb-1 flex items-center justify-between text-[11px]">
-        <span className="font-semibold text-slate-700">
+        <span className="font-semibold text-foreground/90">
           {title}
         </span>
 
-        <span className="text-[10px] text-slate-400">
+        <span className="text-[10px] text-muted-foreground">
           AI Auto-Coded
         </span>
       </div>
 
-      <div className="flex h-9 items-center rounded-lg border border-slate-200 bg-slate-50/50">
-        <span className="px-3 font-bold text-slate-800 text-xs">
+      <div className="flex h-9 items-center rounded-lg border border-border bg-muted/40">
+        <span className="px-3 font-bold text-foreground text-xs">
           {code || "-"}
         </span>
 
         {description && (
-          <span className="border-l border-slate-200 px-3 text-[11px] text-slate-600 truncate">
+          <span className="border-l border-border px-3 text-[11px] text-muted-foreground truncate">
             {description}
           </span>
         )}
@@ -856,10 +856,10 @@ function NoteCard({
   title,
   text,
   icon: Icon = ClipboardList,
-  iconColor = "text-blue-600",
-  iconBg = "bg-blue-100",
-  bgColor = "from-blue-50/70 to-white",
-  borderColor = "border-blue-200/80",
+  iconColor = "text-primary",
+  iconBg = "bg-primary/10",
+  bgColor = "from-primary/5 to-card",
+  borderColor = "border-primary/20",
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -875,7 +875,7 @@ function NoteCard({
     <div
       className={`flex h-[200px] flex-col rounded-xl border ${borderColor} bg-gradient-to-br ${bgColor} p-3 shadow-2xs`}
     >
-      <div className="flex items-center gap-2 pb-1.5 border-b border-slate-100/80">
+      <div className="flex items-center gap-2 pb-1.5 border-b border-border/50">
         <div
           className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${iconBg}`}
         >
@@ -887,18 +887,18 @@ function NoteCard({
         </div>
       </div>
 
-      <div className="mt-2 flex-1 overflow-y-auto pr-1 text-[11px] leading-[1.6] text-slate-700 whitespace-pre-line">
+      <div className="mt-2 flex-1 overflow-y-auto pr-1 text-[11px] leading-[1.6] text-foreground/90 whitespace-pre-line">
         {text}
       </div>
 
-      <div className="mt-1 flex justify-end gap-1.5 pt-1 border-t border-slate-100/60">
+      <div className="mt-1 flex justify-end gap-1.5 pt-1 border-t border-border/50">
         <button
           type="button"
           onClick={handleCopy}
           title="คัดลอกข้อความ"
-          className="cursor-pointer flex h-6 w-6 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+          className="cursor-pointer flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground"
         >
-          {copied ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+          {copied ? <Check size={13} className="text-emerald-600 dark:text-emerald-400" /> : <Copy size={13} />}
         </button>
       </div>
     </div>
@@ -911,52 +911,52 @@ function NoteCard({
 
 const categoryThemes = {
   "พฤติกรรมสุขภาพ": {
-    badgeBg: "bg-blue-50 text-blue-700 border-blue-200",
-    iconBg: "bg-blue-100 text-blue-600",
-    border: "border-blue-200/90",
-    headerBg: "bg-gradient-to-r from-blue-50/80 via-white to-blue-50/30",
+    badgeBg: "bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30 font-bold",
+    iconBg: "bg-blue-500/10 text-blue-500",
+    border: "border-blue-500/30",
+    headerBg: "bg-gradient-to-r from-blue-500/10 via-card to-card",
     icon: Activity,
   },
   "สุขภาพจิต": {
-    badgeBg: "bg-purple-50 text-purple-700 border-purple-200",
-    iconBg: "bg-purple-100 text-purple-600",
-    border: "border-purple-200/90",
-    headerBg: "bg-gradient-to-r from-purple-50/80 via-white to-purple-50/30",
+    badgeBg: "bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30 font-bold",
+    iconBg: "bg-purple-500/10 text-purple-500",
+    border: "border-purple-500/30",
+    headerBg: "bg-gradient-to-r from-purple-500/10 via-card to-card",
     icon: Sparkles,
   },
   "ความปลอดภัย": {
-    badgeBg: "bg-amber-50 text-amber-700 border-amber-200",
-    iconBg: "bg-amber-100 text-amber-600",
-    border: "border-amber-200/90",
-    headerBg: "bg-gradient-to-r from-amber-50/80 via-white to-amber-50/30",
+    badgeBg: "bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/30 font-bold",
+    iconBg: "bg-amber-500/10 text-amber-500",
+    border: "border-amber-500/30",
+    headerBg: "bg-gradient-to-r from-amber-500/10 via-card to-card",
     icon: ShieldAlert,
   },
   "กายภาพและฟื้นฟู": {
-    badgeBg: "bg-teal-50 text-teal-700 border-teal-200",
-    iconBg: "bg-teal-100 text-teal-600",
-    border: "border-teal-200/90",
-    headerBg: "bg-gradient-to-r from-teal-50/80 via-white to-teal-50/30",
+    badgeBg: "bg-teal-500/15 text-teal-800 dark:text-teal-300 border-teal-500/30 font-bold",
+    iconBg: "bg-teal-500/10 text-teal-500",
+    border: "border-teal-500/30",
+    headerBg: "bg-gradient-to-r from-teal-500/10 via-card to-card",
     icon: HeartPulse,
   },
   "โรคไม่ติดต่อเรื้อรัง": {
-    badgeBg: "bg-rose-50 text-rose-700 border-rose-200",
-    iconBg: "bg-rose-100 text-rose-600",
-    border: "border-rose-200/90",
-    headerBg: "bg-gradient-to-r from-rose-50/80 via-white to-rose-50/30",
+    badgeBg: "bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30 font-bold",
+    iconBg: "bg-rose-500/10 text-rose-500",
+    border: "border-rose-500/30",
+    headerBg: "bg-gradient-to-r from-rose-500/10 via-card to-card",
     icon: AlertCircle,
   },
   "การพยาบาล": {
-    badgeBg: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
-    iconBg: "bg-fuchsia-100 text-fuchsia-600",
-    border: "border-fuchsia-200/90",
-    headerBg: "bg-gradient-to-r from-fuchsia-50/80 via-white to-fuchsia-50/30",
+    badgeBg: "bg-fuchsia-500/15 text-fuchsia-700 dark:text-fuchsia-300 border-fuchsia-500/30 font-bold",
+    iconBg: "bg-fuchsia-500/10 text-fuchsia-500",
+    border: "border-fuchsia-500/30",
+    headerBg: "bg-gradient-to-r from-fuchsia-500/10 via-card to-card",
     icon: ClipboardList,
   },
   "โภชนาการ": {
-    badgeBg: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    iconBg: "bg-emerald-100 text-emerald-600",
-    border: "border-emerald-200/90",
-    headerBg: "bg-gradient-to-r from-emerald-50/80 via-white to-emerald-50/30",
+    badgeBg: "bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/30 font-bold",
+    iconBg: "bg-emerald-500/10 text-emerald-500",
+    border: "border-emerald-500/30",
+    headerBg: "bg-gradient-to-r from-emerald-500/10 via-card to-card",
     icon: Layers,
   },
 };
@@ -965,21 +965,21 @@ function getResultSeverityStyle(label = "") {
   const text = String(label).toLowerCase();
   if (text.includes("สูง") || text.includes("severe") || text.includes("เสี่ยงสูง") || text.includes("รุนแรง") || text.includes("มาก")) {
     return {
-      bg: "bg-rose-50 border-rose-200 text-rose-800",
-      badge: "bg-rose-100 text-rose-700 border border-rose-300",
+      bg: "bg-rose-500/10 border-rose-500/30 text-rose-700 dark:text-rose-300",
+      badge: "bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/40",
       bar: "bg-rose-500",
     };
   }
   if (text.includes("ปานกลาง") || text.includes("moderate") || text.includes("เล็กน้อย") || text.includes("mild") || text.includes("เฝ้าระวัง") || text.includes("10 - 20%")) {
     return {
-      bg: "bg-amber-50 border-amber-200 text-amber-800",
-      badge: "bg-amber-100 text-amber-700 border border-amber-300",
+      bg: "bg-amber-500/10 border-amber-500/30 text-amber-700 dark:text-amber-300",
+      badge: "bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40",
       bar: "bg-amber-500",
     };
   }
   return {
-    bg: "bg-emerald-50 border-emerald-200 text-emerald-800",
-    badge: "bg-emerald-100 text-emerald-700 border border-emerald-300",
+    bg: "bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-300",
+    badge: "bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40",
     bar: "bg-emerald-500",
   };
 }
@@ -989,13 +989,11 @@ function AssessmentResultsSection({ sessionData, allForms = [] }) {
   const assessmentAnswers = sessionData?.assessmentAnswers || {};
   const assessmentResults = sessionData?.assessmentResults || {};
 
-  // แสดงเฉพาะแบบประเมินที่มีการบันทึกหรือส่งข้อมูลมา
   const formsToShow = Array.isArray(selectedFormIds) && selectedFormIds.length > 0
     ? allForms.filter((f) => selectedFormIds.includes(f.id))
     : [];
 
   const [expandedForms, setExpandedForms] = useState(() => {
-    // ขยาย 3 ฟอร์มแรกเป็นค่าเริ่มต้น
     return formsToShow.slice(0, 3).reduce((acc, f) => ({ ...acc, [f.id]: true }), {});
   });
 
@@ -1018,24 +1016,24 @@ function AssessmentResultsSection({ sessionData, allForms = [] }) {
   };
 
   return (
-    <section className="mt-3 rounded-xl border border-slate-200 bg-white shadow-2xs">
+    <section className="mt-3 rounded-xl border border-border bg-card shadow-2xs">
       <div className="p-3 sm:p-4">
         {/* Header */}
-        <div className="border-b border-slate-200 pb-3 flex flex-wrap items-center justify-between gap-2.5">
+        <div className="border-b border-border pb-3 flex flex-wrap items-center justify-between gap-2.5">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-teal-50 text-teal-600 border border-teal-200/80">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary border border-primary/20">
               <ClipboardCheck size={18} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-slate-800 text-base">
+                <h3 className="font-bold text-foreground text-base">
                   แบบประเมินทางการแพทย์ (Clinical Assessment Forms)
                 </h3>
-                <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold border ${formsToShow.length > 0 ? "bg-teal-50 border-teal-200/90 text-teal-700" : "bg-slate-100 border-slate-200 text-slate-500"}`}>
+                <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold border ${formsToShow.length > 0 ? "bg-primary/10 border-primary/20 text-primary" : "bg-muted border-border text-muted-foreground"}`}>
                   {formsToShow.length} แบบประเมิน
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-muted-foreground">
                 ผลการคัดกรอง สรุปคะแนน และการประเมินความเสี่ยงของผู้ป่วย
               </p>
             </div>
@@ -1046,7 +1044,7 @@ function AssessmentResultsSection({ sessionData, allForms = [] }) {
               <button
                 type="button"
                 onClick={handleCopyAllAssessments}
-                className="cursor-pointer flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50/80 px-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition"
+                className="cursor-pointer flex h-8 items-center gap-1.5 rounded-lg border border-border bg-muted/50 px-2.5 text-xs font-semibold text-foreground hover:bg-muted transition"
                 title="คัดลอกสรุปผลการประเมินทั้งหมด"
               >
                 <Copy size={13} />
@@ -1063,7 +1061,7 @@ function AssessmentResultsSection({ sessionData, allForms = [] }) {
                   });
                   setExpandedForms(nextState);
                 }}
-                className="cursor-pointer flex h-8 items-center gap-1 rounded-lg border border-slate-200 px-2.5 text-xs font-medium text-slate-600 hover:bg-slate-50 transition"
+                className="cursor-pointer flex h-8 items-center gap-1 rounded-lg border border-border px-2.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition"
               >
                 {formsToShow.every((f) => expandedForms[f.id]) ? "ย่อทั้งหมด" : "ขยายทั้งหมด"}
               </button>
@@ -1072,33 +1070,23 @@ function AssessmentResultsSection({ sessionData, allForms = [] }) {
         </div>
 
         {formsToShow.length === 0 ? (
-          /* Empty State: เมื่อไม่มีข้อมูลแบบประเมิน */
-          <div className="py-8 px-4 text-center rounded-xl border border-dashed border-slate-200 bg-slate-50/40 my-2">
-            <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-slate-100 text-slate-400 mb-2">
+          <div className="py-8 px-4 text-center rounded-xl border border-dashed border-border bg-muted/20 my-2">
+            <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-muted text-muted-foreground mb-2">
               <ClipboardList size={22} />
             </div>
-            <h4 className="text-xs sm:text-sm font-bold text-slate-700">
+            <h4 className="text-xs sm:text-sm font-bold text-foreground">
               ไม่มีรายการแบบประเมิน
             </h4>
-            <p className="mt-0.5 text-[11px] text-slate-400 max-w-md mx-auto">
+            <p className="mt-0.5 text-[11px] text-muted-foreground max-w-md mx-auto">
               ไม่มีการบันทึกหรือส่งข้อมูลแบบประเมินทางการแพทย์สำหรับเคสนี้
             </p>
-            {/* <Link to="/speech-to-text" className="inline-block mt-3">
-              <button
-                type="button"
-                className="cursor-pointer inline-flex items-center gap-1.5 rounded-lg border border-teal-200 bg-teal-50 px-3 py-1.5 text-xs font-semibold text-teal-700 hover:bg-teal-100 transition shadow-2xs"
-              >
-                <FilePenLine size={13} />
-                <span>ไปที่หน้าแบบประเมิน</span>
-              </button>
-            </Link> */}
           </div>
         ) : (
           <>
             {/* Overview Badges Row */}
-            <div className="mt-3 flex flex-wrap items-center gap-1.5 p-2 rounded-lg bg-slate-50/70 border border-slate-100 text-[11px]">
-              <span className="font-semibold text-slate-600 mr-1 flex items-center gap-1">
-                <Activity size={13} className="text-teal-600" />
+            <div className="mt-3 flex flex-wrap items-center gap-1.5 p-2 rounded-lg bg-muted/40 border border-border text-[11px]">
+              <span className="font-semibold text-muted-foreground mr-1 flex items-center gap-1">
+                <Activity size={13} className="text-primary" />
                 สรุปภาพรวม:
               </span>
               {formsToShow.map((form) => {
@@ -1129,10 +1117,10 @@ function AssessmentResultsSection({ sessionData, allForms = [] }) {
                 return (
                   <div
                     key={form.id}
-                    className={`overflow-hidden rounded-xl border ${theme.border} bg-white shadow-2xs transition-all`}
+                    className={`overflow-hidden rounded-xl border ${theme.border} bg-card shadow-2xs transition-all`}
                   >
                     {/* Form Card Header */}
-                    <div className={`p-3 border-b border-slate-100 ${theme.headerBg}`}>
+                    <div className={`p-3 border-b border-border ${theme.headerBg}`}>
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-start gap-2.5 min-w-0">
                           <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${theme.iconBg} shadow-2xs`}>
@@ -1140,14 +1128,14 @@ function AssessmentResultsSection({ sessionData, allForms = [] }) {
                           </div>
                           <div className="min-w-0">
                             <div className="flex flex-wrap items-center gap-1.5">
-                              <h4 className="font-bold text-xs sm:text-sm text-slate-900 truncate">
+                              <h4 className="font-bold text-xs sm:text-sm text-foreground truncate">
                                 {form.title}
                               </h4>
                               <span className={`rounded px-1.5 py-0.2 text-[10px] font-semibold border ${theme.badgeBg}`}>
                                 {form.category}
                               </span>
                             </div>
-                            <p className="mt-0.5 text-[11px] text-slate-500 line-clamp-1">
+                            <p className="mt-0.5 text-[11px] text-muted-foreground line-clamp-1">
                               {form.description}
                             </p>
                           </div>
@@ -1161,7 +1149,7 @@ function AssessmentResultsSection({ sessionData, allForms = [] }) {
                               navigator.clipboard.writeText(text);
                               toast.success(`คัดลอกสรุป ${form.title.split(" (")[0]} สำเร็จ`);
                             }}
-                            className="cursor-pointer flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:bg-white hover:text-slate-700 border border-transparent hover:border-slate-200 transition"
+                            className="cursor-pointer flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground border border-transparent hover:border-border transition"
                             title="คัดลอกผลการประเมินนี้"
                           >
                             <Copy size={13} />
@@ -1170,7 +1158,7 @@ function AssessmentResultsSection({ sessionData, allForms = [] }) {
                           <button
                             type="button"
                             onClick={() => toggleExpand(form.id)}
-                            className="cursor-pointer flex h-7 w-7 items-center justify-center rounded-lg text-slate-500 hover:bg-white border border-transparent hover:border-slate-200 transition"
+                            className="cursor-pointer flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted border border-transparent hover:border-border transition"
                             title={isExpanded ? "ย่อรายละเอียด" : "ขยายดูคำถาม-คำตอบ"}
                           >
                             {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -1188,7 +1176,7 @@ function AssessmentResultsSection({ sessionData, allForms = [] }) {
                         </div>
 
                         <div className="flex items-center gap-1.5 shrink-0">
-                          <span className="text-[11px] font-medium text-slate-600">คะแนนรวม:</span>
+                          <span className="text-[11px] font-medium text-muted-foreground">คะแนนรวม:</span>
                           <span className={`rounded-md px-2 py-0.5 text-xs font-bold ${severity.badge}`}>
                             {score} คะแนน
                           </span>
@@ -1198,13 +1186,13 @@ function AssessmentResultsSection({ sessionData, allForms = [] }) {
 
                     {/* Questions and Answers Breakdown */}
                     {isExpanded && (
-                      <div className="p-3 bg-slate-50/30">
-                        <div className="mb-1.5 flex items-center justify-between text-[11px] font-semibold text-slate-400 px-1">
+                      <div className="p-3 bg-muted/20">
+                        <div className="mb-1.5 flex items-center justify-between text-[11px] font-semibold text-muted-foreground px-1">
                           <span>ข้อที่ / รายการประเมิน</span>
                           <span className="text-right">คำตอบที่บันทึก & คะแนน</span>
                         </div>
 
-                        <div className="divide-y divide-slate-100 rounded-lg border border-slate-200/80 bg-white">
+                        <div className="divide-y divide-border rounded-lg border border-border bg-card">
                           {form.questions?.map((q, idx) => {
                             const answerKey = `${form.id}_q${q.number}`;
                             const recordedAnswer = assessmentAnswers[answerKey] || (q.options ? q.options[0] : "มีอาการ / พบประวัติ");
@@ -1213,22 +1201,22 @@ function AssessmentResultsSection({ sessionData, allForms = [] }) {
                             return (
                               <div
                                 key={idx}
-                                className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 p-2 text-xs hover:bg-slate-50/80 transition"
+                                className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 p-2 text-xs hover:bg-muted/40 transition"
                               >
                                 <div className="flex items-start gap-1.5 min-w-0 flex-1">
-                                  <span className="font-bold text-slate-700 shrink-0">
+                                  <span className="font-bold text-foreground shrink-0">
                                     {q.number}.
                                   </span>
-                                  <span className="text-slate-700 leading-snug">
+                                  <span className="text-foreground/90 leading-snug">
                                     {q.text}
                                   </span>
                                 </div>
 
                                 <div className="flex items-center justify-between sm:justify-end gap-2 pl-4 sm:pl-0 shrink-0 text-right">
-                                  <span className="rounded bg-slate-100 border border-slate-200/80 px-2 py-0.5 text-[11px] font-semibold text-slate-800">
+                                  <span className="rounded bg-muted border border-border px-2 py-0.5 text-[11px] font-semibold text-foreground">
                                     {recordedAnswer}
                                   </span>
-                                  <span className="text-[10px] font-bold text-emerald-600">
+                                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
                                     +{scoreText}
                                   </span>
                                 </div>

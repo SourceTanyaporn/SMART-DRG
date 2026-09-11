@@ -4,11 +4,11 @@ import { cn } from "@/lib/utils";
 export const Bubble = React.forwardRef(
     ({ className, variant = "default", children, ...props }, ref) => {
         const variants = {
-            default: "bg-[#edf3ff] text-slate-700 rounded-2xl rounded-br-xs border border-blue-100/60 shadow-xs",
-            user: "bg-[#edf3ff] text-slate-700 rounded-2xl rounded-br-xs border border-blue-100/60 shadow-xs",
-            bot: "bg-gradient-to-r from-[#eee4ff] to-[#f6dcfb] text-slate-700 rounded-2xl rounded-bl-xs border border-purple-100/60 shadow-xs",
-            ai: "bg-gradient-to-r from-[#eee4ff] to-[#f6dcfb] text-slate-700 rounded-2xl rounded-bl-xs border border-purple-100/60 shadow-xs",
-            muted: "bg-slate-100 text-slate-600 rounded-2xl border border-slate-200/60",
+            default: "bg-muted/80 text-foreground rounded-2xl rounded-br-xs border border-border shadow-xs",
+            user: "bg-primary text-primary-foreground rounded-2xl rounded-br-xs shadow-xs",
+            bot: "bg-primary/[0.04] dark:bg-primary/10 text-foreground rounded-2xl rounded-bl-xs border border-primary/20 shadow-xs",
+            ai: "bg-primary/[0.04] dark:bg-primary/10 text-foreground rounded-2xl rounded-bl-xs border border-primary/20 shadow-xs",
+            muted: "bg-muted text-muted-foreground rounded-2xl border border-border",
             primary: "bg-primary text-primary-foreground rounded-2xl rounded-br-xs shadow-xs",
         };
 

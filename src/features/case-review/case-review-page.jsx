@@ -151,12 +151,12 @@ export function CaseReviewPage({ initialTab }) {
       {activeTab === "patient" && (
         <section className="grid gap-4 xl:grid-cols-[minmax(0,1.95fr)_minmax(22rem,1fr)]">
           <div className="space-y-4">
-            <Card className="rounded-xl border border-[#edf0f5] p-4 shadow-none">
+            <Card className="rounded-xl border border-border p-4 shadow-none">
               <h2 className="mb-3 text-base font-semibold text-foreground">
                 ข้อมูลผู้ป่วยและการเข้ารับการรักษา
               </h2>
-              <div className="overflow-hidden rounded-lg border border-[#edf0f5]">
-                <div className="grid grid-cols-1 divide-y divide-[#edf0f5] sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
+              <div className="overflow-hidden rounded-lg border border-border">
+                <div className="grid grid-cols-1 divide-y divide-border sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
                   {patientSummary.map((group, index) => (
                     <div key={index} className="space-y-3 p-3.5">
                       {group.map(([label, value]) => (
@@ -168,7 +168,7 @@ export function CaseReviewPage({ initialTab }) {
                     </div>
                   ))}
                 </div>
-                <div className="grid grid-cols-1 divide-y border-t border-[#edf0f5] sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
+                <div className="grid grid-cols-1 divide-y border-t border-border sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
                   {admissionDetails.map(([label, value]) => (
                     <div key={label} className="p-3.5">
                       <p className="text-xs font-semibold text-muted-foreground">{label}</p>
@@ -180,7 +180,7 @@ export function CaseReviewPage({ initialTab }) {
             </Card>
 
             <section className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(17rem,0.8fr)]">
-              <Card className="rounded-xl border border-[#edf0f5] p-4 shadow-none">
+              <Card className="rounded-xl border border-border p-4 shadow-none">
                 <h2 className="text-base font-semibold text-foreground">ข้อมูลทางการแพทย์ที่สำคัญ</h2>
                 <div className="mt-3 space-y-2 text-sm">
                   <MedicalRow label="Principal Dx" code="M16.1" detail="Osteoarthritis of hip" />
@@ -195,7 +195,7 @@ export function CaseReviewPage({ initialTab }) {
                 </div>
               </Card>
 
-              <Card className="rounded-xl border border-[#edf0f5] p-4 shadow-none">
+              <Card className="rounded-xl border border-border p-4 shadow-none">
                 <h2 className="text-base font-semibold text-foreground">เอกสารและเส้นเวลา</h2>
                 <div className="mt-4 space-y-4">
                   <TimelineItem
@@ -233,7 +233,7 @@ export function CaseReviewPage({ initialTab }) {
               </Card>
             </section>
 
-            <Card className="rounded-xl border border-[#edf0f5] p-4 shadow-none">
+            <Card className="rounded-xl border border-border p-4 shadow-none">
               <h2 className="text-base font-semibold text-foreground">ข้อมูลค่าใช้จ่ายและการจัดกลุ่ม DRG</h2>
               <div className="mt-4 grid grid-cols-2 divide-x divide-border md:grid-cols-5">
                 <SummaryValue label="DRG (คาดการณ์)" value="I02Z" detail="Major Hip Joint Replacement" />
@@ -260,23 +260,22 @@ export function CaseReviewPage({ initialTab }) {
 
           {/* Right Sidebar: Smart Alerts, AI Suggestion & Actions */}
           <aside className="space-y-4">
-            <Card className="rounded-xl border border-rose-200 bg-rose-50/40 p-4 shadow-none">
+            <Card className="rounded-xl border border-rose-500/25 bg-rose-500/10 p-4 shadow-none">
               <Header
                 icon={BellRingIcon}
                 title="Smart Alert"
-                tone="text-rose-600"
+                tone="text-rose-700 dark:text-rose-300 font-bold"
                 badge="ทั้งหมด 4"
-                badgeClass="border-rose-200 text-rose-600"
+                badgeClass="border-rose-500/35 text-rose-700 dark:text-rose-300 bg-card font-bold"
               />
               <div className="mt-3 space-y-2">
                 {alerts.map(([code, detail, severity, tone]) => (
                   <div key={code} className="grid grid-cols-[1.5rem_1fr_auto] gap-2 text-xs">
                     <b className="text-foreground">{code}</b>
-                    <p className="text-muted-foreground">{detail}</p>
+                    <p className="text-foreground/80 font-medium">{detail}</p>
                     <span
-                      className={`rounded-md px-2 py-0.5 font-semibold ${
-                        tone === "rose" ? "bg-rose-100 text-rose-600" : "bg-amber-100 text-amber-600"
-                      }`}
+                      className={`rounded-md px-2 py-0.5 font-bold ${tone === "rose" ? "bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/30" : "bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30"
+                        }`}
                     >
                       {severity}
                     </span>
@@ -285,63 +284,63 @@ export function CaseReviewPage({ initialTab }) {
               </div>
             </Card>
 
-            <Card className="rounded-xl border border-violet-200 bg-violet-50/30 p-4 shadow-none">
+            <Card className="rounded-xl border border-primary/25 bg-primary/5 p-4 shadow-none">
               <Header
                 icon={SparklesIcon}
                 title="AI Suggestion"
-                tone="text-violet-700"
+                tone="text-primary font-bold"
                 badge="Confidence 86%"
-                badgeClass="border-indigo-200 text-indigo-600"
+                badgeClass="border-primary/35 text-primary bg-primary/15 font-bold"
               />
-              <p className="mt-3 text-sm leading-6 text-foreground">
+              <p className="mt-3 text-sm leading-6 text-foreground font-medium">
                 แนะนำให้ทบทวนการวินิจฉัยหลักเป็น M16.11 และเพิ่มรหัส E66.01 (Morbid obesity) เป็น Secondary Dx
                 เนื่องจากพบหลักฐานในบันทึก pre-operative และผลการประเมินก่อนผ่าตัด
               </p>
               <button
                 type="button"
                 onClick={() => setActiveTab("emr")}
-                className="mt-3 flex w-full items-center justify-between rounded-lg border border-violet-200 bg-white px-3 py-2 text-xs font-semibold text-primary transition hover:bg-violet-50 cursor-pointer"
+                className="mt-3 flex w-full items-center justify-between rounded-lg border border-primary/30 bg-card px-3 py-2 text-xs font-bold text-primary transition hover:bg-primary/10 cursor-pointer"
               >
                 ดูเหตุผลและหลักฐานใน EMR Viewer <ChevronRightIcon className="size-4" />
               </button>
             </Card>
 
-            <Card className="rounded-xl border border-emerald-200 bg-emerald-50/40 p-4 shadow-none">
-              <Header icon={TrendingUpIcon} title="Impact Estimate" tone="text-emerald-700" />
-              <div className="mt-4 grid grid-cols-2 divide-x divide-emerald-200 text-center">
+            <Card className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-4 shadow-none">
+              <Header icon={TrendingUpIcon} title="Impact Estimate" tone="text-emerald-800 dark:text-emerald-300 font-bold" />
+              <div className="mt-4 grid grid-cols-2 divide-x divide-emerald-500/25 text-center">
                 <div>
-                  <p className="text-xs text-muted-foreground">เพิ่มขึ้นของ AdjRW</p>
-                  <p className="mt-1 text-xl font-bold text-emerald-700">+0.5656</p>
-                  <p className="text-xs text-emerald-600">(25.4%)</p>
+                  <p className="text-xs text-muted-foreground font-semibold">เพิ่มขึ้นของ AdjRW</p>
+                  <p className="mt-1 text-xl font-black text-emerald-800 dark:text-emerald-300">+0.5656</p>
+                  <p className="text-xs font-bold text-emerald-800 dark:text-emerald-300">(25.4%)</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">เพิ่มขึ้นของค่าตอบแทน</p>
-                  <p className="mt-1 text-xl font-bold text-emerald-700">+40,270</p>
-                  <p className="text-xs text-emerald-600">บาท (58.8%)</p>
+                  <p className="text-xs text-muted-foreground font-semibold">เพิ่มขึ้นของค่าตอบแทน</p>
+                  <p className="mt-1 text-xl font-black text-emerald-800 dark:text-emerald-300">+40,270</p>
+                  <p className="text-xs font-bold text-emerald-800 dark:text-emerald-300">บาท (58.8%)</p>
                 </div>
               </div>
             </Card>
 
-            <Card className="rounded-xl border border-violet-200 bg-violet-50/30 p-4 shadow-none">
+            <Card className="rounded-xl border border-border bg-card p-4 shadow-none">
               <h2 className="text-base font-semibold text-foreground">การดำเนินการ</h2>
               <button
                 type="button"
                 onClick={() => setActiveTab("coding")}
-                className="mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-primary text-sm font-semibold text-white shadow-sm transition hover:bg-primary/90 cursor-pointer"
+                className="mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-primary text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90 cursor-pointer"
               >
                 <CheckIcon className="size-4" /> ไปที่ Coding Review เพื่อยืนยัน
               </button>
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <button
                   type="button"
-                  className="flex h-9 items-center justify-center gap-1 rounded-lg border border-border bg-white text-xs font-semibold text-primary transition hover:bg-muted cursor-pointer"
+                  className="flex h-9 items-center justify-center gap-1 rounded-lg border border-border bg-card text-xs font-semibold text-primary transition hover:bg-muted cursor-pointer"
                 >
                   <BookmarkIcon className="size-4" /> บันทึกเป็นติดตาม
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab("coding")}
-                  className="flex h-9 items-center justify-center gap-1 rounded-lg border border-border bg-white text-xs font-semibold text-primary transition hover:bg-muted cursor-pointer"
+                  className="flex h-9 items-center justify-center gap-1 rounded-lg border border-border bg-card text-xs font-semibold text-primary transition hover:bg-muted cursor-pointer"
                 >
                   <ClipboardCheckIcon className="size-4" /> ส่ง Coding Review
                 </button>
@@ -372,11 +371,10 @@ function Tab({ label, active, onClick, icon: Icon, badge, badgeClass, className 
     <button
       type="button"
       onClick={onClick}
-      className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition cursor-pointer ${
-        active
+      className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition cursor-pointer ${active
           ? "border-primary text-primary font-semibold"
           : "border-transparent text-muted-foreground hover:border-border hover:text-foreground"
-      } ${className}`}
+        } ${className}`}
     >
       {Icon && <Icon className="size-4" />}
       <span>{label}</span>
@@ -391,8 +389,8 @@ function Tab({ label, active, onClick, icon: Icon, badge, badgeClass, className 
 
 function MedicalRow({ label, code, detail }) {
   return (
-    <div className="grid grid-cols-[8.5rem_minmax(0,1fr)] border border-[#edf0f5]">
-      <p className="border-r border-[#edf0f5] bg-muted/45 px-3 py-3 text-xs font-semibold text-muted-foreground">
+    <div className="grid grid-cols-[8.5rem_minmax(0,1fr)] border border-border">
+      <p className="border-r border-border bg-muted/45 px-3 py-3 text-xs font-semibold text-muted-foreground">
         {label || "—"}
       </p>
       <p className="px-3 py-3 text-sm leading-5 text-foreground">
@@ -407,8 +405,8 @@ function TimelineItem({ title, date, detail, color }) {
   return (
     <div className="relative flex gap-3 pb-4 last:pb-0">
       <div className="relative z-10 flex w-6 shrink-0 justify-center">
-        <span className={`grid size-6 place-items-center rounded-full ${color} ring-4 ring-white`}>
-          <span className="size-2 rounded-full bg-white" />
+        <span className={`grid size-6 place-items-center rounded-full ${color} ring-4 ring-card`}>
+          <span className="size-2 rounded-full bg-card" />
         </span>
         {title !== "Coder Review" && (
           <span className="absolute top-6 h-[calc(100%+0.25rem)] w-px bg-border" />
@@ -437,13 +435,13 @@ function SummaryValue({ label, value, detail }) {
 
 function CompareBox({ title, adjrw, amount, positive }) {
   return (
-    <div className="rounded-lg border border-border bg-white p-3">
+    <div className="rounded-lg border border-border bg-card p-3">
       <p className="text-xs font-semibold text-muted-foreground">{title}</p>
       <p className="mt-2 text-xs text-muted-foreground">
-        AdjRW <b className={`float-right text-sm ${positive ? "text-emerald-600" : "text-foreground"}`}>{adjrw}</b>
+        AdjRW <b className={`float-right text-sm ${positive ? "text-emerald-600 dark:text-emerald-400" : "text-foreground"}`}>{adjrw}</b>
       </p>
       <p className="mt-2 text-xs text-muted-foreground">
-        ค่าตอบแทน <b className={`float-right text-sm ${positive ? "text-emerald-600" : "text-foreground"}`}>{amount}</b>
+        ค่าตอบแทน <b className={`float-right text-sm ${positive ? "text-emerald-600 dark:text-emerald-400" : "text-foreground"}`}>{amount}</b>
       </p>
     </div>
   )
@@ -456,7 +454,7 @@ function Header({ icon: Icon, title, tone, badge, badgeClass }) {
         <Icon className="size-4" />
         {title}
       </h2>
-      {badge && <span className={`rounded-md border bg-white px-2 py-1 text-xs font-semibold ${badgeClass}`}>{badge}</span>}
+      {badge && <span className={`rounded-md border bg-card px-2 py-1 text-xs font-semibold ${badgeClass}`}>{badge}</span>}
     </div>
   )
 }

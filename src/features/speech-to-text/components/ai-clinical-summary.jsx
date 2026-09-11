@@ -50,6 +50,22 @@ import {
 } from "@/components/ui/message";
 import { toast } from "@/components/ui/toast-notification";
 
+// Helper: แสดงผลข้อความ Markdown ตัวหนา (**bold**) ให้ออกมาคมชัด
+function renderFormattedMessage(text) {
+    if (!text || typeof text !== "string") return text;
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, index) => {
+        if (part.startsWith("**") && part.endsWith("**")) {
+            return (
+                <strong key={index} className="font-semibold text-foreground">
+                    {part.slice(2, -2)}
+                </strong>
+            );
+        }
+        return part;
+    });
+}
+
 // Helper: สร้าง Sessions เริ่มต้นที่อิงจากข้อมูลผู้ป่วยใน PatientSearchBanner โดยอัตโนมัติ
 function createInitialSessionForPatient(patient) {
     if (!patient) return null;
@@ -452,7 +468,8 @@ export function AiClinicalSummary({
 
         try {
             console.log("Sending clinical chat request to backend:", requestPayload);
-            const apiRes = await fetch("http://localhost:8002/v1/chat/clinical", {
+            const apiBase = import.meta.env.VITE_API_URL || "http://localhost:8002";
+            const apiRes = await fetch(`${apiBase}/v1/chat/clinical`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(requestPayload),
@@ -600,21 +617,21 @@ export function AiClinicalSummary({
 
     return (
         <section
-            className={`relative flex min-w-0 w-full flex-col overflow-hidden rounded-xl border border-[#dfe3eb] bg-white shadow-2xs col-span-1 lg:col-span-1 h-auto lg:h-full lg:min-h-0 ${className}`}
+            className={`relative flex min-w-0 w-full flex-col overflow-hidden rounded-xl border border-border bg-card shadow-2xs col-span-1 lg:col-span-1 h-auto lg:h-full lg:min-h-0 ${className}`}
         >
             {/* Header */}
-            <div className="flex h-10 shrink-0 items-center justify-between border-b border-[#e2e5ed] bg-[#faf7ff] px-2.5">
+            <div className="flex h-10 shrink-0 items-center justify-between border-b border-border bg-primary/5 px-2.5">
                 <div className="flex items-center gap-1.5 min-w-0">
-                    <div className="flex size-5.5 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-[#8d48b9] to-[#6366f1] text-white shadow-2xs">
+                    <div className="flex size-5.5 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-2xs">
                         <Bot size={13} />
                     </div>
 
-                    <h2 className="text-[12px] font-bold text-slate-800 tracking-tight truncate">
+                    <h2 className="text-[12px] font-bold text-foreground tracking-tight truncate">
                         AI Clinical
                     </h2>
 
                     {/* Status Live Badge */}
-                    <span className="flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200/80 px-1.5 py-0.2 text-[9px] font-semibold text-emerald-700">
+                    <span className="flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-1.5 py-0.2 text-[9px] font-semibold text-emerald-600 dark:text-emerald-400">
                         <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
                         <span>Online</span>
                     </span>
@@ -626,13 +643,13 @@ export function AiClinicalSummary({
                     <button
                         type="button"
                         onClick={() => setIsHistoryOpen(true)}
-                        className="cursor-pointer flex h-6 items-center gap-1 rounded-md bg-white border border-[#dfe3eb] px-1.5 text-[10px] font-medium text-slate-600 hover:bg-slate-50 transition shadow-2xs"
+                        className="cursor-pointer flex h-6 items-center gap-1 rounded-md bg-card border border-border px-1.5 text-[10px] font-medium text-muted-foreground hover:bg-muted hover:text-foreground transition shadow-2xs"
                         title="ดูประวัติการสนทนาย้อนหลังตามรอบการรักษา"
                     >
-                        <History size={11} className="text-purple-600" />
+                        <History size={11} className="text-primary" />
                         <span className="hidden sm:inline">ประวัติ</span>
                         {currentPatientSessions.length > 0 && (
-                            <span className="flex size-3.5 items-center justify-center rounded-full bg-purple-600 text-[8px] font-bold text-white">
+                            <span className="flex size-3.5 items-center justify-center rounded-full bg-primary text-[8px] font-bold text-primary-foreground">
                                 {currentPatientSessions.length}
                             </span>
                         )}
@@ -642,7 +659,7 @@ export function AiClinicalSummary({
                     <button
                         type="button"
                         onClick={handleCreateNewSession}
-                        className="cursor-pointer flex h-6 items-center gap-1 rounded-md bg-purple-50 border border-purple-200/80 px-1.5 text-[10px] font-semibold text-purple-700 shadow-2xs transition hover:bg-purple-100"
+                        className="cursor-pointer flex h-6 items-center gap-1 rounded-md bg-primary/10 border border-primary/20 px-1.5 text-[10px] font-semibold text-primary shadow-2xs transition hover:bg-primary/20"
                         title="เริ่มรอบการสนทนาใหม่"
                     >
                         <Plus size={11} />
@@ -653,18 +670,18 @@ export function AiClinicalSummary({
 
             {/* Sub-bar: บริบท Session ปัจจุบัน */}
             {activeSession && (
-                <div className="flex items-center justify-between border-b border-[#eceef4] bg-slate-50/50 px-2.5 py-1 text-[9px] text-slate-500">
+                <div className="flex items-center justify-between border-b border-border/60 bg-muted/30 px-2.5 py-1 text-[9px] text-muted-foreground">
                     <div className="flex items-center gap-1.5 min-w-0 truncate">
-                        <span className="inline-flex items-center gap-0.5 font-semibold text-purple-700 bg-purple-50 px-1.5 py-0.2 rounded border border-purple-200/60 truncate">
+                        <span className="inline-flex items-center gap-0.5 font-semibold text-primary bg-primary/10 px-1.5 py-0.2 rounded border border-primary/20 truncate">
                             <Calendar size={9} className="shrink-0" />
                             <span className="truncate">{activeSession.visit?.an || selectedPatient?.an || "ปัจจุบัน"}</span>
                         </span>
-                        <span className="truncate text-slate-600 font-medium">
+                        <span className="truncate text-foreground/80 font-medium">
                             {activeSession.service?.name || selectedPatient?.department || "OPD อายุรกรรม"}
                         </span>
                     </div>
 
-                    <span className="shrink-0 text-[9px] text-slate-400 pl-1 truncate max-w-[90px]">
+                    <span className="shrink-0 text-[9px] text-muted-foreground pl-1 truncate max-w-[90px]">
                         {selectedPatient?.doctor?.split(" ")[1]
                             ? `นพ.${selectedPatient.doctor.split(" ")[1]}`
                             : (selectedPatient?.doctor || "แพทย์ประจำเคส")}
@@ -686,8 +703,8 @@ export function AiClinicalSummary({
                         >
                             {msg.bot && (
                                 <MessageAvatar>
-                                    <Avatar size="sm" className="bg-gradient-to-br from-[#8d48b9] to-[#6366f1] text-white shadow-2xs">
-                                        <AvatarFallback className="bg-transparent text-white">
+                                    <Avatar size="sm" className="bg-primary text-primary-foreground shadow-2xs">
+                                        <AvatarFallback className="bg-transparent text-primary-foreground">
                                             <Bot size={13} />
                                         </AvatarFallback>
                                     </Avatar>
@@ -698,7 +715,7 @@ export function AiClinicalSummary({
                                 <BubbleGroup>
                                     <Bubble variant={msg.bot ? "bot" : "user"}>
                                         <BubbleContent className="text-[11.5px] leading-relaxed whitespace-pre-line break-words">
-                                            {msg.text}
+                                            {renderFormattedMessage(msg.text)}
                                         </BubbleContent>
                                     </Bubble>
                                 </BubbleGroup>
@@ -715,13 +732,13 @@ export function AiClinicalSummary({
                                             <button
                                                 type="button"
                                                 onClick={() => handleCopyMessage(msg.text, msg.id)}
-                                                className="cursor-pointer flex items-center gap-1 rounded px-1.5 py-0.5 hover:bg-purple-50 hover:text-purple-700 text-slate-400 transition text-[9px]"
+                                                className="cursor-pointer flex items-center gap-1 rounded px-1.5 py-0.5 hover:bg-muted hover:text-foreground text-muted-foreground transition text-[9px]"
                                                 title="คัดลอกข้อความ"
                                             >
                                                 {copiedId === msg.id ? (
                                                     <>
-                                                        <Check size={10} className="text-emerald-600" />
-                                                        <span className="text-emerald-600">คัดลอกแล้ว</span>
+                                                        <Check size={10} className="text-emerald-600 dark:text-emerald-400" />
+                                                        <span className="text-emerald-600 dark:text-emerald-400">คัดลอกแล้ว</span>
                                                     </>
                                                 ) : (
                                                     <>
@@ -737,8 +754,8 @@ export function AiClinicalSummary({
 
                             {!msg.bot && (
                                 <MessageAvatar>
-                                    <Avatar size="sm" className="bg-[#edf0f5] text-slate-500 shadow-2xs">
-                                        <AvatarFallback className="bg-transparent text-slate-500">
+                                    <Avatar size="sm" className="bg-muted text-muted-foreground shadow-2xs">
+                                        <AvatarFallback className="bg-transparent text-muted-foreground">
                                             <UserRound size={13} />
                                         </AvatarFallback>
                                     </Avatar>
@@ -750,8 +767,8 @@ export function AiClinicalSummary({
                     {isTyping && (
                         <Message from="bot">
                             <MessageAvatar>
-                                <Avatar size="sm" className="bg-gradient-to-br from-[#8d48b9] to-[#6366f1] text-white">
-                                    <AvatarFallback className="bg-transparent text-white">
+                                <Avatar size="sm" className="bg-primary text-primary-foreground">
+                                    <AvatarFallback className="bg-transparent text-primary-foreground">
                                         <Bot size={13} />
                                     </AvatarFallback>
                                 </Avatar>
@@ -759,7 +776,7 @@ export function AiClinicalSummary({
                             <MessageContent>
                                 <Bubble variant="bot">
                                     <BubbleContent>
-                                        <span className="italic flex items-center gap-1 text-slate-500 text-xs">
+                                        <span className="italic flex items-center gap-1 text-muted-foreground text-xs">
                                             AI กำลังวิเคราะห์ข้อมูลทางคลินิก
                                             <span className="animate-bounce">.</span>
                                             <span className="animate-bounce delay-100">.</span>
@@ -780,7 +797,7 @@ export function AiClinicalSummary({
                 <button
                     type="button"
                     onClick={scrollToBottom}
-                    className="cursor-pointer absolute bottom-24 right-4 z-20 flex size-7 items-center justify-center rounded-full bg-white/95 border border-purple-200 shadow-md text-purple-600 hover:bg-purple-50 hover:scale-105 transition-all"
+                    className="cursor-pointer absolute bottom-24 right-4 z-20 flex size-7 items-center justify-center rounded-full bg-card/95 border border-primary/30 shadow-md text-primary hover:bg-muted hover:scale-105 transition-all"
                     title="เลื่อนลงล่างสุด"
                 >
                     <ArrowDown size={14} />
@@ -788,7 +805,7 @@ export function AiClinicalSummary({
             )}
 
             {/* Bottom Quick Actions & Input Bar */}
-            <div className="shrink-0 border-t border-[#e7e9ef] bg-white">
+            <div className="shrink-0 border-t border-border bg-card">
                 {/* Dynamic Quick Actions Chips */}
                 <div className="flex gap-1.5 overflow-x-auto px-2.5 py-1.5 scrollbar-none">
                     {dynamicQuickPrompts.map((promptText, idx) => (
@@ -796,7 +813,7 @@ export function AiClinicalSummary({
                             key={idx}
                             type="button"
                             onClick={() => handleQuickAction(promptText)}
-                            className="cursor-pointer shrink-0 whitespace-nowrap rounded-full border border-[#dfe2ea] bg-slate-50/90 hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700 px-2.5 py-1 text-[10.5px] font-medium text-slate-600 transition shadow-2xs active:scale-95"
+                            className="cursor-pointer shrink-0 whitespace-nowrap rounded-full border border-border bg-muted/50 hover:bg-primary/10 hover:border-primary/30 hover:text-primary px-2.5 py-1 text-[10.5px] font-medium text-muted-foreground transition shadow-2xs active:scale-95"
                         >
                             {promptText}
                         </button>
@@ -804,25 +821,25 @@ export function AiClinicalSummary({
                 </div>
 
                 {/* Input Form */}
-                <div className="border-t border-[#e1e4eb] p-2">
+                <div className="border-t border-border p-2">
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
                             handleSendMessage();
                         }}
-                        className="flex items-center gap-1.5 rounded-xl border border-[#d9c9ff] bg-[#faf8ff] px-2.5 py-1.5 transition focus-within:border-[#9149df] focus-within:ring-2 focus-within:ring-purple-100"
+                        className="flex items-center gap-1.5 rounded-xl border border-input bg-muted/40 px-2.5 py-1.5 transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20"
                     >
                         <input
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
-                            className="min-w-0 flex-1 bg-transparent text-[11.5px] text-slate-800 outline-none placeholder:text-slate-400"
+                            className="min-w-0 flex-1 bg-transparent text-[11.5px] text-foreground outline-none placeholder:text-muted-foreground/60"
                             placeholder="สอบถาม AI / เกี่ยวกับการปรึกษานี้..."
                         />
 
                         <button
                             type="submit"
                             disabled={!inputValue.trim() || isTyping}
-                            className="cursor-pointer flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#9149df] text-white transition hover:bg-[#7e34cd] disabled:opacity-40 disabled:cursor-not-allowed shadow-2xs"
+                            className="cursor-pointer flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground transition hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-2xs"
                             title="ส่งข้อความ"
                         >
                             <Send size={12} />
@@ -833,11 +850,11 @@ export function AiClinicalSummary({
 
             {/* Slide-over Drawer: ประวัติการแชทแยกตามรอบการรักษา */}
             {isHistoryOpen && (
-                <div className="absolute inset-0 z-40 flex flex-col bg-white animate-in slide-in-from-right duration-200 shadow-xl">
-                    <div className="flex h-11 items-center justify-between border-b border-slate-200 bg-slate-50/80 px-3">
+                <div className="absolute inset-0 z-40 flex flex-col bg-card animate-in slide-in-from-right duration-200 shadow-xl">
+                    <div className="flex h-11 items-center justify-between border-b border-border bg-muted/50 px-3">
                         <div className="flex items-center gap-1.5 min-w-0">
-                            <History size={14} className="text-purple-600" />
-                            <h3 className="text-xs font-bold text-slate-800 truncate">
+                            <History size={14} className="text-primary" />
+                            <h3 className="text-xs font-bold text-foreground truncate">
                                 ประวัติการปรึกษา AI ของ {selectedPatient?.fullName || "ผู้ป่วย"}
                             </h3>
                         </div>
@@ -845,22 +862,21 @@ export function AiClinicalSummary({
                         <button
                             type="button"
                             onClick={() => setIsHistoryOpen(false)}
-                            className="cursor-pointer rounded-md p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700"
+                            className="cursor-pointer rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
                         >
                             ✕
                         </button>
                     </div>
 
                     {/* Filter Tabs */}
-                    <div className="flex items-center gap-1 border-b border-slate-100 bg-white px-3 py-1.5 text-[10px]">
+                    <div className="flex items-center gap-1 border-b border-border bg-card px-3 py-1.5 text-[10px]">
                         <button
                             type="button"
                             onClick={() => setVisitFilter("all")}
-                            className={`cursor-pointer rounded-md px-2 py-0.5 font-semibold transition ${
-                                visitFilter === "all"
-                                    ? "bg-purple-100 text-purple-800"
-                                    : "text-slate-500 hover:bg-slate-100"
-                            }`}
+                            className={`cursor-pointer rounded-md px-2 py-0.5 font-semibold transition ${visitFilter === "all"
+                                    ? "bg-primary/10 text-primary border border-primary/20"
+                                    : "text-muted-foreground hover:bg-muted"
+                                }`}
                         >
                             ทั้งหมด ({currentPatientSessions.length})
                         </button>
@@ -868,11 +884,10 @@ export function AiClinicalSummary({
                         <button
                             type="button"
                             onClick={() => setVisitFilter("current_visit")}
-                            className={`cursor-pointer rounded-md px-2 py-0.5 font-semibold transition ${
-                                visitFilter === "current_visit"
-                                    ? "bg-purple-100 text-purple-800"
-                                    : "text-slate-500 hover:bg-slate-100"
-                            }`}
+                            className={`cursor-pointer rounded-md px-2 py-0.5 font-semibold transition ${visitFilter === "current_visit"
+                                    ? "bg-primary/10 text-primary border border-primary/20"
+                                    : "text-muted-foreground hover:bg-muted"
+                                }`}
                         >
                             เฉพาะ Visit ปัจจุบัน ({filteredSessions.length})
                         </button>
@@ -889,18 +904,17 @@ export function AiClinicalSummary({
                                     <div
                                         key={session.id}
                                         onClick={() => handleSelectSession(session)}
-                                        className={`cursor-pointer group relative rounded-xl border p-2.5 transition-all shadow-2xs ${
-                                            isCurrent
-                                                ? "border-purple-400 bg-purple-50/50 shadow-xs ring-1 ring-purple-200"
-                                                : "border-slate-200 bg-white hover:border-purple-200 hover:bg-slate-50"
-                                        }`}
+                                        className={`cursor-pointer group relative rounded-xl border p-2.5 transition-all shadow-2xs ${isCurrent
+                                                ? "border-primary bg-primary/5 shadow-xs ring-1 ring-primary/30"
+                                                : "border-border bg-card hover:border-primary/40 hover:bg-muted/40"
+                                            }`}
                                     >
                                         <div className="flex items-start justify-between gap-1.5">
                                             <div className="min-w-0 flex-1">
-                                                <p className="text-[11px] font-bold text-slate-800 truncate">
+                                                <p className="text-[11px] font-bold text-foreground truncate">
                                                     {session.title}
                                                 </p>
-                                                <p className="mt-0.5 text-[10px] text-slate-500 line-clamp-1">
+                                                <p className="mt-0.5 text-[10px] text-muted-foreground line-clamp-1">
                                                     {firstMsg}
                                                 </p>
                                             </div>
@@ -908,15 +922,15 @@ export function AiClinicalSummary({
                                             <button
                                                 type="button"
                                                 onClick={(e) => handleDeleteSession(e, session.id)}
-                                                className="cursor-pointer opacity-0 group-hover:opacity-100 rounded p-1 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition"
+                                                className="cursor-pointer opacity-0 group-hover:opacity-100 rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition"
                                                 title="ลบประวัตินี้"
                                             >
                                                 <Trash2 size={12} />
                                             </button>
                                         </div>
 
-                                        <div className="mt-2 flex items-center justify-between text-[9px] text-slate-400 border-t border-slate-100 pt-1.5">
-                                            <span className="flex items-center gap-1 text-purple-700 font-medium">
+                                        <div className="mt-2 flex items-center justify-between text-[9px] text-muted-foreground border-t border-border pt-1.5">
+                                            <span className="flex items-center gap-1 text-primary font-medium">
                                                 <Calendar size={9} />
                                                 <span>{session.visit?.an || "OPD"}</span>
                                             </span>
@@ -927,8 +941,8 @@ export function AiClinicalSummary({
                             })
                         ) : (
                             <div className="flex h-32 flex-col items-center justify-center text-center p-4">
-                                <FolderOpen size={24} className="text-slate-300 mb-1" />
-                                <p className="text-xs text-slate-400 font-medium">ยังไม่มีประวัติการสนทนา</p>
+                                <FolderOpen size={24} className="text-muted-foreground/40 mb-1" />
+                                <p className="text-xs text-muted-foreground font-medium">ยังไม่มีประวัติการสนทนา</p>
                             </div>
                         )}
                     </div>

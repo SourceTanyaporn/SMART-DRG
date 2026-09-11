@@ -144,14 +144,14 @@ export function DatePicker({
           }
         }}
         className={cn(
-          "relative flex h-9 w-full items-center justify-between rounded-lg border bg-white px-2.5 text-xs transition cursor-pointer select-none",
-          isOpen ? "border-primary ring-2 ring-primary/20" : "border-[#e4e8f1] hover:border-slate-300",
-          disabled && "cursor-not-allowed bg-slate-50 text-slate-400 opacity-60"
+          "relative flex h-9 w-full items-center justify-between rounded-lg border bg-card px-2.5 text-xs transition cursor-pointer select-none",
+          isOpen ? "border-primary ring-2 ring-primary/20" : "border-input hover:border-border",
+          disabled && "cursor-not-allowed bg-muted text-muted-foreground opacity-60"
         )}
       >
         <div className="flex items-center gap-2 min-w-0 flex-1">
-          <CalendarIcon className="size-3.5 shrink-0 text-slate-400" />
-          <span className={cn("truncate font-medium", selectedDate ? "text-slate-800" : "text-slate-400")}>
+          <CalendarIcon className="size-3.5 shrink-0 text-muted-foreground" />
+          <span className={cn("truncate font-medium", selectedDate ? "text-foreground" : "text-muted-foreground")}>
             {selectedDate ? selectedDate.format(displayFormat) : placeholder}
           </span>
         </div>
@@ -160,7 +160,7 @@ export function DatePicker({
           <button
             type="button"
             onClick={handleClear}
-            className="ml-1 rounded p-0.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+            className="ml-1 rounded p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
             title="ล้างวันที่"
           >
             <XIcon className="size-3" />
@@ -170,21 +170,21 @@ export function DatePicker({
 
       {/* Popover Calendar */}
       {isOpen && (
-        <div className="absolute left-0 top-[calc(100%+4px)] z-50 w-72 rounded-xl border border-slate-200 bg-white p-3 shadow-lg ring-1 ring-black/5 animate-in fade-in-0 zoom-in-95 duration-100">
+        <div className="absolute left-0 top-[calc(100%+4px)] z-50 w-72 rounded-xl border border-border bg-popover p-3 shadow-xl ring-1 ring-black/10 animate-in fade-in-0 zoom-in-95 duration-100">
           {/* Calendar Header */}
-          <div className="flex items-center justify-between gap-1 pb-2.5 border-b border-slate-100">
+          <div className="flex items-center justify-between gap-1 pb-2.5 border-b border-border">
             <Button
               type="button"
               variant="ghost"
               size="icon-xs"
               onClick={prevMonth}
-              className="size-7 rounded-lg text-slate-600 hover:bg-slate-100"
+              className="size-7 rounded-lg text-foreground hover:bg-muted cursor-pointer"
               aria-label="เดือนก่อนหน้า"
             >
               <ChevronLeftIcon className="size-4" />
             </Button>
 
-            <span className="text-xs font-semibold text-slate-800">
+            <span className="text-xs font-semibold text-foreground">
               {viewDate.format("MMMM BBBB")}
             </span>
 
@@ -193,7 +193,7 @@ export function DatePicker({
               variant="ghost"
               size="icon-xs"
               onClick={nextMonth}
-              className="size-7 rounded-lg text-slate-600 hover:bg-slate-100"
+              className="size-7 rounded-lg text-foreground hover:bg-muted cursor-pointer"
               aria-label="เดือนถัดไป"
             >
               <ChevronRightIcon className="size-4" />
@@ -207,7 +207,7 @@ export function DatePicker({
                 key={dayName}
                 className={cn(
                   "text-[10px] font-semibold",
-                  idx === 0 ? "text-rose-500" : "text-slate-400"
+                  idx === 0 ? "text-rose-500" : "text-muted-foreground"
                 )}
               >
                 {dayName}
@@ -232,10 +232,10 @@ export function DatePicker({
                   onClick={() => handleSelectDay(date)}
                   className={cn(
                     "flex size-8 items-center justify-center rounded-lg text-xs font-medium transition cursor-pointer select-none",
-                    !isCurrentMonth && "text-slate-300",
-                    isCurrentMonth && !isSelected && "text-slate-700 hover:bg-slate-100",
+                    !isCurrentMonth && "text-muted-foreground/40",
+                    isCurrentMonth && !isSelected && "text-foreground hover:bg-muted",
                     isCurrentDay && !isSelected && "border border-primary/40 font-semibold text-primary",
-                    isSelected && "bg-primary text-white font-semibold shadow-xs hover:bg-primary/90",
+                    isSelected && "bg-primary text-primary-foreground font-semibold shadow-xs hover:bg-primary/90",
                     isDisabled && "cursor-not-allowed opacity-30 hover:bg-transparent"
                   )}
                 >
@@ -246,11 +246,11 @@ export function DatePicker({
           </div>
 
           {/* Footer Actions */}
-          <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2 text-xs">
+          <div className="mt-2.5 flex items-center justify-between border-t border-border pt-2 text-xs">
             <button
               type="button"
               onClick={handleToday}
-              className="font-medium text-primary hover:underline cursor-pointer"
+              className="font-semibold text-primary hover:underline cursor-pointer"
             >
               วันนี้
             </button>
@@ -258,7 +258,7 @@ export function DatePicker({
               <button
                 type="button"
                 onClick={handleClear}
-                className="font-medium text-rose-500 hover:underline cursor-pointer"
+                className="font-semibold text-rose-500 hover:underline cursor-pointer"
               >
                 ล้างค่า
               </button>

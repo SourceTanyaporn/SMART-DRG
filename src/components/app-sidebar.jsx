@@ -46,8 +46,9 @@ export function AppSidebar(props) {
         shrink-0
         place-items-center
         rounded-lg
-        bg-sidebar-primary/10
-        text-sidebar-primary
+        bg-primary
+        text-white
+        shadow-2xs
       "
           >
             <Building2Icon className="size-5" />

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "https://smart-drg-api.onrender.com";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8002";
 const transcribeApi = axios.create({
   baseURL: `${API_BASE_URL}/v1/transcribe`,
   timeout: 0,

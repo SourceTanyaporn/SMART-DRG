@@ -18,6 +18,8 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { Toaster } from "@/components/ui/toast-notification"
+import { ThemeProvider } from "@/context/theme-context"
+import { ThemeSwitcher } from "@/components/theme-switcher"
 
 import { getBreadcrumb } from "@/config/navigation"
 
@@ -34,12 +36,13 @@ function RootLayout() {
     : null
 
   return (
-    <SidebarProvider>
-      <Toaster />
-      <AppSidebar />
-      <SidebarInset className="bg-background">
-        <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center border-b border-border bg-white px-2 sm:px-3 md:px-4">
-          <SidebarTrigger className="-ml-1 sm:-ml-1.5 mr-1.5 sm:mr-2.5 shrink-0" />
+    <ThemeProvider>
+      <SidebarProvider>
+        <Toaster />
+        <AppSidebar />
+        <SidebarInset className="bg-background">
+          <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center border-b border-border bg-card/95 backdrop-blur-md px-2 sm:px-3 md:px-4">
+            <SidebarTrigger className="-ml-1 sm:-ml-1.5 mr-1.5 sm:mr-2.5 shrink-0" />
 
           {/* ===== 1. Mobile & iPad View (< lg): Back-link + Current Page ===== */}
           <div className="flex lg:hidden items-center gap-1.5 min-w-0 flex-1 mr-2 text-xs sm:text-sm">
@@ -114,8 +117,9 @@ function RootLayout() {
             </BreadcrumbList>
           </Breadcrumb>
 
-          {/* Right: User Profile (Compact Avatar on Mobile, Name on iPad, Full on Desktop) */}
-          <div className="ml-auto flex items-center shrink-0">
+          {/* Right: Theme Switcher & User Profile */}
+          <div className="ml-auto flex items-center gap-2 sm:gap-2.5 shrink-0">
+            <ThemeSwitcher />
             <NavUser user={currentUser} className="w-auto md:w-auto lg:w-60 shrink-0" />
           </div>
         </header>
@@ -124,6 +128,7 @@ function RootLayout() {
         </main>
       </SidebarInset>
     </SidebarProvider>
+    </ThemeProvider>
   )
 }
 

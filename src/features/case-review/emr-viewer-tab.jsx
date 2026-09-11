@@ -175,21 +175,21 @@ export function EmrViewerTab({ onSwitchTab }) {
 
         {/* Coder Guide Flow */}
         <div className="mt-3.5 grid gap-2.5 border-t border-primary/10 pt-3 sm:grid-cols-3 text-xs">
-          <div className="flex items-center gap-2 rounded-lg bg-white/80 p-2 border border-primary/10">
+          <div className="flex items-center gap-2 rounded-lg bg-card p-2 border border-primary/10">
             <span className="grid size-5 place-items-center rounded-full bg-emerald-500 text-white font-bold text-[10px]">✓</span>
             <div>
               <p className="font-semibold text-foreground">1. เอกสารที่ระบุรหัส</p>
               <p className="text-muted-foreground text-[11px]">เลือกดู Note ที่ AI ไฮไลท์</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 rounded-lg bg-white p-2 border border-primary/30 shadow-xs">
-            <span className="grid size-5 place-items-center rounded-full bg-primary text-white font-bold text-[10px]">2</span>
+          <div className="flex items-center gap-2 rounded-lg bg-card p-2 border border-primary/30 shadow-xs">
+            <span className="grid size-5 place-items-center rounded-full bg-primary text-primary-foreground font-bold text-[10px]">2</span>
             <div>
               <p className="font-semibold text-primary">2. ตรวจหลักฐานเวชระเบียน</p>
               <p className="text-muted-foreground text-[11px]">ตรวจคำวินิจฉัยและ BMI</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 rounded-lg bg-white/80 p-2 border border-primary/10">
+          <div className="flex items-center gap-2 rounded-lg bg-card p-2 border border-primary/10">
             <span className="grid size-5 place-items-center rounded-full bg-muted text-muted-foreground font-bold text-[10px]">3</span>
             <div>
               <p className="font-semibold text-foreground">3. ส่ง Coding Review</p>
@@ -202,7 +202,7 @@ export function EmrViewerTab({ onSwitchTab }) {
       {/* Main 3-Column Viewer Workspace */}
       <section className="grid gap-4 xl:grid-cols-[15rem_minmax(0,1fr)_18rem]">
         {/* Left Column: Document Navigation */}
-        <Card className="rounded-xl border border-[#edf0f5] p-3.5 shadow-none space-y-3">
+        <Card className="rounded-xl border border-border p-3.5 shadow-none space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="flex items-center gap-1.5 text-xs font-bold text-foreground uppercase tracking-wider">
               <FileTextIcon className="size-4 text-primary" />
@@ -217,7 +217,7 @@ export function EmrViewerTab({ onSwitchTab }) {
               placeholder="ค้นหาเอกสาร..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-8 w-full rounded-lg border border-border bg-muted/30 pl-8 pr-3 text-xs outline-none focus:border-primary focus:bg-white"
+              className="h-8 w-full rounded-lg border border-border bg-muted/30 pl-8 pr-3 text-xs outline-none focus:border-primary focus:bg-card"
             />
           </div>
 
@@ -242,7 +242,7 @@ export function EmrViewerTab({ onSwitchTab }) {
                         {doc.title}
                       </p>
                       {doc.alertsCount > 0 && (
-                        <span className="rounded bg-rose-100 px-1.5 py-0.2 text-[10px] font-bold text-rose-700">
+                        <span className="rounded bg-rose-500/20 px-1.5 py-0.2 text-[10px] font-bold text-rose-600 dark:text-rose-400">
                           {doc.alertsCount}
                         </span>
                       )}
@@ -253,9 +253,9 @@ export function EmrViewerTab({ onSwitchTab }) {
                       <span
                         className={`rounded px-1.5 py-0.5 font-medium ${
                           doc.statusType === "success"
-                            ? "bg-emerald-50 text-emerald-700"
+                            ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                             : doc.statusType === "warning"
-                            ? "bg-amber-50 text-amber-700"
+                            ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
                             : "bg-muted text-muted-foreground"
                         }`}
                       >
@@ -269,7 +269,7 @@ export function EmrViewerTab({ onSwitchTab }) {
         </Card>
 
         {/* Center Column: Active Document Reading Pane */}
-        <Card className="rounded-xl border border-[#edf0f5] p-5 shadow-none flex flex-col justify-between">
+        <Card className="rounded-xl border border-border p-5 shadow-none flex flex-col justify-between">
           <div className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3">
               <div>
@@ -279,7 +279,7 @@ export function EmrViewerTab({ onSwitchTab }) {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <span className="flex items-center gap-1 rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200">
+                <span className="flex items-center gap-1 rounded-md bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                   <SparklesIcon className="size-3.5" />
                   AI ไฮไลท์หลักฐานอัตโนมัติ
                 </span>
@@ -287,18 +287,18 @@ export function EmrViewerTab({ onSwitchTab }) {
             </div>
 
             {/* Document Content View */}
-            <div className="rounded-lg bg-card p-4 ring-1 ring-[#edf0f5]">
+            <div className="rounded-lg bg-card p-4 ring-1 ring-border">
               {activeDoc.content}
             </div>
 
             {/* AI Evidence Alert Callout Box */}
-            <div className="rounded-lg border border-amber-200 bg-amber-50/70 p-3.5 text-xs text-amber-900 space-y-1.5">
-              <div className="flex items-center gap-2 font-bold text-amber-950">
-                <AlertCircleIcon className="size-4 text-amber-600" />
+            <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3.5 text-xs text-foreground space-y-1.5">
+              <div className="flex items-center gap-2 font-bold text-amber-600 dark:text-amber-400">
+                <AlertCircleIcon className="size-4 text-amber-600 dark:text-amber-400" />
                 ข้อสังเกตจากระบบ Smart DRG สำหรับเอกสารนี้
               </div>
-              <p className="leading-5">
-                พบหลักฐานการวินิจฉัย <b>M16.1 (OA Hip)</b> และ <b>E66.01 (Morbid obesity, BMI 38.6)</b> ในบันทึก Progress note ซึ่งมีความสมบูรณ์เพียงพอสำหรับการให้รหัสโรคร่วม (Secondary Diagnosis) ที่มีผลต่อการจัดกลุ่ม DRG
+              <p className="leading-5 text-muted-foreground">
+                พบหลักฐานการวินิจฉัย <b className="text-foreground">M16.1 (OA Hip)</b> และ <b className="text-foreground">E66.01 (Morbid obesity, BMI 38.6)</b> ในบันทึก Progress note ซึ่งมีความสมบูรณ์เพียงพอสำหรับการให้รหัสโรคร่วม (Secondary Diagnosis) ที่มีผลต่อการจัดกลุ่ม DRG
               </p>
             </div>
           </div>
@@ -327,10 +327,10 @@ export function EmrViewerTab({ onSwitchTab }) {
             </p>
 
             <div className="space-y-2.5 pt-1">
-              <div className="rounded-lg border border-primary/10 bg-white p-3 space-y-1">
+              <div className="rounded-lg border border-primary/10 bg-card p-3 space-y-1">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-muted-foreground">Principal Dx</span>
-                  <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold text-emerald-800">
+                  <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
                     พบหลักฐานชัดเจน
                   </span>
                 </div>
@@ -338,10 +338,10 @@ export function EmrViewerTab({ onSwitchTab }) {
                 <p className="text-[11px] text-muted-foreground">ระบุใน Admission & Progress Note</p>
               </div>
 
-              <div className="rounded-lg border border-primary/10 bg-white p-3 space-y-1">
+              <div className="rounded-lg border border-primary/10 bg-card p-3 space-y-1">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-muted-foreground">Secondary Dx (แนะนำเพิ่ม)</span>
-                  <span className="rounded bg-indigo-100 px-1.5 py-0.5 text-[10px] font-bold text-indigo-800">
+                  <span className="rounded bg-primary/20 px-1.5 py-0.5 text-[10px] font-bold text-primary">
                     AI แนะนำ + หลักฐานครบ
                   </span>
                 </div>
@@ -349,10 +349,10 @@ export function EmrViewerTab({ onSwitchTab }) {
                 <p className="text-[11px] text-muted-foreground">พบ BMI 38.6 kg/m² ใน Progress Note</p>
               </div>
 
-              <div className="rounded-lg border border-primary/10 bg-white p-3 space-y-1">
+              <div className="rounded-lg border border-primary/10 bg-card p-3 space-y-1">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-semibold text-muted-foreground">Procedure</span>
-                  <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[10px] font-bold text-emerald-800">
+                  <span className="rounded bg-emerald-500/20 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
                     พบหลักฐานชัดเจน
                   </span>
                 </div>
@@ -360,12 +360,12 @@ export function EmrViewerTab({ onSwitchTab }) {
                 <p className="text-[11px] text-muted-foreground">มีบันทึก Operative Note ครบถ้วน</p>
               </div>
 
-              <div className="rounded-lg border border-emerald-200 bg-emerald-50/50 p-3 space-y-1">
+              <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-3 space-y-1">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-emerald-900">ผลกระทบต่อ AdjRW</span>
-                  <span className="font-bold text-emerald-700">+0.5656</span>
+                  <span className="font-semibold text-emerald-700 dark:text-emerald-300">ผลกระทบต่อ AdjRW</span>
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400">+0.5656</span>
                 </div>
-                <p className="text-[11px] text-emerald-800">
+                <p className="text-[11px] text-emerald-700 dark:text-emerald-300">
                   เพิ่มค่าตอบแทนคาดการณ์ประมาณ <b>+40,270 บาท</b>
                 </p>
               </div>
@@ -375,7 +375,7 @@ export function EmrViewerTab({ onSwitchTab }) {
               <button
                 type="button"
                 onClick={() => onSwitchTab?.("coding")}
-                className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-primary text-xs font-bold text-white shadow-sm transition hover:bg-primary/90 cursor-pointer"
+                className="flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-primary text-xs font-bold text-primary-foreground shadow-sm transition hover:bg-primary/90 cursor-pointer"
               >
                 <PanelRightOpenIcon className="size-4" />
                 ส่งผลตรวจไป Coding Review

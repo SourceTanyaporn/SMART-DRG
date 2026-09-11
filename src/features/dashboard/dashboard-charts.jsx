@@ -45,7 +45,7 @@ export function DashboardCharts() {
 
 function RiskDistribution() {
   return (
-    <section className="rounded-xl border border-[#edf0f5] bg-card p-3.5 sm:p-4.5 flex flex-col justify-between">
+    <section className="rounded-xl border border-border bg-card p-3.5 sm:p-4.5 flex flex-col justify-between">
       <h2 className="text-sm sm:text-base font-semibold text-foreground">การกระจายความเสี่ยง</h2>
       <div className="mt-2 flex flex-col sm:flex-row md:flex-col xl:flex-row items-center justify-around gap-2 sm:gap-4">
         <ChartContainer config={riskConfig} className="h-48 sm:h-52 min-h-48 sm:min-h-52 w-full max-w-[220px] aspect-auto">
@@ -82,7 +82,7 @@ function RiskDistribution() {
 
 function RevenueTrend() {
   return (
-    <section className="rounded-xl border border-[#edf0f5] bg-card p-3.5 sm:p-4.5 flex flex-col justify-between">
+    <section className="rounded-xl border border-border bg-card p-3.5 sm:p-4.5 flex flex-col justify-between">
       <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
         <h2 className="text-sm sm:text-base font-semibold text-foreground">แนวโน้มรายได้ (บาท)</h2>
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs">

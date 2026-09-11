@@ -76,7 +76,7 @@ export function CodingReviewTab({ onSwitchTab }) {
   return (
     <div className="space-y-4">
       {/* Overview Banner */}
-      <section className="rounded-xl border border-[#edf0f5] bg-card p-4.5">
+      <section className="rounded-xl border border-border bg-card p-4.5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2.5">
@@ -86,7 +86,7 @@ export function CodingReviewTab({ onSwitchTab }) {
               <div>
                 <div className="flex items-center gap-2">
                   <h2 className="text-lg font-bold text-foreground">Coding Review & Validation</h2>
-                  <span className="rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-semibold text-amber-700 border border-amber-200">
+                  <span className="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400 border border-amber-500/20">
                     รอ Coder ยืนยันผล
                   </span>
                 </div>
@@ -99,15 +99,15 @@ export function CodingReviewTab({ onSwitchTab }) {
 
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-1.5 text-xs">
-              <span className="rounded-md bg-emerald-50 px-2.5 py-1 font-semibold text-emerald-700 border border-emerald-200">
+              <span className="rounded-md bg-emerald-500/10 px-2.5 py-1 font-semibold text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                 อนุมัติ {approvedCount}
               </span>
               {reviewCount > 0 && (
-                <span className="rounded-md bg-amber-50 px-2.5 py-1 font-semibold text-amber-700 border border-amber-200">
+                <span className="rounded-md bg-amber-500/10 px-2.5 py-1 font-semibold text-amber-600 dark:text-amber-400 border border-amber-500/20">
                   รอทบทวน {reviewCount}
                 </span>
               )}
-              <span className="rounded-md bg-rose-50 px-2.5 py-1 font-semibold text-rose-700 border border-rose-200">
+              <span className="rounded-md bg-rose-500/10 px-2.5 py-1 font-semibold text-rose-600 dark:text-rose-400 border border-rose-500/20">
                 ปฏิเสธ {rejectedCount}
               </span>
             </div>
@@ -137,7 +137,7 @@ export function CodingReviewTab({ onSwitchTab }) {
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1.4fr)_minmax(22rem,0.9fr)]">
         {/* Left Column: Candidates Table & Active Inspector */}
         <div className="space-y-4">
-          <Card className="rounded-xl border border-[#edf0f5] p-4 shadow-none">
+          <Card className="rounded-xl border border-border p-4 shadow-none">
             <div className="flex items-center justify-between pb-3">
               <div>
                 <h3 className="text-sm font-bold text-foreground">รายการรหัสวินิจฉัยและหัตถการที่ประเมิน</h3>
@@ -148,7 +148,7 @@ export function CodingReviewTab({ onSwitchTab }) {
               <span className="text-xs font-semibold text-muted-foreground">ทั้งหมด {candidates.length} รายการ</span>
             </div>
 
-            <div className="overflow-hidden rounded-xl border border-[#edf0f5]">
+            <div className="overflow-hidden rounded-xl border border-border">
               <div className="grid grid-cols-[minmax(12rem,1.2fr)_minmax(11rem,1fr)_10.5rem] gap-2 bg-muted/60 px-4 py-2.5 text-xs font-semibold text-muted-foreground">
                 <span>รหัส & คำวินิจฉัย</span>
                 <span>เหตุผล / ความน่าเชื่อถือ</span>
@@ -161,15 +161,15 @@ export function CodingReviewTab({ onSwitchTab }) {
                   <div
                     key={cand.id}
                     onClick={() => setSelectedCandidateId(cand.id)}
-                    className={`grid grid-cols-[minmax(12rem,1.2fr)_minmax(11rem,1fr)_10.5rem] items-center gap-2 border-t border-[#edf0f5] px-4 py-3.5 transition cursor-pointer ${
-                      isSelected ? "bg-primary/[0.04] ring-1 ring-inset ring-primary/25" : "hover:bg-muted/40"
+                    className={`grid grid-cols-[minmax(12rem,1.2fr)_minmax(11rem,1fr)_10.5rem] items-center gap-2 border-t border-border px-4 py-3.5 transition cursor-pointer ${
+                      isSelected ? "bg-primary/[0.06] ring-1 ring-inset ring-primary/25" : "hover:bg-muted/40"
                     }`}
                   >
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-foreground">{cand.code}</span>
                         {cand.code === "E66.01" && (
-                          <span className="rounded bg-indigo-50 px-1.5 py-0.2 text-[10px] font-bold text-indigo-700">
+                          <span className="rounded bg-primary/10 px-1.5 py-0.2 text-[10px] font-bold text-primary">
                             AI แนะนำ
                           </span>
                         )}
@@ -196,7 +196,7 @@ export function CodingReviewTab({ onSwitchTab }) {
                         className={`flex h-7 items-center gap-1 rounded-md px-2 text-xs font-semibold transition cursor-pointer ${
                           cand.decision === "Approve"
                             ? "bg-emerald-600 text-white shadow-xs"
-                            : "border border-border bg-white text-muted-foreground hover:border-emerald-300 hover:text-emerald-700"
+                            : "border border-border bg-card text-muted-foreground hover:border-emerald-500/40 hover:text-emerald-600"
                         }`}
                       >
                         <CheckIcon className="size-3" />
@@ -212,7 +212,7 @@ export function CodingReviewTab({ onSwitchTab }) {
                         className={`flex h-7 items-center gap-1 rounded-md px-2 text-xs font-semibold transition cursor-pointer ${
                           cand.decision === "Reject"
                             ? "bg-rose-600 text-white shadow-xs"
-                            : "border border-border bg-white text-muted-foreground hover:border-rose-300 hover:text-rose-700"
+                            : "border border-border bg-card text-muted-foreground hover:border-rose-500/40 hover:text-rose-600"
                         }`}
                       >
                         <XIcon className="size-3" />
@@ -244,11 +244,11 @@ export function CodingReviewTab({ onSwitchTab }) {
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2 text-xs">
-                <div className="rounded-lg border border-primary/10 bg-white p-3 space-y-1">
+                <div className="rounded-lg border border-primary/10 bg-card p-3 space-y-1">
                   <p className="font-semibold text-muted-foreground">หลักฐานทางการแพทย์ที่พบ:</p>
                   <p className="text-foreground">{selectedCandidate.reason}</p>
                 </div>
-                <div className="rounded-lg border border-primary/10 bg-white p-3 space-y-1">
+                <div className="rounded-lg border border-primary/10 bg-card p-3 space-y-1">
                   <p className="font-semibold text-muted-foreground">ผลกระทบต่อ DRG:</p>
                   <p className="text-foreground">
                     {selectedCandidate.code === "E66.01"
@@ -267,7 +267,7 @@ export function CodingReviewTab({ onSwitchTab }) {
                   value={coderNote}
                   onChange={(e) => setCoderNote(e.target.value)}
                   placeholder="ระบุเหตุผลการตัดสินใจ..."
-                  className="w-full rounded-lg border border-border bg-white p-2.5 text-xs text-foreground outline-none focus:border-primary"
+                  className="w-full rounded-lg border border-border bg-card p-2.5 text-xs text-foreground outline-none focus:border-primary"
                 />
               </div>
             </div>
@@ -276,7 +276,7 @@ export function CodingReviewTab({ onSwitchTab }) {
 
         {/* Right Column: DRG Financial Impact & Submission */}
         <div className="space-y-4">
-          <Card className="rounded-xl border border-[#edf0f5] p-4.5 shadow-none space-y-4">
+          <Card className="rounded-xl border border-border p-4.5 shadow-none space-y-4">
             <h3 className="text-sm font-bold text-foreground">ผลกระทบต่อ DRG & ค่าชดเชย</h3>
 
             <div className="rounded-xl border border-border bg-muted/30 p-3.5 space-y-3 text-xs">
@@ -288,7 +288,7 @@ export function CodingReviewTab({ onSwitchTab }) {
                 <MoveRightIcon className="size-4 text-primary" />
                 <div>
                   <p className="text-muted-foreground">DRG หลังปรับ</p>
-                  <p className="mt-1 text-sm font-bold text-emerald-700">I02Z (Adj)</p>
+                  <p className="mt-1 text-sm font-bold text-emerald-600 dark:text-emerald-400">I02Z (Adj)</p>
                 </div>
               </div>
 
@@ -300,7 +300,7 @@ export function CodingReviewTab({ onSwitchTab }) {
                 <MoveRightIcon className="size-4 text-primary" />
                 <div>
                   <p className="text-muted-foreground">AdjRW ใหม่</p>
-                  <p className="mt-1 text-sm font-bold text-emerald-700">2.7890</p>
+                  <p className="mt-1 text-sm font-bold text-emerald-600 dark:text-emerald-400">2.7890</p>
                 </div>
               </div>
 
@@ -312,22 +312,22 @@ export function CodingReviewTab({ onSwitchTab }) {
                 <MoveRightIcon className="size-4 text-primary" />
                 <div>
                   <p className="text-muted-foreground">ค่าชดเชยใหม่</p>
-                  <p className="mt-1 text-sm font-bold text-emerald-700">108,720 บาท</p>
+                  <p className="mt-1 text-sm font-bold text-emerald-600 dark:text-emerald-400">108,720 บาท</p>
                 </div>
               </div>
             </div>
 
-            <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-3.5 text-center text-emerald-800">
+            <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-3.5 text-center text-emerald-700 dark:text-emerald-300">
               <p className="text-xs font-semibold">รายได้คาดการณ์ที่เพิ่มขึ้น (Recovered Revenue)</p>
-              <p className="mt-1 text-2xl font-extrabold text-emerald-700">+40,270 บาท</p>
-              <p className="text-[11px] text-emerald-600 mt-0.5">(+25.4% AdjRW Growth)</p>
+              <p className="mt-1 text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">+40,270 บาท</p>
+              <p className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-0.5">(+25.4% AdjRW Growth)</p>
             </div>
           </Card>
 
           {/* Submission Checklist */}
-          <Card className="rounded-xl border border-violet-200 bg-violet-50/30 p-4.5 shadow-none space-y-3">
-            <h3 className="text-sm font-bold text-violet-900 flex items-center gap-1.5">
-              <CheckCircle2Icon className="size-4 text-violet-700" />
+          <Card className="rounded-xl border border-primary/20 bg-primary/5 p-4.5 shadow-none space-y-3">
+            <h3 className="text-sm font-bold text-primary flex items-center gap-1.5">
+              <CheckCircle2Icon className="size-4 text-primary" />
               รายการตรวจสอบก่อนส่งผล (Submission Checklist)
             </h3>
 

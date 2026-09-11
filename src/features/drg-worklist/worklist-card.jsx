@@ -95,10 +95,10 @@ export function WorklistCard({
   }, [appliedFilters])
 
   return (
-    <section className="rounded-xl border border-[#edf0f5] bg-card p-3.5 sm:p-5">
+    <section className="rounded-xl border border-border bg-card p-3.5 sm:p-5">
       <div className="mb-3.5 sm:mb-4 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-base sm:text-lg font-semibold text-black">รายการผู้ป่วย DRG</h2>
+          <h2 className="text-base sm:text-lg font-semibold text-foreground">รายการผู้ป่วย DRG</h2>
         </div>
         {!dashboardPage && hasActiveFilters && (
           <div className="flex items-center gap-2 self-start sm:self-auto">

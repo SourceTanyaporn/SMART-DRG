@@ -119,26 +119,26 @@ export function PatientSearchBanner({
         const cleanAn = (p.an || "").toLowerCase().replace(/[-\s]/g, "");
 
         if (cleanHn.includes(cleanQ) || (p.hn && p.hn.toLowerCase().includes(q))) {
-            return { label: "HN", value: p.hn, color: "bg-blue-50 text-blue-700 border-blue-200" };
+            return { label: "HN", value: p.hn, color: "bg-primary/10 text-primary border-primary/20" };
         }
         if (cleanAn.includes(cleanQ) || (p.an && p.an.toLowerCase().includes(q))) {
-            return { label: "AN", value: p.an, color: "bg-indigo-50 text-indigo-700 border-indigo-200" };
+            return { label: "AN", value: p.an, color: "bg-primary/10 text-primary border-primary/20" };
         }
         if (cleanCitizen.includes(cleanQ) || (p.citizenId && p.citizenId.includes(q))) {
-            return { label: "เลขบัตร ปชช", value: p.citizenId, color: "bg-purple-50 text-purple-700 border-purple-200" };
+            return { label: "เลขบัตร ปชช", value: p.citizenId, color: "bg-primary/10 text-primary border-primary/20" };
         }
         if (
             (p.fullName && p.fullName.toLowerCase().includes(q)) ||
             (p.firstName && p.firstName.toLowerCase().includes(q)) ||
             (p.lastName && p.lastName.toLowerCase().includes(q))
         ) {
-            return { label: "ชื่อ-สกุล", value: p.fullName, color: "bg-emerald-50 text-emerald-700 border-emerald-200" };
+            return { label: "ชื่อ-สกุล", value: p.fullName, color: "bg-primary/10 text-primary border-primary/20" };
         }
         if (p.doctor && p.doctor.toLowerCase().includes(q)) {
-            return { label: "แพทย์ผู้ตรวจ", value: p.doctor, color: "bg-teal-50 text-teal-700 border-teal-200" };
+            return { label: "แพทย์ผู้ตรวจ", value: p.doctor, color: "bg-primary/10 text-primary border-primary/20" };
         }
         if (p.drg && p.drg.toLowerCase().includes(q)) {
-            return { label: "DRG", value: p.drg, color: "bg-amber-50 text-amber-700 border-amber-200" };
+            return { label: "DRG", value: p.drg, color: "bg-primary/10 text-primary border-primary/20" };
         }
         return null;
     };
@@ -164,13 +164,13 @@ export function PatientSearchBanner({
         <div ref={containerRef} className={`relative z-30 w-full ${className}`}>
             {/* When patient is selected & not in editing search mode */}
             {showPatientCard && selectedPatient && !isEditingMode ? (
-                <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-xl border border-[#dfe3eb] bg-white px-3.5 py-2.5 shadow-2xs transition-all">
+                <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-xl border border-border bg-card px-3.5 py-2.5 shadow-2xs transition-all">
                     {/* Left: Patient Avatar & Demographics */}
                     <div className="flex items-center gap-3 min-w-0">
-                        <div className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-bold shadow-2xs">
+                        <div className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold shadow-2xs">
                             <User size={20} />
                             <span
-                                className={`absolute -bottom-1 -right-1 flex size-4 items-center justify-center rounded-full text-[9px] font-bold text-white border-2 border-white ${selectedPatient.gender === "ชาย" ? "bg-blue-600" : "bg-pink-500"
+                                className={`absolute -bottom-1 -right-1 flex size-4 items-center justify-center rounded-full text-[9px] font-bold text-white border-2 border-card ${selectedPatient.gender === "ชาย" ? "bg-blue-600" : "bg-pink-500"
                                     }`}
                                 title={`เพศ${selectedPatient.gender}`}
                             >
@@ -180,21 +180,21 @@ export function PatientSearchBanner({
 
                         <div className="min-w-0">
                             <div className="flex flex-wrap items-center gap-2">
-                                <h2 className="text-sm font-bold text-slate-800 tracking-tight truncate">
+                                <h2 className="text-sm font-bold text-foreground tracking-tight truncate">
                                     {selectedPatient.fullName}
                                 </h2>
-                                <span className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[11px] font-medium text-slate-600">
+                                <span className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium text-foreground/80">
                                     อายุ {selectedPatient.age} ปี ({selectedPatient.gender})
                                 </span>
-                                <span className="rounded-md bg-blue-100/70 px-2 py-0.5 text-[10px] font-semibold text-blue-700 border border-blue-200/60">
+                                <span className="rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary border border-primary/20">
                                     {selectedPatient.department}
                                 </span>
                                 {selectedPatient.doctor && (
                                     <span
-                                        className="flex items-center gap-1 rounded-md bg-teal-50 border border-teal-200/90 px-2 py-0.5 text-[11px] font-semibold text-teal-800 shadow-2xs"
+                                        className="flex items-center gap-1 rounded-md bg-primary/10 border border-primary/20 px-2 py-0.5 text-[11px] font-semibold text-primary shadow-2xs"
                                         title={`แพทย์ผู้ตรวจ: ${selectedPatient.doctor}`}
                                     >
-                                        <Stethoscope size={12} className="text-teal-600 shrink-0" />
+                                        <Stethoscope size={12} className="text-primary shrink-0" />
                                         <span>แพทย์: {selectedPatient.doctor}</span>
                                     </span>
                                 )}
@@ -205,55 +205,54 @@ export function PatientSearchBanner({
                                 <button
                                     type="button"
                                     onClick={() => handleCopy(selectedPatient.hn, "hn")}
-                                    className="group flex items-center gap-1 rounded border border-slate-200/80 bg-white/90 px-1.5 py-0.5 text-[11px] font-medium text-slate-700 hover:border-blue-300 hover:bg-blue-50/50 transition cursor-pointer"
+                                    className="group flex items-center gap-1 rounded border border-border bg-card px-1.5 py-0.5 text-[11px] font-medium text-foreground hover:border-primary/40 hover:bg-muted transition cursor-pointer"
                                     title="คลิกเพื่อคัดลอก HN"
                                 >
-                                    <span className="text-[10px] font-semibold text-blue-600">HN:</span>
+                                    <span className="text-[10px] font-semibold text-primary">HN:</span>
                                     <span className="font-mono">{selectedPatient.hn}</span>
                                     {copiedField === "hn" ? (
-                                        <Check size={10} className="text-emerald-600" />
+                                        <Check size={10} className="text-emerald-500" />
                                     ) : (
-                                        <Copy size={9} className="opacity-40 group-hover:opacity-100 text-slate-500" />
+                                        <Copy size={9} className="opacity-40 group-hover:opacity-100 text-muted-foreground" />
                                     )}
                                 </button>
 
                                 <button
                                     type="button"
                                     onClick={() => handleCopy(selectedPatient.an, "an")}
-                                    className="group flex items-center gap-1 rounded border border-slate-200/80 bg-white/90 px-1.5 py-0.5 text-[11px] font-medium text-slate-700 hover:border-indigo-300 hover:bg-indigo-50/50 transition cursor-pointer"
+                                    className="group flex items-center gap-1 rounded border border-border bg-card px-1.5 py-0.5 text-[11px] font-medium text-foreground hover:border-primary/40 hover:bg-muted transition cursor-pointer"
                                     title="คลิกเพื่อคัดลอก AN"
                                 >
-                                    <span className="text-[10px] font-semibold text-indigo-600">AN:</span>
+                                    <span className="text-[10px] font-semibold text-primary">AN:</span>
                                     <span className="font-mono">{selectedPatient.an}</span>
                                     {copiedField === "an" ? (
-                                        <Check size={10} className="text-emerald-600" />
+                                        <Check size={10} className="text-emerald-500" />
                                     ) : (
-                                        <Copy size={9} className="opacity-40 group-hover:opacity-100 text-slate-500" />
+                                        <Copy size={9} className="opacity-40 group-hover:opacity-100 text-muted-foreground" />
                                     )}
                                 </button>
 
                                 <button
                                     type="button"
                                     onClick={() => handleCopy(selectedPatient.citizenId, "cid")}
-                                    className="group flex items-center gap-1 rounded border border-slate-200/80 bg-white/90 px-1.5 py-0.5 text-[11px] font-medium text-slate-700 hover:border-purple-300 hover:bg-purple-50/50 transition cursor-pointer"
+                                    className="group flex items-center gap-1 rounded border border-border bg-card px-1.5 py-0.5 text-[11px] font-medium text-foreground hover:border-primary/40 hover:bg-muted transition cursor-pointer"
                                     title="คลิกเพื่อคัดลอกเลขบัตรประชาชน"
                                 >
-                                    <span className="text-[10px] font-semibold text-purple-600">เลขบัตร:</span>
+                                    <span className="text-[10px] font-semibold text-primary">เลขบัตร:</span>
                                     <span className="font-mono">{selectedPatient.citizenId}</span>
                                     {copiedField === "cid" ? (
-                                        <Check size={10} className="text-emerald-600" />
+                                        <Check size={10} className="text-emerald-500" />
                                     ) : (
-                                        <Copy size={9} className="opacity-40 group-hover:opacity-100 text-slate-500" />
+                                        <Copy size={9} className="opacity-40 group-hover:opacity-100 text-muted-foreground" />
                                     )}
                                 </button>
 
-                                <span className="rounded bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700">
-                                    สิทธิ :
-                                    {selectedPatient.rights}
+                                <span className="rounded bg-primary/10 border border-primary/20 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+                                    สิทธิ : {selectedPatient.rights}
                                 </span>
 
                                 {selectedPatient.date && (
-                                    <span className="rounded bg-slate-100 border border-slate-200 px-1.5 py-0.5 text-[10px] font-medium text-slate-700">
+                                    <span className="rounded bg-muted border border-border px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
                                         วันที่ : {selectedPatient.isToday ? "วันนี้" : selectedPatient.isYesterday ? "เมื่อวาน" : dayjs(selectedPatient.date).format("D MMM BBBB")}
                                     </span>
                                 )}
@@ -286,30 +285,30 @@ export function PatientSearchBanner({
                                             </span>
                                         </button>
 
-                                        {/* Drug Allergy Popover Card (แบบกระชับ มีระดับความรุนแรงชัดเจน ไม่กวนสายตา) */}
+                                        {/* Drug Allergy Popover Card */}
                                         {isAllergyModalOpen && (
-                                            <div className="absolute top-full left-0 mt-1.5 z-50 w-80 sm:w-96 max-w-[calc(100vw-2rem)] rounded-xl border border-rose-200 bg-white p-3 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+                                            <div className="absolute top-full left-0 mt-1.5 z-50 w-80 sm:w-96 max-w-[calc(100vw-2rem)] rounded-xl border border-rose-500/30 bg-popover p-3 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
                                                 {/* Header */}
-                                                <div className="flex items-center justify-between border-b border-rose-100 pb-2 mb-2">
-                                                    <div className="flex items-center gap-1.5 text-rose-700">
-                                                        <ShieldAlert size={16} className="text-rose-600" />
-                                                        <h4 className="text-xs font-bold text-slate-800">
+                                                <div className="flex items-center justify-between border-b border-rose-500/20 pb-2 mb-2">
+                                                    <div className="flex items-center gap-1.5 text-rose-600 dark:text-rose-400">
+                                                        <ShieldAlert size={16} className="text-rose-500" />
+                                                        <h4 className="text-xs font-bold text-foreground">
                                                             ประวัติการแพ้ยา (Drug Allergy Profile)
                                                         </h4>
                                                     </div>
                                                     <button
                                                         type="button"
                                                         onClick={() => setIsAllergyModalOpen(false)}
-                                                        className="cursor-pointer rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+                                                        className="cursor-pointer rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
                                                     >
                                                         ✕
                                                     </button>
                                                 </div>
 
                                                 {/* Patient Info Sub-header */}
-                                                <div className="mb-2.5 flex items-center justify-between rounded-lg bg-rose-50/60 px-2.5 py-1.5 text-[10px] text-rose-800 border border-rose-100">
+                                                <div className="mb-2.5 flex items-center justify-between rounded-lg bg-rose-500/10 px-2.5 py-1.5 text-[10px] text-rose-600 dark:text-rose-300 border border-rose-500/20">
                                                     <span className="font-semibold">{selectedPatient.fullName} (HN: {selectedPatient.hn})</span>
-                                                    <span className="text-[9px] text-rose-600">ข้อควรระวังพิเศษทางคลินิก</span>
+                                                    <span className="text-[9px] text-rose-500">ข้อควรระวังพิเศษทางคลินิก</span>
                                                 </div>
 
                                                 {/* Allergies List */}
@@ -321,21 +320,21 @@ export function PatientSearchBanner({
                                                             const badgeColor = isLifeThreatening
                                                                 ? "bg-red-600 text-white"
                                                                 : isSevere
-                                                                    ? "bg-rose-100 text-rose-800 border border-rose-300"
-                                                                    : "bg-amber-100 text-amber-800 border border-amber-300";
+                                                                    ? "bg-rose-500/20 text-rose-600 dark:text-rose-300 border border-rose-500/30"
+                                                                    : "bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/30";
 
                                                             return (
                                                                 <div
                                                                     key={idx}
-                                                                    className="rounded-lg border border-slate-200/80 bg-slate-50/40 p-2 text-[10px] transition hover:bg-rose-50/30"
+                                                                    className="rounded-lg border border-border bg-muted/40 p-2 text-[10px] transition hover:bg-rose-500/10"
                                                                 >
                                                                     <div className="flex items-start justify-between gap-1.5">
                                                                         <div className="min-w-0">
-                                                                            <p className="font-bold text-slate-900 flex items-center gap-1">
-                                                                                <Pill size={11} className="text-rose-600 shrink-0" />
+                                                                            <p className="font-bold text-foreground flex items-center gap-1">
+                                                                                <Pill size={11} className="text-rose-500 shrink-0" />
                                                                                 <span>{item.drug}</span>
                                                                             </p>
-                                                                            <p className="text-[9px] text-slate-500">{item.group}</p>
+                                                                            <p className="text-[9px] text-muted-foreground">{item.group}</p>
                                                                         </div>
 
                                                                         <span className={`rounded px-1.5 py-0.5 text-[8px] font-bold shrink-0 ${badgeColor}`}>
@@ -343,12 +342,12 @@ export function PatientSearchBanner({
                                                                         </span>
                                                                     </div>
 
-                                                                    <div className="mt-1.5 rounded bg-white p-1.5 border border-slate-100 text-slate-700">
-                                                                        <p className="font-semibold text-rose-700 text-[9px] mb-0.5">อาการที่แพ้ / อาการแสดง:</p>
-                                                                        <p className="text-slate-600 leading-relaxed text-[10px]">{item.reaction}</p>
+                                                                    <div className="mt-1.5 rounded bg-card p-1.5 border border-border text-foreground">
+                                                                        <p className="font-semibold text-rose-600 dark:text-rose-400 text-[9px] mb-0.5">อาการที่แพ้ / อาการแสดง:</p>
+                                                                        <p className="text-muted-foreground leading-relaxed text-[10px]">{item.reaction}</p>
                                                                     </div>
 
-                                                                    <div className="mt-1 flex items-center justify-between text-[8px] text-slate-400">
+                                                                    <div className="mt-1 flex items-center justify-between text-[8px] text-muted-foreground">
                                                                         <span>บันทึกเมื่อ: {item.date}</span>
                                                                         <span>{item.hospital}</span>
                                                                     </div>
@@ -356,27 +355,12 @@ export function PatientSearchBanner({
                                                             );
                                                         })
                                                     ) : (
-                                                        <div className="rounded-lg border border-slate-200 p-2.5 text-[11px] text-slate-700 bg-rose-50/20">
-                                                            <p className="font-bold text-rose-700 mb-1">ยาที่ระบุในบันทึก:</p>
-                                                            <p>{selectedPatient.allergies}</p>
+                                                        <div className="rounded-lg border border-border p-2.5 text-[11px] text-foreground bg-rose-500/10">
+                                                            <p className="font-bold text-rose-600 dark:text-rose-400 mb-1">ยาที่ระบุในบันทึก:</p>
+                                                            <p className="text-muted-foreground">{selectedPatient.allergies}</p>
                                                         </div>
                                                     )}
                                                 </div>
-
-                                                {/* Footer */}
-                                                {/* <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[9px] text-slate-400">
-                                                    <span className="flex items-center gap-1 text-slate-500">
-                                                        <Info size={10} />
-                                                        <span>ระบบจะแจ้งเตือนเมื่อสั่งยาข้ามกลุ่ม</span>
-                                                    </span>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setIsAllergyModalOpen(false)}
-                                                        className="cursor-pointer text-blue-600 hover:underline font-semibold"
-                                                    >
-                                                        ปิดหน้าต่าง
-                                                    </button>
-                                                </div> */}
                                             </div>
                                         )}
                                     </div>
@@ -395,7 +379,7 @@ export function PatientSearchBanner({
                                 setIsEditingMode(true);
                                 setTimeout(() => inputRef.current?.focus(), 50);
                             }}
-                            className="cursor-pointer h-7.5 gap-1.5 rounded-lg border-blue-200 bg-white px-2.5 text-xs font-semibold text-blue-700 hover:bg-blue-50 hover:text-blue-800 shadow-2xs"
+                            className="cursor-pointer h-7.5 gap-1.5 rounded-lg border-primary/30 bg-card px-2.5 text-xs font-semibold text-primary hover:bg-primary/10 shadow-2xs"
                         >
                             <Search size={13} />
                             <span>ค้นหาผู้ป่วย</span>
@@ -404,7 +388,7 @@ export function PatientSearchBanner({
                         <button
                             type="button"
                             onClick={() => onSelectPatient(null)}
-                            className="cursor-pointer flex size-7 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-red-500 transition"
+                            className="cursor-pointer flex size-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-destructive transition"
                             title="ล้างข้อมูลผู้ป่วย"
                         >
                             <X size={14} />
@@ -413,11 +397,11 @@ export function PatientSearchBanner({
                 </div>
             ) : (
                 /* Search Input Bar Mode */
-                <div className="relative rounded-xl border border-[#d3d9e8] bg-white p-2 sm:p-2.5 shadow-2xs transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10">
+                <div className="relative rounded-xl border border-border bg-card p-2 sm:p-2.5 shadow-2xs transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10">
                     <div className="flex flex-wrap items-center gap-2">
                         {/* Search Input Box */}
                         <div className="relative flex-1 min-w-[240px]">
-                            <Search className="absolute left-3 top-2.5 size-4 text-slate-400" />
+                            <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
                             <input
                                 ref={inputRef}
                                 type="text"
@@ -428,7 +412,7 @@ export function PatientSearchBanner({
                                 }}
                                 onFocus={() => setIsDropdownOpen(true)}
                                 placeholder="ค้นหาผู้ป่วยด้วย HN, AN, เลขบัตร ปชช, ชื่อ-สกุล หรือชื่อแพทย์ผู้ตรวจ..."
-                                className="h-9 w-full rounded-lg bg-slate-50/80 pl-9 pr-8 text-xs sm:text-sm text-slate-800 placeholder:text-slate-400 outline-none transition focus:bg-white"
+                                className="h-9 w-full rounded-lg bg-muted/40 pl-9 pr-8 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground outline-none transition focus:bg-card border border-transparent focus:border-border"
                             />
                             {searchQuery && (
                                 <button
@@ -439,7 +423,7 @@ export function PatientSearchBanner({
                                             onSelectPatient(null);
                                         }
                                     }}
-                                    className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 cursor-pointer"
+                                    className="absolute right-2.5 top-2.5 text-muted-foreground hover:text-foreground cursor-pointer"
                                 >
                                     <X size={14} />
                                 </button>
@@ -447,13 +431,13 @@ export function PatientSearchBanner({
                         </div>
 
                         {/* Search Tag Badges */}
-                        <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-medium text-slate-400 shrink-0">
+                        <div className="hidden sm:flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground shrink-0">
                             <span>ค้นหาจาก:</span>
-                            <span className="rounded bg-blue-50 border border-blue-100 px-1.5 py-0.5 text-[10px] font-bold text-blue-600">HN</span>
-                            <span className="rounded bg-indigo-50 border border-indigo-100 px-1.5 py-0.5 text-[10px] font-bold text-indigo-600">AN</span>
-                            <span className="rounded bg-purple-50 border border-purple-100 px-1.5 py-0.5 text-[10px] font-bold text-purple-600">เลขบัตร ปชช</span>
-                            <span className="rounded bg-emerald-50 border border-emerald-100 px-1.5 py-0.5 text-[10px] font-bold text-emerald-600">ชื่อ-สกุล</span>
-                            <span className="rounded bg-teal-50 border border-teal-100 px-1.5 py-0.5 text-[10px] font-bold text-teal-700">แพทย์ผู้ตรวจ</span>
+                            <span className="rounded bg-primary/10 border border-primary/20 px-1.5 py-0.5 text-[10px] font-bold text-primary">HN</span>
+                            <span className="rounded bg-primary/10 border border-primary/20 px-1.5 py-0.5 text-[10px] font-bold text-primary">AN</span>
+                            <span className="rounded bg-primary/10 border border-primary/20 px-1.5 py-0.5 text-[10px] font-bold text-primary">เลขบัตร ปชช</span>
+                            <span className="rounded bg-primary/10 border border-primary/20 px-1.5 py-0.5 text-[10px] font-bold text-primary">ชื่อ-สกุล</span>
+                            <span className="rounded bg-primary/10 border border-primary/20 px-1.5 py-0.5 text-[10px] font-bold text-primary">แพทย์ผู้ตรวจ</span>
                         </div>
 
                         {/* Quick filter chips */}
@@ -467,8 +451,8 @@ export function PatientSearchBanner({
                                         setIsDropdownOpen(true);
                                     }}
                                     className={`cursor-pointer rounded-lg px-2.5 py-1 text-xs font-semibold transition ${filterCategory === cat
-                                        ? "bg-primary text-white shadow-2xs"
-                                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                                        ? "bg-primary text-primary-foreground shadow-2xs font-bold"
+                                        : "bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80"
                                         }`}
                                 >
                                     {cat}
@@ -482,7 +466,7 @@ export function PatientSearchBanner({
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => setIsEditingMode(false)}
-                                className="cursor-pointer h-8 text-xs text-slate-500 hover:text-slate-700 shrink-0"
+                                className="cursor-pointer h-8 text-xs text-muted-foreground hover:text-foreground shrink-0"
                             >
                                 ยกเลิก
                             </Button>
@@ -491,14 +475,14 @@ export function PatientSearchBanner({
 
                     {/* Autocomplete Dropdown */}
                     {isDropdownOpen && (
-                        <div className="absolute left-0 right-0 top-full mt-1.5 z-50 max-h-[380px] overflow-y-auto rounded-xl border border-slate-200 bg-white p-2 shadow-xl ring-1 ring-black/5 scrollbar-thin scrollbar-thumb-slate-200">
-                            <div className="flex items-center justify-between px-2 py-1 text-xs font-semibold text-slate-500 border-b border-slate-100 mb-1.5">
+                        <div className="absolute left-0 right-0 top-full mt-1.5 z-50 max-h-[380px] overflow-y-auto rounded-xl border border-border bg-popover p-2 shadow-2xl ring-1 ring-black/10 scrollbar-thin">
+                            <div className="flex items-center justify-between px-2 py-1 text-xs font-semibold text-muted-foreground border-b border-border/80 mb-1.5">
                                 <span>
                                     {searchQuery
                                         ? `ผลการค้นหา (${filteredPatients.length} รายการ)`
                                         : `รายชื่อผู้ป่วยล่าสุด (${filteredPatients.length} รายการ)`}
                                 </span>
-                                <span className="text-[10px] text-slate-400 font-normal">คลิกเลือกเพื่อบันทึกข้อมูล</span>
+                                <span className="text-[10px] text-muted-foreground font-normal">คลิกเลือกเพื่อบันทึกข้อมูล</span>
                             </div>
 
                             {filteredPatients.length > 0 ? (
@@ -512,15 +496,15 @@ export function PatientSearchBanner({
                                                 key={patient.id}
                                                 onClick={() => handleSelect(patient)}
                                                 className={`group relative flex cursor-pointer items-center justify-between rounded-xl p-2.5 transition ${isCurrent
-                                                    ? "bg-primary/[0.08] border border-primary/30"
-                                                    : "hover:bg-slate-50 border border-transparent hover:border-slate-200"
+                                                    ? "bg-primary/[0.12] border border-primary/40 shadow-xs"
+                                                    : "hover:bg-muted/60 border border-transparent hover:border-border"
                                                     }`}
                                             >
                                                 <div className="flex items-center gap-3 min-w-0 flex-1">
                                                     <div
                                                         className={`flex size-9 shrink-0 items-center justify-center rounded-xl font-bold text-xs ${patient.gender === "ชาย"
-                                                            ? "bg-blue-100 text-blue-700"
-                                                            : "bg-pink-100 text-pink-700"
+                                                            ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                                                            : "bg-pink-500/10 text-pink-600 dark:text-pink-400"
                                                             }`}
                                                     >
                                                         {patient.gender === "ชาย" ? "♂" : "♀"}
@@ -528,18 +512,18 @@ export function PatientSearchBanner({
 
                                                     <div className="min-w-0 flex-1">
                                                         <div className="flex flex-wrap items-center gap-1.5">
-                                                            <span className="font-bold text-xs sm:text-sm text-slate-800 group-hover:text-primary transition">
+                                                            <span className="font-bold text-xs sm:text-sm text-foreground group-hover:text-primary transition">
                                                                 {patient.fullName}
                                                             </span>
-                                                            <span className="text-xs text-slate-500">
+                                                            <span className="text-xs text-muted-foreground">
                                                                 (อายุ {patient.age} ปี)
                                                             </span>
-                                                            <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-600">
+                                                            <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
                                                                 {patient.department}
                                                             </span>
                                                             {patient.doctor && (
-                                                                <span className="flex items-center gap-1 rounded bg-teal-50 border border-teal-200/90 px-1.5 py-0.5 text-[10px] font-semibold text-teal-800">
-                                                                    <Stethoscope size={11} className="text-teal-600 shrink-0" />
+                                                                <span className="flex items-center gap-1 rounded bg-primary/10 border border-primary/20 px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+                                                                    <Stethoscope size={11} className="text-primary shrink-0" />
                                                                     <span>{patient.doctor}</span>
                                                                 </span>
                                                             )}
@@ -553,24 +537,24 @@ export function PatientSearchBanner({
                                                         </div>
 
                                                         {/* Details Row */}
-                                                        <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-slate-500">
-                                                            <span className={`rounded px-1.5 py-0.2 text-[10px] font-semibold ${patient.isToday ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : patient.isYesterday ? "bg-amber-50 text-amber-700 border border-amber-200" : "bg-slate-100 text-slate-600"}`}>
+                                                        <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
+                                                            <span className={`rounded px-1.5 py-0.2 text-[10px] font-semibold ${patient.isToday ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" : patient.isYesterday ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20" : "bg-muted text-muted-foreground"}`}>
                                                                 {patient.isToday ? "วันนี้" : patient.isYesterday ? "เมื่อวาน" : (patient.date ? dayjs(patient.date).format("D MMM BBBB") : "-")}
                                                             </span>
                                                             <span>•</span>
                                                             <span>
-                                                                <strong className="text-blue-600">HN:</strong> {patient.hn}
+                                                                <strong className="text-primary">HN:</strong> {patient.hn}
                                                             </span>
                                                             <span>•</span>
                                                             <span>
-                                                                <strong className="text-indigo-600">AN:</strong> {patient.an}
+                                                                <strong className="text-primary">AN:</strong> {patient.an}
                                                             </span>
                                                             <span>•</span>
                                                             <span>
-                                                                <strong className="text-purple-600">บัตร ปชช:</strong> {patient.citizenId}
+                                                                <strong className="text-primary">บัตร ปชช:</strong> {patient.citizenId}
                                                             </span>
                                                             <span>•</span>
-                                                            <span className="text-emerald-600 font-medium">
+                                                            <span className="text-primary font-medium">
                                                                 {patient.rights}
                                                             </span>
                                                         </div>
@@ -579,7 +563,7 @@ export function PatientSearchBanner({
 
                                                 <div className="flex items-center gap-2 shrink-0 pl-2">
                                                     {patient.allergies && patient.allergies !== "ไม่มีประวัติแพ้ยา" && (
-                                                        <span className="hidden md:inline-flex rounded bg-rose-50 border border-rose-200 px-1.5 py-0.5 text-[10px] font-medium text-rose-700">
+                                                        <span className="hidden md:inline-flex rounded bg-rose-500/10 border border-rose-500/20 px-1.5 py-0.5 text-[10px] font-medium text-rose-600 dark:text-rose-400">
                                                             แพ้ยา
                                                         </span>
                                                     )}

@@ -40,13 +40,13 @@ export function DataTable({ columns, data, searchPlaceholder, onRowSelect, selec
           value={globalFilter}
           onChange={(event) => setGlobalFilter(event.target.value)}
           placeholder={searchPlaceholder}
-          className="h-9 sm:h-10 rounded-lg border-[#e4e8f1] bg-white pl-9 pr-3 text-xs sm:text-sm"
+          className="h-9 sm:h-10 rounded-lg border-input bg-card pl-9 pr-3 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground"
         />
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-[#edf0f5] bg-card">
+      <div className="overflow-x-auto rounded-lg border border-border bg-card">
         <Table>
-          <TableHeader className="bg-muted/70 [&_tr]:border-[#edf0f5]">
+          <TableHeader className="bg-muted/70 [&_tr]:border-border">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="hover:bg-transparent">
                 {headerGroup.headers.map((header) => (
@@ -68,7 +68,7 @@ export function DataTable({ columns, data, searchPlaceholder, onRowSelect, selec
                   <TableRow
                     key={row.id}
                     onClick={() => onRowSelect?.(row.original)}
-                    className={`border-[#edf0f5] ${onRowSelect ? "cursor-pointer hover:bg-primary/[0.035]" : ""} ${isSelected ? "bg-primary/[0.045] hover:bg-primary/[0.06]" : ""}`}
+                    className={`border-border ${onRowSelect ? "cursor-pointer hover:bg-primary/[0.04]" : ""} ${isSelected ? "bg-primary/[0.08] hover:bg-primary/[0.1]" : ""}`}
                   >
                     {row.getVisibleCells().map((cell, index) => (
                       <TableCell key={cell.id} className={`px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm text-foreground whitespace-nowrap ${isSelected && index === 0 ? "border-l-[3px] border-l-primary pl-[11px] sm:pl-[13px]" : ""}`}>

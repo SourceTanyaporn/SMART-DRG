@@ -45,15 +45,15 @@ const Input = React.forwardRef(function Input(
   }[size] || "px-3 py-2"
 
   const baseInputClasses = cn(
-    "w-full min-w-0 font-semibold text-slate-800 placeholder:text-slate-300 outline-none transition disabled:cursor-not-allowed disabled:opacity-50",
+    "w-full min-w-0 font-semibold text-foreground placeholder:text-muted-foreground/50 outline-none transition disabled:cursor-not-allowed disabled:opacity-50",
     sizeClasses,
     paddingClasses,
     !isWrapped && [
-      "rounded-lg border bg-white shadow-2xs",
+      "rounded-lg border bg-card shadow-2xs",
       error
         ? "border-destructive focus:border-destructive focus:ring-2 focus:ring-destructive/20"
-        : "border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100",
-      disabled && "bg-slate-50 text-slate-400",
+        : "border-input focus:border-primary focus:ring-2 focus:ring-primary/20",
+      disabled && "bg-muted text-muted-foreground",
     ],
     isWrapped && "bg-transparent border-0 focus:ring-0 shadow-none",
     className
@@ -79,17 +79,17 @@ const Input = React.forwardRef(function Input(
     <div
       data-slot="input-wrapper"
       className={cn(
-        "relative flex items-center rounded-lg border bg-white shadow-2xs transition overflow-hidden",
+        "relative flex items-center rounded-lg border bg-card shadow-2xs transition overflow-hidden",
         sizeClasses,
         error
           ? "border-destructive focus-within:border-destructive focus-within:ring-2 focus-within:ring-destructive/20"
-          : "border-slate-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100",
-        disabled && "bg-slate-50 text-slate-400 cursor-not-allowed",
+          : "border-input focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20",
+        disabled && "bg-muted text-muted-foreground cursor-not-allowed",
         wrapperClassName
       )}
     >
       {prefix && (
-        <span className="pointer-events-none absolute left-2.5 flex items-center justify-center text-slate-400 shrink-0 select-none">
+        <span className="pointer-events-none absolute left-2.5 flex items-center justify-center text-muted-foreground shrink-0 select-none">
           {prefix}
         </span>
       )}
@@ -97,13 +97,13 @@ const Input = React.forwardRef(function Input(
       {inputElement}
 
       {suffix && (
-        <span className="pointer-events-none absolute right-2.5 flex items-center justify-center text-slate-400 shrink-0 select-none">
+        <span className="pointer-events-none absolute right-2.5 flex items-center justify-center text-muted-foreground shrink-0 select-none">
           {suffix}
         </span>
       )}
 
       {unit && (
-        <span className="shrink-0 bg-slate-50 px-2 py-1.5 text-[10px] font-semibold text-slate-400 border-l border-slate-100 select-none h-full flex items-center">
+        <span className="shrink-0 bg-muted px-2 py-1.5 text-[10px] font-semibold text-muted-foreground border-l border-border select-none h-full flex items-center">
           {unit}
         </span>
       )}
@@ -158,12 +158,12 @@ const DualInput = React.forwardRef(function DualInput(
       ref={ref}
       data-slot="dual-input-wrapper"
       className={cn(
-        "relative flex items-center rounded-lg border bg-white shadow-2xs transition overflow-hidden",
+        "relative flex items-center rounded-lg border bg-card shadow-2xs transition overflow-hidden",
         sizeClasses,
         error
           ? "border-destructive focus-within:border-destructive focus-within:ring-2 focus-within:ring-destructive/20"
-          : "border-slate-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100",
-        disabled && "bg-slate-50 text-slate-400 cursor-not-allowed",
+          : "border-input focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20",
+        disabled && "bg-muted text-muted-foreground cursor-not-allowed",
         wrapperClassName || (!label && !badge && className)
       )}
       {...props}
@@ -174,10 +174,10 @@ const DualInput = React.forwardRef(function DualInput(
         value={value1 ?? ""}
         onChange={(e) => onChange1?.(e.target.value, e)}
         placeholder={placeholder1}
-        className="w-full min-w-0 bg-transparent px-2 py-1.5 font-semibold text-slate-800 placeholder:text-slate-300 outline-none text-center disabled:cursor-not-allowed"
+        className="w-full min-w-0 bg-transparent px-2 py-1.5 font-semibold text-foreground placeholder:text-muted-foreground/40 outline-none text-center disabled:cursor-not-allowed"
       />
 
-      <span className="shrink-0 text-xs font-bold text-slate-300 px-0.5 select-none">
+      <span className="shrink-0 text-xs font-bold text-muted-foreground/50 px-0.5 select-none">
         {separator}
       </span>
 
@@ -187,11 +187,11 @@ const DualInput = React.forwardRef(function DualInput(
         value={value2 ?? ""}
         onChange={(e) => onChange2?.(e.target.value, e)}
         placeholder={placeholder2}
-        className="w-full min-w-0 bg-transparent px-2 py-1.5 font-semibold text-slate-800 placeholder:text-slate-300 outline-none text-center disabled:cursor-not-allowed"
+        className="w-full min-w-0 bg-transparent px-2 py-1.5 font-semibold text-foreground placeholder:text-muted-foreground/40 outline-none text-center disabled:cursor-not-allowed"
       />
 
       {unit && (
-        <span className="shrink-0 bg-slate-50 px-2 py-1.5 text-[10px] font-semibold text-slate-400 border-l border-slate-100 select-none h-full flex items-center">
+        <span className="shrink-0 bg-muted px-2 py-1.5 text-[10px] font-semibold text-muted-foreground border-l border-border select-none h-full flex items-center">
           {unit}
         </span>
       )}
@@ -207,7 +207,7 @@ const DualInput = React.forwardRef(function DualInput(
       {(label || badge) && (
         <div className="flex items-center justify-between">
           {label && (
-            <label className="text-[11px] font-semibold text-slate-700 select-none">
+            <label className="text-[11px] font-semibold text-foreground/90 select-none">
               {label}
               {required && <span className="text-destructive ml-0.5">*</span>}
             </label>
@@ -225,7 +225,7 @@ const DualInput = React.forwardRef(function DualInput(
       )}
 
       {helperText && !error && (
-        <p className="text-[10px] text-slate-400">{helperText}</p>
+        <p className="text-[10px] text-muted-foreground">{helperText}</p>
       )}
     </div>
   )
@@ -262,7 +262,7 @@ const InputField = React.forwardRef(function InputField(
       {(label || badge) && (
         <div className="flex items-center justify-between">
           {label && (
-            <label className="text-[11px] font-semibold text-slate-700 select-none">
+            <label className="text-[11px] font-semibold text-foreground/90 select-none">
               {label}
               {required && <span className="text-destructive ml-0.5">*</span>}
             </label>
@@ -286,7 +286,7 @@ const InputField = React.forwardRef(function InputField(
       )}
 
       {helperText && !error && (
-        <p className="text-[10px] text-slate-400">{helperText}</p>
+        <p className="text-[10px] text-muted-foreground">{helperText}</p>
       )}
     </div>
   )

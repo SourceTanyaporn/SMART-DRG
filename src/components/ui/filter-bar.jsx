@@ -90,7 +90,7 @@ export function FilterBar({
     <form
       onSubmit={handleSearch}
       className={cn(
-        "rounded-xl border border-[#e4e8f1] bg-slate-50/70 p-3 sm:p-3.5",
+        "rounded-xl border border-border bg-muted/40 p-3 sm:p-3.5",
         className
       )}
     >
@@ -123,18 +123,18 @@ export function FilterBar({
                   <select
                     value={val}
                     onChange={(e) => handleFieldChange(field.name, e.target.value)}
-                    className="h-9 w-full appearance-none rounded-lg border border-[#e4e8f1] bg-white pl-2.5 pr-8 text-xs font-semibold text-slate-800 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition cursor-pointer"
+                    className="h-9 w-full appearance-none rounded-lg border border-input bg-card pl-2.5 pr-8 text-xs font-semibold text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition cursor-pointer"
                   >
                     {field.placeholder && (
-                      <option value="">{field.placeholder}</option>
+                      <option value="" className="bg-popover text-muted-foreground">{field.placeholder}</option>
                     )}
                     {field.options?.map((opt) => (
-                      <option key={opt.value} value={opt.value}>
+                      <option key={opt.value} value={opt.value} className="bg-popover text-foreground">
                         {opt.label}
                       </option>
                     ))}
                   </select>
-                  <ChevronDownIcon className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-slate-400" />
+                  <ChevronDownIcon className="pointer-events-none absolute right-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
                 </div>
               )}
 
@@ -147,7 +147,7 @@ export function FilterBar({
                     value={val}
                     onChange={(e) => handleFieldChange(field.name, e.target.value)}
                     prefix={field.prefix || <SearchIcon className="size-3.5 text-muted-foreground" />}
-                    className="h-9 rounded-lg border-[#e4e8f1] bg-white text-xs font-semibold text-slate-800"
+                    className="h-9 rounded-lg border-input bg-card text-xs font-semibold text-foreground"
                   />
                   {val && (
                     <button
@@ -185,7 +185,7 @@ export function FilterBar({
                 variant="outline"
                 size="sm"
                 onClick={handleClear}
-                className="h-9 px-2.5 text-xs text-slate-600 hover:bg-slate-100"
+                className="h-9 px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted"
                 title="ล้างตัวกรอง"
               >
                 <RotateCcwIcon className="mr-1 size-3.5" />

@@ -61,22 +61,22 @@ function NotebookCard({ item, isCreate = false, onClick }) {
           onClick={onClick}
           className="
           group flex min-h-[300px] w-full cursor-pointer flex-col items-center justify-center
-          rounded-xl border border-dashed border-[#78aaf5]
-          bg-[#edf5ff] px-5 transition-all
-          hover:border-[#1677ff] hover:bg-[#e7f1ff]
+          rounded-xl border border-dashed border-primary/40
+          bg-primary/5 px-5 transition-all
+          hover:border-primary hover:bg-primary/10
         "
         >
           <div
             className="
             mb-4 flex h-12 w-12 items-center justify-center
-            rounded-full bg-[#003b7a] text-white
-            transition-transform group-hover:scale-105
+            rounded-full bg-primary text-primary-foreground
+            transition-transform group-hover:scale-105 shadow-sm
           "
           >
             <Plus size={27} strokeWidth={1.8} />
           </div>
 
-          <span className="text-sm font-semibold text-[#003b7a]">
+          <span className="text-sm font-semibold text-primary">
             สร้าง Notebook ใหม่
           </span>
         </button>
@@ -89,17 +89,17 @@ function NotebookCard({ item, isCreate = false, onClick }) {
       to="/speech-to-text"
       search={{ hn: item.hn }}
       className="
-        flex min-h-[300px] flex-col rounded-xl border border-[#e5ebf4]
-        bg-white p-3 shadow-none transition-all
-        hover:border-[#b8d3f7] hover:shadow-sm
+        group flex min-h-[300px] flex-col rounded-xl border border-border
+        bg-card p-4 shadow-2xs transition-all
+        hover:border-primary/50 hover:shadow-md
       "
     >
       <div className="flex items-start justify-between">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#eef5ff]">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 border border-primary/20 text-primary">
           <FileText
-            size={22}
+            size={20}
             strokeWidth={1.8}
-            className="text-[#4b9cff]"
+            className="text-primary"
           />
         </div>
 
@@ -111,66 +111,67 @@ function NotebookCard({ item, isCreate = false, onClick }) {
           }}
           className="
             flex h-8 w-8 items-center justify-center rounded-full
-            bg-[#eef5ff] text-[#a8c5e9]
-            transition-colors hover:bg-[#dcecff] hover:text-[#1677ff]
+            bg-muted text-muted-foreground
+            transition-colors hover:bg-primary/15 hover:text-primary cursor-pointer
           "
         >
-          <MoreVertical size={18} />
+          <MoreVertical size={16} />
         </button>
       </div>
 
       {/* Content */}
-      <div className="mt-4 flex-1">
+      <div className="mt-3.5 flex-1">
         <h3
-          className="border-b border-[#c8dcf7] pb-1.5 text-[14px] font-bold text-[#0066cc] truncate"
+          className="border-b border-border pb-2 text-[13.5px] font-bold text-primary truncate"
           title={`HN: ${item.hn} - ${item.patient}`}
         >
-          <span className="text-[#1677ff]">HN: {item.hn}</span> - {item.patient}
+          <span>HN: {item.hn}</span> - <span className="text-foreground">{item.patient}</span>
         </h3>
 
         <div className="mt-2.5">
-          <div className="text-[11px] font-semibold text-slate-700">อาการสำคัญ:</div>
-          <p className="mt-1 line-clamp-3 text-[12px] leading-5 text-[#64748b]">
+          <div className="text-[11px] font-bold text-foreground">อาการสำคัญ:</div>
+          <p className="mt-1 line-clamp-3 text-[12px] leading-relaxed text-foreground/80">
             {item.chiefComplaint || item.description}
           </p>
         </div>
       </div>
 
-      <div className="mt-4 space-y-2 text-[11px] text-[#a0a8b6]">
-        <div className="mt-2 space-y-1 text-[11px] text-[#8a94a6]">
+      <div className="mt-4 space-y-2 text-[11px] text-muted-foreground">
+        <div className="mt-2 space-y-1 text-[11px]">
           <div className="flex items-center gap-1.5 truncate">
-            <Stethoscope size={12} className="text-teal-600 shrink-0" />
-            <span className="truncate">{item.doctor}</span>
+            <Stethoscope size={13} className="text-primary shrink-0" />
+            <span className="truncate text-foreground font-medium">{item.doctor}</span>
           </div>
 
-          <div className="flex items-center gap-1.5 truncate">
-            <Building2 size={12} className="text-slate-400 shrink-0" />
+          <div className="flex items-center gap-1.5 truncate text-muted-foreground">
+            <Building2 size={13} className="shrink-0" />
             <span className="truncate">{item.department}</span>
           </div>
         </div>
-        <div className="flex items-center justify-between">
+
+        <div className="flex items-center justify-between border-t border-border pt-2 text-[10.5px]">
           <div className="flex items-center gap-1.5">
-            <CalendarDays size={13} />
+            <CalendarDays size={13} className="text-muted-foreground" />
             <span>{item.date}</span>
           </div>
 
           <div>
             แหล่งข้อมูล{" "}
-            <span className="font-medium text-[#1677ff]">
+            <span className="font-semibold text-primary">
               {item.source}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between text-[10.5px]">
           <div className="flex items-center gap-1.5">
-            <Clock3 size={13} />
+            <Clock3 size={13} className="text-muted-foreground" />
             <span>{item.time}</span>
           </div>
 
           <div>
             จำนวนผู้สนทนา{" "}
-            <span className="font-medium text-[#1677ff]">
+            <span className="font-semibold text-primary">
               {item.users}
             </span>
           </div>
@@ -284,10 +285,10 @@ export function DashboardConversation() {
   };
 
   return (
-    <section className="min-h-full bg-white rounded-xl ">
+    <section className="min-h-full bg-card rounded-xl border border-border">
       <div className="p-5">
         {/* Filter Toolbar */}
-        <div className="mb-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 rounded-xl bg-white px-1 sm:px-2 py-2">
+        <div className="mb-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 rounded-xl bg-muted/40 border border-border p-3">
           {/* Search & Filter Form */}
           <form
             onSubmit={handleSearchSubmit}
@@ -295,7 +296,7 @@ export function DashboardConversation() {
           >
             {/* Start Date */}
             <div className="flex items-center gap-1.5">
-              <span className="text-xs text-slate-600 font-medium whitespace-nowrap">วันที่เริ่มต้น:</span>
+              <span className="text-xs text-foreground font-medium whitespace-nowrap">วันที่เริ่มต้น:</span>
               <div className="w-36 sm:w-40">
                 <DatePicker
                   value={startDate}
@@ -311,7 +312,7 @@ export function DashboardConversation() {
 
             {/* End Date */}
             <div className="flex items-center gap-1.5">
-              <span className="text-xs text-slate-600 font-medium whitespace-nowrap">วันที่สิ้นสุด:</span>
+              <span className="text-xs text-foreground font-medium whitespace-nowrap">วันที่สิ้นสุด:</span>
               <div className="w-36 sm:w-40">
                 <DatePicker
                   value={endDate}
@@ -333,11 +334,11 @@ export function DashboardConversation() {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="ค้นหา HN, AN, ชื่อผู้ป่วย หรืออื่นๆ..."
                 className="
-                  h-9 w-full rounded-md border border-[#e5eaf1]
-                  bg-white px-3 pr-8 text-xs text-gray-700
+                  h-9 w-full rounded-md border border-input
+                  bg-card px-3 pr-8 text-xs text-foreground
                   outline-none transition
-                  focus:border-[#1677ff]
-                  focus:ring-1 focus:ring-[#1677ff]/20
+                  focus:border-primary
+                  focus:ring-1 focus:ring-primary/20
                 "
               />
               {search && (
@@ -348,7 +349,7 @@ export function DashboardConversation() {
                     setAppliedSearch("");
                     setCurrentPage(1);
                   }}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
                   title="ล้างข้อความค้นหา"
                 >
                   <X size={14} />
@@ -361,8 +362,8 @@ export function DashboardConversation() {
               type="submit"
               className="
                 flex h-9 items-center gap-1.5 rounded-md
-                bg-[#1677ff] px-4 text-xs font-medium text-white
-                transition hover:bg-[#1565d8] cursor-pointer shadow-xs
+                bg-primary px-4 text-xs font-semibold text-primary-foreground
+                transition hover:bg-primary/90 active:scale-98 cursor-pointer shadow-xs
               "
             >
               <Search size={15} />
@@ -376,8 +377,8 @@ export function DashboardConversation() {
                 onClick={handleResetFilters}
                 className="
                   flex h-9 items-center gap-1.5 rounded-md
-                  border border-rose-200 bg-rose-50/70 px-3
-                  text-xs font-medium text-rose-600 hover:bg-rose-100/80 transition cursor-pointer
+                  border border-destructive/30 bg-destructive/10 px-3
+                  text-xs font-medium text-destructive hover:bg-destructive/20 transition cursor-pointer
                 "
                 title="ล้างตัวกรองทั้งหมด"
               >
@@ -387,9 +388,9 @@ export function DashboardConversation() {
             )}
 
             {/* Result Counter Badge */}
-            <div className="hidden sm:flex items-center gap-1 rounded-full bg-blue-50/80 border border-blue-200/60 px-3 py-1 text-xs text-blue-700 font-medium">
+            <div className="hidden sm:flex items-center gap-1 rounded-full bg-primary/10 border border-primary/20 px-3 py-1 text-xs text-primary font-medium">
               <span>พบ</span>
-              <span className="font-bold text-[#1677ff]">{totalItems}</span>
+              <span className="font-bold text-primary">{totalItems}</span>
               <span>รายการ</span>
             </div>
           </form>
@@ -397,23 +398,23 @@ export function DashboardConversation() {
           {/* View Mode Toggle */}
           <div className="flex items-center gap-2 shrink-0 self-end lg:self-center">
             {/* Mobile result badge */}
-            <div className="sm:hidden text-xs text-slate-500 font-medium mr-1">
-              พบ <span className="font-bold text-[#1677ff]">{totalItems}</span> รายการ
+            <div className="sm:hidden text-xs text-muted-foreground font-medium mr-1">
+              พบ <span className="font-bold text-primary">{totalItems}</span> รายการ
             </div>
 
-            <div className="flex h-9 overflow-hidden rounded-md bg-[#1677ff]">
+            <div className="flex h-9 overflow-hidden rounded-md border border-input bg-card p-0.5">
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
                 title="มุมมองแบบการ์ด (Grid)"
                 className={`
-                  flex w-9 items-center justify-center 
+                  flex w-8 items-center justify-center rounded-sm transition
                   ${viewMode === "grid"
-                    ? "bg-[#1677ff] text-white"
-                    : "bg-white text-[#1677ff] border border-[#1677ff] rounded-md"}
+                    ? "bg-primary text-primary-foreground font-semibold shadow-xs"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"}
                 `}
               >
-                <Grid2X2 size={17} />
+                <Grid2X2 size={16} />
               </button>
 
               <button
@@ -421,13 +422,13 @@ export function DashboardConversation() {
                 onClick={() => setViewMode("list")}
                 title="มุมมองแบบรายการ (List)"
                 className={`
-                  flex w-9 items-center justify-center 
+                  flex w-8 items-center justify-center rounded-sm transition
                   ${viewMode === "list"
-                    ? "bg-[#1677ff] text-white"
-                    : "bg-white text-[#1677ff] border border-[#1677ff] rounded-md"}
+                    ? "bg-primary text-primary-foreground font-semibold shadow-xs"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"}
                 `}
               >
-                <List size={18} />
+                <List size={16} />
               </button>
             </div>
           </div>
@@ -435,19 +436,19 @@ export function DashboardConversation() {
 
         {/* Empty State */}
         {totalItems === 0 && (
-          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 py-16 px-4 text-center my-4 bg-slate-50/40">
-            <div className="flex size-14 items-center justify-center rounded-full bg-slate-100 text-slate-400 mb-3">
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16 px-4 text-center my-4 bg-muted/20">
+            <div className="flex size-14 items-center justify-center rounded-full bg-muted text-muted-foreground mb-3">
               <FilterX size={26} />
             </div>
-            <h4 className="text-sm font-bold text-slate-700">ไม่พบข้อมูลที่ตรงกับเงื่อนไขการค้นหา</h4>
-            <p className="text-xs text-slate-500 mt-1 max-w-sm">
+            <h4 className="text-sm font-bold text-foreground">ไม่พบข้อมูลที่ตรงกับเงื่อนไขการค้นหา</h4>
+            <p className="text-xs text-muted-foreground mt-1 max-w-sm">
               กรุณาลองตรวจสอบคำค้นหา หรือกดปุ่ม &quot;ล้างตัวกรอง&quot; เพื่อดูข้อมูลทั้งหมด
             </p>
             {hasActiveFilters && (
               <button
                 type="button"
                 onClick={handleResetFilters}
-                className="mt-4 flex items-center gap-1.5 rounded-md bg-[#1677ff] px-4 py-2 text-xs font-medium text-white hover:bg-[#1565d8] transition cursor-pointer"
+                className="mt-4 flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:bg-primary/90 transition cursor-pointer shadow-xs"
               >
                 <RotateCcw size={13} />
                 <span>ล้างตัวกรองทั้งหมด</span>
@@ -462,7 +463,7 @@ export function DashboardConversation() {
             {viewMode === "grid" ? (
               <div
                 className="
-                  grid grid-cols-1 gap-7
+                  grid grid-cols-1 gap-6
                   sm:grid-cols-2
                   lg:grid-cols-3
                   xl:grid-cols-4
@@ -484,7 +485,7 @@ export function DashboardConversation() {
                 ))}
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {safeCurrentPage === 1 && (
                   <Link
                     to="/speech-to-text"
@@ -492,26 +493,26 @@ export function DashboardConversation() {
                     className="
                       group flex h-[72px] w-full cursor-pointer
                       items-center justify-center
-                      rounded-lg border border-dashed border-[#78aaf5]
-                      bg-[#edf5ff]
+                      rounded-lg border border-dashed border-primary/40
+                      bg-primary/5
                       transition-all
-                      hover:border-[#1677ff]
-                      hover:bg-[#e7f1ff]
+                      hover:border-primary
+                      hover:bg-primary/10
                     "
                   >
                     <div className="flex items-center gap-3">
                       <div
                         className="
                           flex h-9 w-9 items-center justify-center
-                          rounded-full bg-[#003b7a] text-white
+                          rounded-full bg-primary text-primary-foreground
                           transition-transform
-                          group-hover:scale-105
+                          group-hover:scale-105 shadow-sm
                         "
                       >
                         <Plus size={21} strokeWidth={1.8} />
                       </div>
 
-                      <span className="text-xs font-semibold text-[#003b7a]">
+                      <span className="text-xs font-semibold text-primary">
                         สร้าง Notebook ใหม่
                       </span>
                     </div>
@@ -526,10 +527,10 @@ export function DashboardConversation() {
                     className="
                       flex min-h-[68px] w-full cursor-pointer
                       items-center gap-4
-                      rounded-lg border border-[#e5ebf4]
-                      bg-white px-3 py-2
+                      rounded-lg border border-border
+                      bg-card px-3 py-2
                       transition-all
-                      hover:border-[#b8d3f7]
+                      hover:border-primary/50
                       hover:shadow-sm
                     "
                   >
@@ -538,41 +539,41 @@ export function DashboardConversation() {
                       className="
                         flex h-9 w-9 shrink-0
                         items-center justify-center
-                        rounded-lg bg-[#eef5ff]
+                        rounded-lg bg-primary/10
                       "
                     >
                       <FileText
                         size={20}
                         strokeWidth={1.8}
-                        className="text-[#4b9cff]"
+                        className="text-primary"
                       />
                     </div>
 
                     {/* HN & Name */}
                     <div className="w-[200px] shrink-0">
-                      <h3 className="text-xs font-bold text-[#0066cc] truncate">
+                      <h3 className="text-xs font-bold text-primary truncate">
                         HN: {item.hn}
                       </h3>
-                      <p className="text-[11px] font-medium text-slate-700 truncate">
+                      <p className="text-[11px] font-medium text-foreground truncate">
                         {item.patient}
                       </p>
                     </div>
 
                     {/* Chief Complaint / Description */}
                     <div className="min-w-0 flex-1">
-                      <p className="line-clamp-2 text-[11px] leading-4 text-[#737b8c]">
-                        <span className="font-semibold text-slate-700 mr-1">อาการสำคัญ:</span>
+                      <p className="line-clamp-2 text-[11px] leading-4 text-muted-foreground">
+                        <span className="font-semibold text-foreground mr-1">อาการสำคัญ:</span>
                         {item.chiefComplaint || item.description}
                       </p>
                     </div>
 
                     {/* Doctor & Department */}
-                    <div className="hidden sm:block w-[180px] shrink-0 space-y-1 text-[11px] text-[#8a94a6]">
+                    <div className="hidden sm:block w-[180px] shrink-0 space-y-1 text-[11px] text-muted-foreground">
                       <div className="flex items-center gap-1.5 truncate">
-                        <Stethoscope size={12} className="text-teal-600 shrink-0" />
-                        <span className="truncate">{item.doctor}</span>
+                        <Stethoscope size={12} className="text-primary shrink-0" />
+                        <span className="truncate text-foreground/80">{item.doctor}</span>
                       </div>
-                      <div className="flex items-center gap-1.5 truncate text-[10px] text-slate-500">
+                      <div className="flex items-center gap-1.5 truncate text-[10px] text-muted-foreground">
                         <Building2 size={11} className="shrink-0" />
                         <span className="truncate">{item.department}</span>
                       </div>
@@ -582,7 +583,7 @@ export function DashboardConversation() {
                     <div
                       className="
                         hidden w-[110px] shrink-0
-                        text-[10px] text-[#a0a8b6]
+                        text-[10px] text-muted-foreground
                         lg:block
                       "
                     >
@@ -601,20 +602,20 @@ export function DashboardConversation() {
                     <div
                       className="
                         hidden w-[90px] shrink-0
-                        text-[10px] text-[#a0a8b6]
+                        text-[10px] text-muted-foreground
                         md:block
                       "
                     >
                       <div>
                         แหล่งข้อมูล{" "}
-                        <span className="font-medium text-[#1677ff]">
+                        <span className="font-medium text-primary">
                           {item.source}
                         </span>
                       </div>
 
                       <div className="mt-1">
                         จำนวนผู้สนทนา{" "}
-                        <span className="font-medium text-[#1677ff]">
+                        <span className="font-medium text-primary">
                           {item.users}
                         </span>
                       </div>
@@ -631,11 +632,11 @@ export function DashboardConversation() {
                         flex h-7 w-7 shrink-0
                         items-center justify-center
                         rounded-full
-                        bg-[#eef5ff]
-                        text-[#a8c5e9]
+                        bg-muted
+                        text-muted-foreground
                         transition-colors
-                        hover:bg-[#dcecff]
-                        hover:text-[#1677ff]
+                        hover:bg-primary/15
+                        hover:text-primary
                       "
                     >
                       <MoreVertical size={16} />
@@ -646,23 +647,23 @@ export function DashboardConversation() {
             )}
 
             {/* Pagination Controls */}
-            <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-slate-100 pt-4 text-xs text-slate-600">
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-border pt-4 text-xs text-muted-foreground">
               {/* Left: Summary & Page Size selector */}
               <div className="flex flex-wrap items-center gap-3">
                 <span>
-                  แสดง <span className="font-semibold text-slate-800">{startIndex + 1} - {endIndex}</span> จากทั้งหมด{" "}
-                  <span className="font-semibold text-slate-800">{totalItems}</span> รายการ
+                  แสดง <span className="font-semibold text-foreground">{startIndex + 1} - {endIndex}</span> จากทั้งหมด{" "}
+                  <span className="font-semibold text-foreground">{totalItems}</span> รายการ
                 </span>
 
-                <div className="flex items-center gap-1.5 border-l border-slate-200 pl-3">
-                  <span className="text-slate-500">แสดงหน้าละ:</span>
+                <div className="flex items-center gap-1.5 border-l border-border pl-3">
+                  <span className="text-muted-foreground">แสดงหน้าละ:</span>
                   <select
                     value={pageSize}
                     onChange={(e) => {
                       setPageSize(Number(e.target.value));
                       setCurrentPage(1);
                     }}
-                    className="h-8 rounded-md border border-slate-200 bg-white px-2 py-0.5 text-xs text-slate-700 outline-none focus:border-[#1677ff]"
+                    className="h-8 rounded-md border border-input bg-card px-2 py-0.5 text-xs text-foreground outline-none focus:border-primary"
                   >
                     <option value={8}>8</option>
                     <option value={12}>12</option>
@@ -679,7 +680,7 @@ export function DashboardConversation() {
                   type="button"
                   onClick={() => setCurrentPage(1)}
                   disabled={safeCurrentPage === 1}
-                  className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                  className="flex h-8 w-8 items-center justify-center rounded-md border border-input bg-card text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition"
                   title="หน้าแรก"
                 >
                   <ChevronsLeft size={15} />
@@ -690,7 +691,7 @@ export function DashboardConversation() {
                   type="button"
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={safeCurrentPage === 1}
-                  className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                  className="flex h-8 w-8 items-center justify-center rounded-md border border-input bg-card text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition"
                   title="หน้าก่อนหน้า"
                 >
                   <ChevronLeft size={15} />
@@ -701,7 +702,7 @@ export function DashboardConversation() {
                   {getPageNumbers(safeCurrentPage, totalPages).map((p, idx) => {
                     if (p === "...") {
                       return (
-                        <span key={`dots-${idx}`} className="px-1 text-slate-400">
+                        <span key={`dots-${idx}`} className="px-1 text-muted-foreground">
                           ...
                         </span>
                       );
@@ -716,8 +717,8 @@ export function DashboardConversation() {
                           flex h-8 min-w-[32px] items-center justify-center rounded-md px-2 text-xs font-medium transition
                           ${
                             isCurrent
-                              ? "bg-[#1677ff] text-white shadow-xs font-semibold"
-                              : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-300"
+                              ? "bg-primary text-primary-foreground shadow-xs font-semibold"
+                              : "border border-input bg-card text-foreground hover:bg-muted"
                           }
                         `}
                       >
@@ -732,7 +733,7 @@ export function DashboardConversation() {
                   type="button"
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={safeCurrentPage === totalPages}
-                  className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                  className="flex h-8 w-8 items-center justify-center rounded-md border border-input bg-card text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition"
                   title="หน้าถัดไป"
                 >
                   <ChevronRight size={15} />
@@ -743,7 +744,7 @@ export function DashboardConversation() {
                   type="button"
                   onClick={() => setCurrentPage(totalPages)}
                   disabled={safeCurrentPage === totalPages}
-                  className="flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                  className="flex h-8 w-8 items-center justify-center rounded-md border border-input bg-card text-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition"
                   title="หน้าสุดท้าย"
                 >
                   <ChevronsRight size={15} />

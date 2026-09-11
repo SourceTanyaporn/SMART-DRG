@@ -75,7 +75,7 @@ function DashboardPage() {
       growth: totalCasesCount > 0 ? "100%" : "0%",
       comparison: startDate === endDate && startDate === dayjs().format("YYYY-MM-DD") ? "วันนี้" : "ในช่วงเวลาที่เลือก",
       icon: UsersIcon,
-      iconClass: "bg-primary/10 text-primary",
+      iconClass: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400",
     },
     {
       label: "เคสเสี่ยงสูง",
@@ -83,7 +83,7 @@ function DashboardPage() {
       growth: totalCasesCount > 0 ? `${((highRiskCount / (totalCasesCount || 1)) * 100).toFixed(0)}%` : "0%",
       comparison: "ของเคสทั้งหมด",
       icon: ShieldAlertIcon,
-      iconClass: "bg-rose-50 text-rose-500",
+      iconClass: "bg-rose-500/10 text-rose-600 dark:text-rose-400",
     },
     {
       label: "AdjRW รวม",
@@ -91,7 +91,7 @@ function DashboardPage() {
       growth: "เฉลี่ย",
       comparison: `${totalCasesCount > 0 ? (totalAdjrw / totalCasesCount).toFixed(2) : "0"} / เคส`,
       icon: Layers3Icon,
-      iconClass: "bg-emerald-50 text-emerald-500",
+      iconClass: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
     },
     {
       label: "รายได้ที่อาจสูญเสีย",
@@ -100,7 +100,7 @@ function DashboardPage() {
       growth: "16%",
       comparison: "ประมาณการจากต้นทุน",
       icon: CoinsIcon,
-      iconClass: "bg-amber-50 text-amber-500",
+      iconClass: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
     },
   ]
 
@@ -131,7 +131,7 @@ function DashboardPage() {
           return (
             <Card
               key={stat.label}
-              className="rounded-xl border border-[#edf0f5] p-3.5 sm:p-4 xl:p-4.5 shadow-none ring-0"
+              className="rounded-xl border border-border p-3.5 sm:p-4 xl:p-4.5 shadow-none ring-0"
               style={{ "--card-spacing": "0.75rem" }}
             >
               <div className="flex items-center gap-3.5 sm:gap-4">
@@ -139,16 +139,16 @@ function DashboardPage() {
                   <Icon className="size-6 sm:size-7" strokeWidth={2} />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-xs sm:text-sm font-semibold text-black">{stat.label}</p>
+                  <p className="truncate text-xs sm:text-sm font-semibold text-foreground">{stat.label}</p>
                   <div className="mt-0.5 sm:mt-1 flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
-                    <p className="text-xl sm:text-2xl font-bold tracking-tight text-black">
+                    <p className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
                       {stat.value}
                     </p>
-                    {stat.unit && <span className="text-xs sm:text-sm font-semibold text-black">{stat.unit}</span>}
+                    {stat.unit && <span className="text-xs sm:text-sm font-semibold text-foreground">{stat.unit}</span>}
                   </div>
                   <p className="mt-0.5 sm:mt-1 flex flex-wrap items-center gap-x-1 gap-y-0.5 text-[11px] sm:text-xs text-muted-foreground">
                     <ArrowUpIcon className="size-3 shrink-0 text-emerald-500" />
-                    <span className="font-medium text-emerald-600">{stat.growth}</span>
+                    <span className="font-medium text-emerald-600 dark:text-emerald-400">{stat.growth}</span>
                     <span className="truncate">{stat.comparison}</span>
                   </p>
                 </div>

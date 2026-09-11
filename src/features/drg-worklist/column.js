@@ -1,25 +1,34 @@
+import { createElement } from "react"
+import dayjs from "@/lib/dayjs"
+
 const riskClasses = {
-  สูง: "bg-rose-50 text-rose-600",
-  ปานกลาง: "bg-amber-50 text-amber-600",
-  ต่ำ: "bg-emerald-50 text-emerald-600",
+  สูง: "bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400 font-bold",
+  ปานกลาง: "bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400 font-bold",
+  ต่ำ: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400 font-bold",
 }
 
 const statusClasses = {
-  รอตรวจสอบ: "bg-blue-50 text-blue-600",
-  กำลังตรวจสอบ: "bg-violet-50 text-violet-600",
-  เสร็จสิ้น: "bg-emerald-50 text-emerald-600",
+  รอตรวจสอบ: "bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400 font-bold",
+  กำลังตรวจสอบ: "bg-purple-50 text-purple-600 dark:bg-purple-950/50 dark:text-purple-400 font-bold",
+  เสร็จสิ้น: "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400 font-bold",
 }
 
 export const drgWorklistColumns = [
   {
     accessorKey: "an",
     header: "AN",
-    cell: ({ getValue }) => createElement("span", { className: "font-semibold text-foreground whitespace-nowrap" }, getValue()),
+    cell: ({ getValue }) =>
+      createElement(
+        "span",
+        { className: "font-semibold text-foreground hover:text-primary transition-colors whitespace-nowrap" },
+        getValue(),
+      ),
   },
   {
     accessorKey: "hn",
     header: "HN",
-    cell: ({ getValue }) => createElement("span", { className: "font-medium text-muted-foreground whitespace-nowrap" }, getValue() || "-"),
+    cell: ({ getValue }) =>
+      createElement("span", { className: "font-medium text-muted-foreground whitespace-nowrap" }, getValue() || "-"),
   },
   {
     accessorKey: "date",
@@ -29,14 +38,19 @@ export const drgWorklistColumns = [
       return createElement(
         "span",
         { className: "text-xs font-medium text-muted-foreground whitespace-nowrap" },
-        val ? dayjs(val).format("D MMM BBBB") : "-"
+        val ? dayjs(val).format("D MMM BBBB") : "-",
       )
     },
   },
   {
     accessorKey: "patient",
     header: "ผู้ป่วย",
-    cell: ({ row }) => detailCell(row.original.patient),
+    cell: ({ row }) =>
+      detailCell(
+        row.original.patient,
+        row.original.demographics || (row.original.gender ? `${row.original.gender}, ${row.original.age} ปี` : ""),
+        "font-semibold text-foreground",
+      ),
   },
   {
     accessorKey: "drg",
@@ -56,11 +70,14 @@ export const drgWorklistColumns = [
   {
     accessorKey: "risk",
     header: "Risk",
-    cell: ({ getValue }) => createElement(
-      "span",
-      { className: `inline-flex min-w-18 justify-center rounded-md px-2 py-1 text-xs font-semibold ${riskClasses[getValue()]}` },
-      getValue(),
-    ),
+    cell: ({ getValue }) =>
+      createElement(
+        "span",
+        {
+          className: `inline-flex min-w-18 justify-center rounded-md px-2.5 py-1 text-xs ${riskClasses[getValue()] || "bg-muted text-muted-foreground"}`,
+        },
+        getValue(),
+      ),
   },
   {
     accessorKey: "alerts",
@@ -70,7 +87,13 @@ export const drgWorklistColumns = [
 
       return createElement(
         "span",
-        { className: `inline-grid size-6 place-items-center rounded-full text-xs font-semibold ${count > 0 ? "bg-rose-50 text-rose-600" : "bg-emerald-50 text-emerald-600"}` },
+        {
+          className: `inline-grid size-6 place-items-center rounded-full text-xs font-bold ${
+            count > 0
+              ? "bg-rose-50 text-rose-600 dark:bg-rose-950/50 dark:text-rose-400"
+              : "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400"
+          }`,
+        },
         count,
       )
     },
@@ -78,11 +101,14 @@ export const drgWorklistColumns = [
   {
     accessorKey: "status",
     header: "สถานะ",
-    cell: ({ getValue }) => createElement(
-      "span",
-      { className: `inline-flex rounded-md px-2 py-1 text-xs font-semibold ${statusClasses[getValue()]}` },
-      getValue(),
-    ),
+    cell: ({ getValue }) =>
+      createElement(
+        "span",
+        {
+          className: `inline-flex rounded-md px-2.5 py-1 text-xs ${statusClasses[getValue()] || "bg-muted text-muted-foreground"}`,
+        },
+        getValue(),
+      ),
   },
 ]
 
@@ -94,5 +120,4 @@ function detailCell(primary, secondary, primaryClassName) {
     secondary ? createElement("p", { className: "mt-0.5 text-xs text-muted-foreground" }, secondary) : null,
   )
 }
-import { createElement } from "react"
-import dayjs from "@/lib/dayjs"
+

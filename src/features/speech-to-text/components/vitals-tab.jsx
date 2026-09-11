@@ -18,19 +18,19 @@ export const calculateBMI = (wt, ht) => {
     if (isNaN(w) || isNaN(h) || w <= 0 || h <= 0) return null;
     const bmi = w / (h * h);
     let status = "สมส่วน (Normal)";
-    let color = "text-emerald-700 bg-emerald-50 border-emerald-200";
+    let color = "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/25";
     if (bmi < 18.5) {
         status = "น้ำหนักน้อย (Underweight)";
-        color = "text-sky-700 bg-sky-50 border-sky-200";
+        color = "text-sky-600 dark:text-sky-400 bg-sky-500/10 border-sky-500/25";
     } else if (bmi >= 23 && bmi < 25) {
         status = "ท้วม (Overweight)";
-        color = "text-amber-700 bg-amber-50 border-amber-200";
+        color = "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/25";
     } else if (bmi >= 25 && bmi < 30) {
         status = "อ้วนระดับ 1 (Obese I)";
-        color = "text-orange-700 bg-orange-50 border-orange-200";
+        color = "text-orange-600 dark:text-orange-400 bg-orange-500/10 border-orange-500/25";
     } else if (bmi >= 30) {
         status = "อ้วนระดับ 2 (Obese II)";
-        color = "text-rose-700 bg-rose-50 border-rose-200";
+        color = "text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/25";
     }
     return { value: bmi.toFixed(1), status, color };
 };
@@ -70,9 +70,9 @@ export function ScoreBox({ title, values, value, onChange }) {
     return (
         <div className="flex flex-col justify-between h-full space-y-1">
             <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-800">{title}</span>
+                <span className="text-xs font-bold text-foreground">{title}</span>
                 {value !== "" && value !== undefined && (
-                    <span className="text-[10px] font-semibold text-slate-500 truncate max-w-[90px]">
+                    <span className="text-[10px] font-semibold text-muted-foreground truncate max-w-[90px]">
                         {value} ({getPainLabel(value)})
                     </span>
                 )}
@@ -87,7 +87,7 @@ export function ScoreBox({ title, values, value, onChange }) {
                             type="button"
                             onClick={() => onChange?.(v)}
                             className={`cursor-pointer flex-1 h-6 sm:h-6.5 min-w-0 flex items-center justify-center rounded-xs sm:rounded text-[8px] sm:text-[9px] font-bold text-white transition-all ${painColors[index]} ${isSelected
-                                ? "ring-2 ring-blue-600 ring-offset-1 scale-105 z-10 shadow-xs font-black"
+                                ? "ring-2 ring-primary ring-offset-1 ring-offset-background scale-105 z-10 shadow-xs font-black"
                                 : "opacity-85 hover:opacity-100 hover:scale-105"
                                 }`}
                             title={`Pain Score: ${v} - ${getPainLabel(v)}`}
@@ -104,9 +104,9 @@ export function ScoreBox({ title, values, value, onChange }) {
 export function DiffBadge({ label = "คัดกรอง", originalValue, unit = "", onRevert, className = "" }) {
     if (originalValue === null || originalValue === undefined || originalValue === "") return null;
     return (
-        <div className={`mt-1 flex items-center justify-between gap-1 rounded bg-amber-50/95 border border-amber-200/90 px-1.5 py-0.5 text-[9.5px] sm:text-[10px] text-amber-800 animate-in fade-in duration-200 ${className}`}>
+        <div className={`mt-1 flex items-center justify-between gap-1 rounded bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.5 text-[9.5px] sm:text-[10px] text-amber-800 dark:text-amber-300 font-medium animate-in fade-in duration-200 ${className}`}>
             <span className="truncate">
-                {label}: <strong className="font-semibold text-amber-950">{originalValue}</strong> {unit}
+                {label}: <strong className="font-bold text-amber-900 dark:text-amber-200">{originalValue}</strong> {unit}
             </span>
             {onRevert && (
                 <button
@@ -115,7 +115,7 @@ export function DiffBadge({ label = "คัดกรอง", originalValue, unit
                         e.stopPropagation();
                         onRevert();
                     }}
-                    className="cursor-pointer shrink-0 font-semibold text-blue-600 hover:text-blue-800 hover:underline ml-1 text-[9.5px]"
+                    className="cursor-pointer shrink-0 font-semibold text-primary hover:underline ml-1 text-[9.5px]"
                     title="คลิกเพื่อคืนค่าเป็นค่าเดิมจากจุดคัดกรอง"
                 >
                     คืนค่าเดิม
@@ -160,13 +160,13 @@ export function VitalsTab({ formData, setFormData, triageBaseline = {}, onRevert
             <div className="grid grid-cols-1 @[420px]:grid-cols-3 gap-2 sm:gap-2.5">
 
                 {/* Card 1: Circulation & Heart (ความดันและชีพจร) */}
-                <div className="flex flex-col rounded-xl border border-blue-100/90 bg-gradient-to-b from-blue-50/30 via-white to-white p-2.5 sm:p-3 shadow-2xs transition-all hover:border-blue-200">
-                    <div className="flex items-center gap-1.5 pb-1.5 mb-2 border-b border-blue-100/60">
-                        <div className="flex size-5.5 sm:size-6 shrink-0 items-center justify-center rounded-md bg-blue-100/80 text-blue-600">
+                <div className="flex flex-col rounded-xl border border-indigo-500/20 bg-gradient-to-b from-indigo-500/5 via-card to-card p-2.5 sm:p-3 shadow-2xs transition-all hover:border-indigo-500/40">
+                    <div className="flex items-center gap-1.5 pb-1.5 mb-2 border-b border-indigo-500/10">
+                        <div className="flex size-5.5 sm:size-6 shrink-0 items-center justify-center rounded-md bg-indigo-500/10 text-indigo-500">
                             <HeartPulse className="size-3 sm:size-3.5" />
                         </div>
                         <div className="min-w-0 flex-1">
-                            <h3 className="text-[11px] sm:text-xs font-bold text-slate-800 truncate">
+                            <h3 className="text-[11px] sm:text-xs font-bold text-foreground truncate">
                                 ความดันโลหิตและชีพจร
                             </h3>
                         </div>
@@ -293,13 +293,13 @@ export function VitalsTab({ formData, setFormData, triageBaseline = {}, onRevert
                 </div>
 
                 {/* Card 2: Respiration, Temperature & Oxygen (หายใจ ออกซิเจน อุณหภูมิ) */}
-                <div className="flex flex-col rounded-xl border border-sky-100/90 bg-gradient-to-b from-sky-50/30 via-white to-white p-2.5 sm:p-3 shadow-2xs transition-all hover:border-sky-200">
-                    <div className="flex items-center gap-1.5 pb-1.5 mb-2 border-b border-sky-100/60">
-                        <div className="flex size-5.5 sm:size-6 shrink-0 items-center justify-center rounded-md bg-sky-100/80 text-sky-600">
+                <div className="flex flex-col rounded-xl border border-sky-500/20 bg-gradient-to-b from-sky-500/5 via-card to-card p-2.5 sm:p-3 shadow-2xs transition-all hover:border-sky-500/40">
+                    <div className="flex items-center gap-1.5 pb-1.5 mb-2 border-b border-sky-500/10">
+                        <div className="flex size-5.5 sm:size-6 shrink-0 items-center justify-center rounded-md bg-sky-500/10 text-sky-500">
                             <Wind className="size-3 sm:size-3.5" />
                         </div>
                         <div className="min-w-0 flex-1">
-                            <h3 className="text-[11px] sm:text-xs font-bold text-slate-800 truncate">
+                            <h3 className="text-[11px] sm:text-xs font-bold text-foreground truncate">
                                 การหายใจและอุณหภูมิ
                             </h3>
                         </div>
@@ -312,8 +312,8 @@ export function VitalsTab({ formData, setFormData, triageBaseline = {}, onRevert
                                 label="O2sat"
                                 badge={formData.o2sat ? (
                                     <span className={`text-[9px] font-semibold px-1 py-0.2 rounded border ${Number(formData.o2sat) >= 95
-                                        ? "text-emerald-700 bg-emerald-50 border-emerald-200"
-                                        : "text-rose-700 bg-rose-50 border-rose-200"
+                                        ? "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/30"
+                                        : "text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/30"
                                         }`}>
                                         {Number(formData.o2sat) >= 95 ? "ปกติ" : "ต่ำ"}
                                     </span>
@@ -341,8 +341,8 @@ export function VitalsTab({ formData, setFormData, triageBaseline = {}, onRevert
                                 label="BT"
                                 badge={formData.bodyTemperature ? (
                                     <span className={`text-[9px] font-semibold px-1 py-0.2 rounded border ${Number(formData.bodyTemperature) >= 37.5
-                                        ? "text-rose-700 bg-rose-50 border-rose-200"
-                                        : "text-emerald-700 bg-emerald-50 border-emerald-200"
+                                        ? "text-rose-600 dark:text-rose-400 bg-rose-500/10 border-rose-500/30"
+                                        : "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/30"
                                         }`}>
                                         {Number(formData.bodyTemperature) >= 38.5 ? "ไข้สูง" : Number(formData.bodyTemperature) >= 37.5 ? "มีไข้" : "ปกติ"}
                                     </span>
@@ -388,13 +388,13 @@ export function VitalsTab({ formData, setFormData, triageBaseline = {}, onRevert
                 </div>
 
                 {/* Card 3: Body Measurements & BMI / BSA (สัดส่วนร่างกาย & BMI / BSA) */}
-                <div className="flex flex-col rounded-xl border border-emerald-100/90 bg-gradient-to-b from-emerald-50/30 via-white to-white p-2.5 sm:p-3 shadow-2xs transition-all hover:border-emerald-200">
-                    <div className="flex items-center gap-1.5 pb-1.5 mb-2 border-b border-emerald-100/60">
-                        <div className="flex size-5.5 sm:size-6 shrink-0 items-center justify-center rounded-md bg-emerald-100/80 text-emerald-600">
+                <div className="flex flex-col rounded-xl border border-emerald-500/20 bg-gradient-to-b from-emerald-500/5 via-card to-card p-2.5 sm:p-3 shadow-2xs transition-all hover:border-emerald-500/40">
+                    <div className="flex items-center gap-1.5 pb-1.5 mb-2 border-b border-emerald-500/10">
+                        <div className="flex size-5.5 sm:size-6 shrink-0 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-500">
                             <Scale className="size-3 sm:size-3.5" />
                         </div>
                         <div className="min-w-0 flex-1">
-                            <h3 className="text-[11px] sm:text-xs font-bold text-slate-800 truncate">
+                            <h3 className="text-[11px] sm:text-xs font-bold text-foreground truncate">
                                 สัดส่วนร่างกาย & BMI / BSA
                             </h3>
                         </div>
@@ -469,7 +469,7 @@ export function VitalsTab({ formData, setFormData, triageBaseline = {}, onRevert
                             <InputField
                                 label="BSA"
                                 badge={calculateBSA(formData.weight, formData.height) ? (
-                                    <span className="text-[8px] font-medium text-slate-400">
+                                    <span className="text-[8px] font-medium text-muted-foreground">
                                         Mosteller
                                     </span>
                                 ) : null}
@@ -533,7 +533,7 @@ export function VitalsTab({ formData, setFormData, triageBaseline = {}, onRevert
             <div className="grid grid-cols-1 @[320px]:grid-cols-2 @[560px]:grid-cols-4 gap-2 sm:gap-2.5 pt-0.5">
 
                 {/* Pain Score */}
-                <div className="flex flex-col rounded-xl border border-slate-200 bg-white p-2.5 sm:p-3 shadow-2xs transition hover:border-slate-300">
+                <div className="flex flex-col rounded-xl border border-border bg-card p-2.5 sm:p-3 shadow-2xs transition hover:border-border/80">
                     <ScoreBox
                         title="Pain Score"
                         values={["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]}
@@ -550,10 +550,10 @@ export function VitalsTab({ formData, setFormData, triageBaseline = {}, onRevert
                 </div>
 
                 {/* ESI Triage */}
-                <div className="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-2.5 sm:p-3 shadow-2xs transition hover:border-slate-300">
+                <div className="flex flex-col justify-between rounded-xl border border-border bg-card p-2.5 sm:p-3 shadow-2xs transition hover:border-border/80">
                     <div>
                         <div className="flex items-center justify-between mb-1">
-                            <label className="text-xs font-bold text-slate-800">
+                            <label className="text-xs font-bold text-foreground">
                                 ESI
                             </label>
                         </div>
@@ -568,7 +568,7 @@ export function VitalsTab({ formData, setFormData, triageBaseline = {}, onRevert
                                 { value: "ESI 4", label: "ESI 4 : เขียว" },
                                 { value: "ESI 5", label: "ESI 5 : ขาว" },
                             ]}
-                            className="h-7.5 sm:h-8 w-full rounded-lg border-slate-200 bg-slate-50/50 px-2 text-[11px] sm:text-xs font-semibold text-slate-700 hover:bg-slate-100/70"
+                            className="h-7.5 sm:h-8 w-full rounded-lg border-input bg-muted/40 px-2 text-[11px] sm:text-xs font-semibold text-foreground hover:bg-muted/70"
                         />
                         {hasEsiConflict && (
                             <DiffBadge
@@ -581,10 +581,10 @@ export function VitalsTab({ formData, setFormData, triageBaseline = {}, onRevert
                 </div>
 
                 {/* Barthel Index */}
-                <div className="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-2.5 sm:p-3 shadow-2xs transition hover:border-slate-300">
+                <div className="flex flex-col justify-between rounded-xl border border-border bg-card p-2.5 sm:p-3 shadow-2xs transition hover:border-border/80">
                     <div>
                         <div className="flex items-center justify-between mb-1">
-                            <label className="text-xs font-bold text-slate-800">
+                            <label className="text-xs font-bold text-foreground">
                                 Barthel Index
                             </label>
                         </div>
@@ -593,7 +593,7 @@ export function VitalsTab({ formData, setFormData, triageBaseline = {}, onRevert
                             onValueChange={(val) => setFormData(prev => ({ ...prev, barthelIndex: val }))}
                             placeholder="เลือก Barthel Index"
                             options={Array.from({ length: 21 }, (_, i) => String(i))}
-                            className="h-7.5 sm:h-8 w-full rounded-lg border-slate-200 bg-slate-50/50 px-2 text-[11px] sm:text-xs font-semibold text-slate-700 hover:bg-slate-100/70"
+                            className="h-7.5 sm:h-8 w-full rounded-lg border-input bg-muted/40 px-2 text-[11px] sm:text-xs font-semibold text-foreground hover:bg-muted/70"
                         />
                         {hasBarthelConflict && (
                             <DiffBadge
@@ -606,10 +606,10 @@ export function VitalsTab({ formData, setFormData, triageBaseline = {}, onRevert
                 </div>
 
                 {/* CVD Risk */}
-                <div className="flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-2.5 sm:p-3 shadow-2xs transition hover:border-slate-300">
+                <div className="flex flex-col justify-between rounded-xl border border-border bg-card p-2.5 sm:p-3 shadow-2xs transition hover:border-border/80">
                     <div>
                         <div className="flex items-center justify-between mb-1">
-                            <label className="text-xs font-bold text-slate-800">
+                            <label className="text-xs font-bold text-foreground">
                                 CVD Risk
                             </label>
                         </div>
@@ -624,7 +624,7 @@ export function VitalsTab({ formData, setFormData, triageBaseline = {}, onRevert
                                 { value: "30-40%", label: "30 - 40% : เสี่ยงสูงมาก" },
                                 { value: ">= 40%", label: "≥ 40% : เสี่ยงสูงสุด" },
                             ]}
-                            className="h-7.5 sm:h-8 w-full rounded-lg border-slate-200 bg-slate-50/50 px-2 text-[11px] sm:text-xs font-semibold text-slate-700 hover:bg-slate-100/70"
+                            className="h-7.5 sm:h-8 w-full rounded-lg border-input bg-muted/40 px-2 text-[11px] sm:text-xs font-semibold text-foreground hover:bg-muted/70"
                         />
                         {hasCvdConflict && (
                             <DiffBadge

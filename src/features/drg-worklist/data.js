@@ -66,7 +66,7 @@ const patientTemplates = [
     firstName: "กุลธิดา",
     lastName: "ชูมายงสี",
     gender: "หญิง",
-    age: 9,
+    age: 19,
     dob: "05 ส.ค. 2560",
     rights: "จ่ายตรงกรมบัญชีกลาง (CS)",
     department: "OPD กุมารเวชศาสตร์",
@@ -120,7 +120,7 @@ const patientTemplates = [
     risk: "ปานกลาง",
     alerts: 2,
     status: "รอตรวจสอบ",
-    allergies: "Sulfa, Aspirin, Tramadol (3 รายการ)",
+    allergies: "Sulfa, Aspirin, Tramadol, Paracetamol (4 รายการ)",
     allergyDetails: [
       {
         drug: "Co-trimoxazole (Bactrim)",
@@ -145,6 +145,14 @@ const patientTemplates = [
         severity: "Mild",
         date: "11 พ.ย. 2565",
         hospital: "รพ. ทั่วไป",
+      },
+      {
+        drug: "Paracetamol (Acetaminophen)",
+        group: "Analgesics & Antipyretics",
+        reaction: "ผื่นคัน ปากบวม แน่นหน้าอก หายใจลำบาก (Angioedema)",
+        severity: "Severe",
+        date: "15 ม.ค. 2566",
+        hospital: "รพ. ศูนย์",
       },
     ],
     underlying: "Heart Failure, CKD Stage 3",

@@ -11,7 +11,7 @@ export function CaseReviewPanel({ caseData }) {
   if (!caseData) {
     return (
       <aside className="space-y-3 sm:space-y-4">
-        <section className="rounded-xl border border-[#edf0f5] bg-card p-6 text-center">
+        <section className="rounded-xl border border-border bg-card p-6 text-center">
           <ClipboardListIcon className="mx-auto size-8 text-muted-foreground/50 mb-2" />
           <h3 className="text-sm font-semibold text-foreground">ไม่พบข้อมูลเคสผู้ป่วย</h3>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -39,7 +39,7 @@ export function CaseReviewPanel({ caseData }) {
 
   return (
     <aside className="space-y-3 sm:space-y-4">
-      <section className="rounded-xl border border-[#edf0f5] bg-card p-3.5 sm:p-4">
+      <section className="rounded-xl border border-border bg-card p-3.5 sm:p-4">
         <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
           <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">
             <ClipboardListIcon className="size-4 shrink-0 text-primary" />
@@ -52,20 +52,20 @@ export function CaseReviewPanel({ caseData }) {
         <dl className="divide-y divide-border text-xs">
           {details.map(([label, value]) => (
             <div key={label} className="grid grid-cols-1 xs:grid-cols-[minmax(6.5rem,auto)_1fr] gap-1 sm:gap-2 py-1.5">
-              <dt className="font-semibold text-muted-foreground">{label}</dt>
-              <dd className="font-medium text-foreground min-w-0 break-words">{value}</dd>
+              <dt className="font-semibold text-foreground/80">{label}</dt>
+              <dd className="font-semibold text-foreground min-w-0 break-words">{value}</dd>
             </div>
           ))}
         </dl>
       </section>
 
-      <section className="rounded-xl border border-rose-200 bg-rose-50/40 p-3.5 sm:p-4">
+      <section className="rounded-xl border border-rose-500/25 bg-rose-500/10 p-3.5 sm:p-4">
         <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-rose-600">
-            <BellRingIcon className="size-4 shrink-0" />
+          <h2 className="flex items-center gap-2 text-sm font-bold text-rose-700 dark:text-rose-300">
+            <BellRingIcon className="size-4 shrink-0 text-rose-600 dark:text-rose-400" />
             <span>Smart Alert</span>
           </h2>
-          <span className="rounded-md border border-rose-200 bg-white px-2 py-0.5 text-xs font-semibold text-rose-600">
+          <span className="rounded-md border border-rose-500/35 bg-card px-2 py-0.5 text-xs font-bold text-rose-700 dark:text-rose-300 shadow-2xs">
             ทั้งหมด {caseData.alerts}
           </span>
         </div>
@@ -74,43 +74,43 @@ export function CaseReviewPanel({ caseData }) {
             {alerts.map(([code, detail, severity, tone]) => (
               <li key={code} className="flex items-start justify-between gap-2 text-xs">
                 <div className="flex items-start gap-1.5 min-w-0 flex-1">
-                  <span className="mt-1 flex items-center gap-1 font-medium text-foreground shrink-0">
+                  <span className="mt-1 flex items-center gap-1 font-bold text-foreground shrink-0">
                     <span className="size-1.5 rounded-full bg-rose-500" />
                     {code}
                   </span>
-                  <span className="text-muted-foreground min-w-0 break-words">{detail}</span>
+                  <span className="text-foreground/90 font-medium min-w-0 break-words">{detail}</span>
                 </div>
-                <span className={`shrink-0 rounded-md px-2 py-0.5 font-semibold text-[11px] sm:text-xs ${tone === "rose" ? "bg-rose-100 text-rose-600" : "bg-amber-100 text-amber-600"}`}>
+                <span className={`shrink-0 rounded-md px-2 py-0.5 font-bold text-[11px] sm:text-xs border ${tone === "rose" ? "bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30" : "bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/30"}`}>
                   {severity}
                 </span>
               </li>
             ))}
           </ul>
         ) : (
-          <p className="py-2 text-center text-xs text-emerald-600">ไม่พบรายการแจ้งเตือนสำหรับเคสนี้</p>
+          <p className="py-2 text-center text-xs font-bold text-emerald-700 dark:text-emerald-400">ไม่พบรายการแจ้งเตือนสำหรับเคสนี้</p>
         )}
       </section>
 
-      <section className="rounded-xl border border-violet-200 bg-violet-50/30 p-3.5 sm:p-4">
+      <section className="rounded-xl border border-primary/25 bg-primary/5 p-3.5 sm:p-4">
         <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-violet-700">
-            <SparklesIcon className="size-4 shrink-0" />
+          <h2 className="flex items-center gap-2 text-sm font-bold text-primary">
+            <SparklesIcon className="size-4 shrink-0 text-primary" />
             <span>AI Suggestion</span>
           </h2>
-          <span className="rounded-md border border-indigo-200 bg-indigo-50 px-2 py-0.5 text-xs font-semibold text-indigo-600">
+          <span className="rounded-md border border-primary/35 bg-primary/15 px-2 py-0.5 text-xs font-bold text-primary shadow-2xs">
             Confidence 86%
           </span>
         </div>
-        <p className="text-xs leading-5 text-foreground">
+        <p className="text-xs leading-5 font-medium text-foreground">
           แนะนำพิจารณาเพิ่มรหัสวินิจฉัยรองที่เกี่ยวข้อง เพื่อสนับสนุนความรุนแรงของโรคและเพิ่ม AdjRW ของเคสนี้
         </p>
         <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 xl:grid-cols-3 gap-2 text-xs">
           <Metric label="Before (ปัจจุบัน)" value={caseData.adjrw.toFixed(4)} />
           <Metric label="After (แนะนำ)" value={suggestedAdjrw} />
-          <div className="flex flex-col justify-between rounded-lg border border-emerald-100 bg-emerald-50 p-2 sm:p-2.5 text-center text-emerald-700">
-            <p className="text-[11px] sm:text-xs">เพิ่มขึ้นโดยประมาณ</p>
-            <p className="my-1 text-base sm:text-lg font-bold">{estimatedGain.toLocaleString()}</p>
-            <p className="text-[11px] sm:text-xs">บาท</p>
+          <div className="flex flex-col justify-between rounded-lg border border-emerald-500/25 bg-emerald-500/10 p-2 sm:p-2.5 text-center text-emerald-800 dark:text-emerald-300">
+            <p className="text-[11px] sm:text-xs font-bold text-emerald-800 dark:text-emerald-300">เพิ่มขึ้นโดยประมาณ</p>
+            <p className="my-1 text-base sm:text-lg font-black text-emerald-800 dark:text-emerald-300">{estimatedGain.toLocaleString()}</p>
+            <p className="text-[11px] sm:text-xs font-bold text-emerald-800 dark:text-emerald-300">บาท</p>
           </div>
         </div>
       </section>
@@ -120,7 +120,7 @@ export function CaseReviewPanel({ caseData }) {
 
 function Metric({ label, value }) {
   return (
-    <div className="flex flex-col justify-between rounded-lg border border-violet-100 bg-white p-2 sm:p-2.5">
+    <div className="flex flex-col justify-between rounded-lg border border-border bg-card p-2 sm:p-2.5">
       <p className="text-[11px] sm:text-xs font-semibold text-muted-foreground">{label}</p>
       <p className="mt-1 sm:mt-2 text-xs sm:text-sm font-bold text-foreground">
         AdjRW <span className="ml-1 text-primary">{value}</span>
