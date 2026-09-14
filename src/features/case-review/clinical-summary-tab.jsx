@@ -77,11 +77,11 @@ export function ClinicalSummaryTab({ onSwitchTab }) {
           <h3 className="text-base font-bold text-foreground">ผลตรวจทางห้องปฏิบัติการ</h3>
           <div className="overflow-hidden rounded-lg border border-border text-xs">
             <table className="w-full text-left">
-              <thead className="bg-muted/60 text-muted-foreground font-semibold border-b border-border">
+              <thead className="bg-primary/[0.08] dark:bg-primary/15 text-foreground dark:text-foreground font-semibold border-b border-primary/20 dark:border-primary/30">
                 <tr>
-                  <th className="p-2.5">Lab Test</th>
-                  <th className="p-2.5">Result</th>
-                  <th className="p-2.5">Reference</th>
+                  <th className="p-2.5 transition-colors duration-150 hover:bg-slate-200 dark:hover:bg-slate-800">Lab Test</th>
+                  <th className="p-2.5 transition-colors duration-150 hover:bg-slate-200 dark:hover:bg-slate-800">Result</th>
+                  <th className="p-2.5 transition-colors duration-150 hover:bg-slate-200 dark:hover:bg-slate-800">Reference</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">

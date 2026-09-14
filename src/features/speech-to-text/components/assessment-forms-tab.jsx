@@ -23,144 +23,16 @@ import {
     DialogDescription,
     DialogFooter,
 } from "@/components/ui/dialog";
+import { Select } from "@/components/ui/select";
 
-export const assessmentForms = [
-    {
-        id: "smoking",
-        title: "แบบประเมินพฤติกรรมการสูบบุหรี่ (Fagerström Test)",
-        category: "พฤติกรรมสุขภาพ",
-        description: "แบบประเมินพฤติกรรมและความเสี่ยงการติดนิโคติน",
-        totalScore: 5,
-        resultLabel: "ระดับการติดนิโคตินปานกลาง (ควรให้คำแนะนำการเลิกบุหรี่)",
-        questions: [
-            { number: "1", text: "โดยปกติคุณสูบบุหรี่หรือไม่?", type: "select", options: ["ไม่สูบ", "สูบเป็นประจำ", "สูบเป็นครั้งคราว"], score: "1 คะแนน" },
-            { number: "2", text: "หลังตื่นนอนตอนเช้า คุณสูบบุหรี่ รวมแล้วกี่มวน?", type: "select", options: ["น้อยกว่า 10 มวน", "11-20 มวน", "21-30 มวน", "31 มวนขึ้นไป"], score: "1 คะแนน" },
-            { number: "3", text: "คุณสูบบุหรี่ในช่วงแรกหลังตื่นนอน (ภายใน 30 นาทีหลังตื่นนอน)", type: "radio", score: "1 คะแนน" },
-            { number: "4", text: "หากมีคนในที่ทำงานสูบบุหรี่ คุณมักจะ?", type: "radio", score: "1 คะแนน" },
-            { number: "5", text: "คุณรู้สึกว่าคุณสามารถหยุดสูบบุหรี่ได้หรือไม่?", type: "radio", score: "0 คะแนน" },
-            { number: "6", text: "คุณสูบบุหรี่เป็นประจำในวันที่มีความเครียดหรือไม่?", type: "radio", score: "1 คะแนน" },
-        ],
-    },
-    {
-        id: "depression",
-        title: "แบบคัดกรองภาวะซึมเศร้า (2Q / 9Q)",
-        category: "สุขภาพจิต",
-        description: "แบบคัดกรองและประเมินระดับความรุนแรงของโรคซึมเศร้า",
-        totalScore: 7,
-        resultLabel: "มีอาการซึมเศร้าระดับเล็กน้อย (Mild Depression)",
-        questions: [
-            { number: "1", text: "ใน 2 สัปดาห์ที่ผ่านมารวมถึงวันนี้ ท่านรู้สึกหมดพลังหรือไม่สบายใจบ่อยไหม?", type: "radio", score: "1 คะแนน" },
-            { number: "2", text: "ใน 2 สัปดาห์ที่ผ่านมารวมถึงวันนี้ ท่านรู้สึกเบื่อหน่าย ไม่เพลิดเพลินกับสิ่งที่เคยทำหรือไม่?", type: "radio", score: "1 คะแนน" },
-            { number: "3", text: "หลับยาก หรือหลับๆ ตื่นๆ หรือหลับมากเกินไป?", type: "select", options: ["ไม่มีเลย", "เป็นบางวัน (1-7 วัน)", "เป็นบ่อย (> 7 วัน)", "เป็นทุกวัน"], score: "2 คะแนน" },
-            { number: "4", text: "เหนื่อยง่าย หรือไม่ค่อยมีแรง?", type: "select", options: ["ไม่มีเลย", "เป็นบางวัน", "เป็นบ่อย", "เป็นทุกวัน"], score: "2 คะแนน" },
-            { number: "5", text: "เบื่ออาหาร หรือรับประทานอาหารมากเกินไป?", type: "radio", score: "1 คะแนน" },
-            { number: "6", text: "สมาธิในการทำสิ่งต่างๆ เช่น ดูทีวี หรือทำงาน ลดลงหรือไม่?", type: "radio", score: "0 คะแนน" },
-        ],
-    },
-    {
-        id: "fall_risk",
-        title: "แบบประเมินความเสี่ยงต่อการหกล้ม (Morse Fall Scale)",
-        category: "ความปลอดภัย",
-        description: "ประเมินความเสี่ยงและมาตรการป้องกันการพลัดตกหกล้มของผู้ป่วย",
-        totalScore: 45,
-        resultLabel: "ความเสี่ยงปานกลาง (Moderate Fall Risk - เฝ้าระวัง)",
-        questions: [
-            { number: "1", text: "ประวัติการหกล้มในช่วง 3 เดือนที่ผ่านมา?", type: "radio", score: "25 คะแนน" },
-            { number: "2", text: "มีโรคประจำตัวหรือการวินิจฉัยโรคร่วมมากกว่า 1 โรคหรือไม่?", type: "radio", score: "15 คะแนน" },
-            { number: "3", text: "การใช้อุปกรณ์ช่วยเดิน (ไม้เท้า, Walker, รถเข็น)?", type: "select", options: ["ไม่ต้องใช้อุปกรณ์/มีคนพยุง", "ใช้ไม้เท้า/Crutches", "เกาะโต๊ะ/เตียง/ผนัง"], score: "0 คะแนน" },
-            { number: "4", text: "ได้รับการให้สารน้ำทางหลอดเลือดดำ (IV Infusion / Heparin lock)?", type: "radio", score: "20 คะแนน" },
-            { number: "5", text: "ลักษณะการเดินและการทรงตัว (Gait & Balance)?", type: "select", options: ["เดินปกติ ทรงตัวดี", "เดินช้า ก้าวกระชั้น", "เดินเซ กล้ามเนื้ออ่อนแรง"], score: "10 คะแนน" },
-            { number: "6", text: "สภาพจิตใจและการรับรู้ (Mental Status ประเมินตนเองถูกต้อง)?", type: "radio", score: "0 คะแนน" },
-        ],
-    },
-    {
-        id: "adl",
-        title: "แบบประเมินกิจวัตรประจำวัน (Barthel ADL Index)",
-        category: "กายภาพและฟื้นฟู",
-        description: "ประเมินระดับการพึ่งพาตนเองในการทำกิจวัตรประจำวัน",
-        totalScore: 16,
-        resultLabel: "ระดับพึ่งพาเล็กน้อย (Mild Dependency - ติดสังคม)",
-        questions: [
-            { number: "1", text: "การรับประทานอาหาร (Feeding)?", type: "select", options: ["ทำได้เองทั้งหมด", "ต้องการความช่วยเหลือบางส่วน", "ทำเองไม่ได้เลย"], score: "10 คะแนน" },
-            { number: "2", text: "การล้างหน้า แปรงฟัน หวีผม (Grooming)?", type: "radio", score: "5 คะแนน" },
-            { number: "3", text: "การเคลื่อนย้ายตัวจากเตียงไปเก้าอี้ (Transfer)?", type: "select", options: ["ทำได้เอง", "ต้องการคนช่วยเล็กน้อย", "ต้องการคนช่วยมาก", "ทำไม่ได้"], score: "15 คะแนน" },
-            { number: "4", text: "การใช้ห้องน้ำและขับถ่าย (Toilet Use)?", type: "select", options: ["ทำได้เอง", "ต้องการคนช่วยบางส่วน", "ทำไม่ได้"], score: "10 คะแนน" },
-            { number: "5", text: "การเดินหรือเคลื่อนที่บนพื้นราบ (Mobility)?", type: "select", options: ["เดินได้เอง 50 เมตร", "เดินได้โดยมีคนช่วย", "ใช้รถเข็นได้เอง", "ทำไม่ได้"], score: "15 คะแนน" },
-            { number: "6", text: "การสวมใส่เสื้อผ้า (Dressing)?", type: "select", options: ["ทำได้เอง", "ต้องการคนช่วยบางส่วน", "ทำไม่ได้"], score: "10 คะแนน" },
-        ],
-    },
-    {
-        id: "cvd",
-        title: "แบบประเมินความเสี่ยงโรคหัวใจและหลอดเลือด (Thai CV Risk)",
-        category: "โรคไม่ติดต่อเรื้อรัง",
-        description: "ประเมินความเสี่ยงต่อการเกิดโรคหลอดเลือดหัวใจและสมองใน 10 ปี",
-        totalScore: 12,
-        resultLabel: "ความเสี่ยงปานกลาง (10 - 20% 10-Year CV Risk)",
-        questions: [
-            { number: "1", text: "ประวัติการสูบบุหรี่ในปัจจุบัน?", type: "radio", score: "2 คะแนน" },
-            { number: "2", text: "มีประวัติได้รับการวินิจฉัยโรคเบาหวาน (DM) หรือไม่?", type: "radio", score: "4 คะแนน" },
-            { number: "3", text: "ระดับความดันโลหิต Systolic Blood Pressure (SBP)?", type: "select", options: ["< 120 mmHg", "120 - 139 mmHg", "140 - 159 mmHg", "≥ 160 mmHg"], score: "3 คะแนน" },
-            { number: "4", text: "ระดับไขมันโคเลสเตอรอลรวมในเลือด (Total Cholesterol)?", type: "select", options: ["< 200 mg/dL", "200 - 239 mg/dL", "240 - 279 mg/dL", "≥ 280 mg/dL"], score: "2 คะแนน" },
-            { number: "5", text: "ขนาดรอบเอวเกินเกณฑ์มาตรฐาน (ชาย > 90 ซม. / หญิง > 80 ซม.)?", type: "radio", score: "1 คะแนน" },
-            { number: "6", text: "ประวัติโรคหลอดเลือดหัวใจในครอบครัวสายตรงก่อนวัยอันควร?", type: "radio", score: "0 คะแนน" },
-        ],
-    },
-    {
-        id: "braden",
-        title: "แบบประเมินความเสี่ยงแผลกดทับ (Braden Scale)",
-        category: "การพยาบาล",
-        description: "ประเมินความไวต่อความรู้สึก ความชื้น กิจกรรม ภาวะโภชนาการ และแรงเฉือน",
-        totalScore: 18,
-        resultLabel: "ความเสี่ยงต่ำ (Low Risk of Pressure Ulcer)",
-        questions: [
-            { number: "1", text: "การรับความรู้สึกต่อแรงกด (Sensory Perception)?", type: "select", options: ["ไม่บกพร่อง (4)", "บกพร่องเล็กน้อย (3)", "บกพร่องมาก (2)", "ไม่รับรู้เลย (1)"], score: "4 คะแนน" },
-            { number: "2", text: "ความเปียกชื้นของผิวหนัง (Moisture)?", type: "select", options: ["แทบไม่มีความชื้น (4)", "ชื้นเป็นบางครั้ง (3)", "ชื้นบ่อย (2)", "เปียกชื้นตลอดเวลา (1)"], score: "3 คะแนน" },
-            { number: "3", text: "กิจกรรมและการเคลื่อนไหว (Activity)?", type: "select", options: ["เดินได้บ่อย (4)", "เดินได้เป็นครั้งคราว (3)", "นั่งเก้าอี้/รถเข็น (2)", "นอนติดเตียงตลอด (1)"], score: "3 คะแนน" },
-            { number: "4", text: "การเปลี่ยนท่านอนและเคลื่อนไหวร่างกาย (Mobility)?", type: "select", options: ["เคลื่อนไหวได้ปกติ (4)", "จำกัดเล็กน้อย (3)", "จำกัดมาก (2)", "เคลื่อนไหวไม่ได้ (1)"], score: "3 คะแนน" },
-            { number: "5", text: "ภาวะโภชนาการ (Nutrition)?", type: "select", options: ["ดีเยี่ยม (4)", "เพียงพอ (3)", "น่าจะไม่เพียงพอ (2)", "แย่มาก (1)"], score: "3 คะแนน" },
-            { number: "6", text: "แรงเสียดทานและแรงเฉือน (Friction & Shear)?", type: "select", options: ["ไม่มีปัญหา (3)", "อาจมีปัญหา (2)", "มีปัญหา (1)"], score: "2 คะแนน" },
-        ],
-    },
-    {
-        id: "alcohol",
-        title: "แบบคัดกรองปัญหาการดื่มสุรา (AUDIT Screening)",
-        category: "พฤติกรรมสุขภาพ",
-        description: "แบบคัดกรองพฤติกรรมการดื่มสุราและความเสี่ยงต่อภาวะติดสุรา",
-        totalScore: 4,
-        resultLabel: "การดื่มระดับเสี่ยงต่ำ (Low Risk Drinking)",
-        questions: [
-            { number: "1", text: "คุณดื่มเครื่องดื่มที่มีแอลกอฮอล์บ่อยเพียงใด?", type: "select", options: ["ไม่เคยดื่มเลย", "เดือนละ 1 ครั้งหรือน้อยกว่า", "เดือนละ 2-4 ครั้ง", "สัปดาห์ละ 2-3 ครั้ง", "สัปดาห์ละ 4 ครั้งขึ้นไป"], score: "1 คะแนน" },
-            { number: "2", text: "ในวันที่คุณดื่ม โดยทั่วไปคุณดื่มกี่ดื่มมาตรฐาน (Standard Drinks)?", type: "select", options: ["1-2 ดื่ม", "3-4 ดื่ม", "5-6 ดื่ม", "7-9 ดื่ม", "10 ดื่มขึ้นไป"], score: "1 คะแนน" },
-            { number: "3", text: "คุณดื่มหนัก (6 ดื่มขึ้นไปในคราวเดียว) บ่อยแค่ไหน?", type: "select", options: ["ไม่เคย", "น้อยกว่าเดือนละครั้ง", "ทุกเดือน", "ทุกสัปดาห์", "ทุกวัน"], score: "0 คะแนน" },
-            { number: "4", text: "ในช่วงปีที่ผ่านมา เคยไม่สามารถหยุดดื่มได้เมื่อเริ่มดื่มหรือไม่?", type: "radio", score: "0 คะแนน" },
-            { number: "5", text: "คนใกล้ชิดหรือแพทย์เคยแสดงความกังวลหรือแนะนำให้เลิกดื่มหรือไม่?", type: "radio", score: "2 คะแนน" },
-        ],
-    },
-    {
-        id: "mna",
-        title: "แบบประเมินภาวะโภชนาการ (Mini Nutritional Assessment - MNA)",
-        category: "โภชนาการ",
-        description: "แบบคัดกรองภาวะทุพโภชนาการและการขาดสารอาหารในผู้ป่วย",
-        totalScore: 13,
-        resultLabel: "ภาวะโภชนาการปกติ (Normal Nutritional Status)",
-        questions: [
-            { number: "1", text: "ในช่วง 3 เดือนที่ผ่านมา การรับประทานอาหารลดลงเนื่องจากเบื่ออาหารหรือไม่?", type: "select", options: ["ไม่ลดลงเลย (2)", "ลดลงปานกลาง (1)", "ลดลงมาก (0)"], score: "2 คะแนน" },
-            { number: "2", text: "น้ำหนักลดลงในช่วง 3 เดือนที่ผ่านมาหรือไม่?", type: "select", options: ["น้ำหนักไม่ลด (3)", "ไม่ทราบ (2)", "ลดลง 1 - 3 กก. (1)", "ลดลงมากกว่า 3 กก. (0)"], score: "3 คะแนน" },
-            { number: "3", text: "ความสามารถในการเคลื่อนไหว (Mobility)?", type: "select", options: ["ออกไปข้างนอกได้ปกติ (2)", "ลุกจากเตียงหรือเก้าอี้ได้แต่ไม่ออกข้างนอก (1)", "นอนติดเตียง/นั่งรถเข็นตลอด (0)"], score: "2 คะแนน" },
-            { number: "4", text: "มีความเครียดทางจิตใจรุนแรงหรือมีโรคเฉียบพลันใน 3 เดือนที่ผ่านมา?", type: "radio", score: "2 คะแนน" },
-            { number: "5", text: "ปัญหาทางระบบประสาทและจิตใจ (เช่น ความจำเสื่อม หรือซึมเศร้า)?", type: "select", options: ["ไม่มีปัญหา (2)", "ความจำเสื่อมเล็กน้อย (1)", "รุนแรง (0)"], score: "2 คะแนน" },
-            { number: "6", text: "ดัชนีมวลกาย Body Mass Index (BMI)?", type: "select", options: ["BMI ≥ 23 (3)", "BMI 21 - 22.9 (2)", "BMI 19 - 20.9 (1)", "BMI < 19 (0)"], score: "2 คะแนน" },
-        ],
-    },
-];
-
-export const formCategories = ["ทั้งหมด", "พฤติกรรมสุขภาพ", "สุขภาพจิต", "ความปลอดภัย", "กายภาพและฟื้นฟู", "โรคไม่ติดต่อเรื้อรัง", "การพยาบาล", "โภชนาการ"];
+export { assessmentForms, formCategories } from "@/data/assessment-forms";
+import { assessmentForms, formCategories } from "@/data/assessment-forms";
 
 export function AssessmentQuestion({
     formId,
     number,
     text,
-    type = "select",
+    type = "radio",
     options,
     score,
     value,
@@ -176,20 +48,13 @@ export function AssessmentQuestion({
             </div>
 
             {type === "select" ? (
-                <select
-                    value={value || "เลือกคำตอบ"}
-                    onChange={(e) => onChange?.(e.target.value)}
-                    className="h-8 rounded-lg border border-border bg-card px-2.5 text-[11.5px] font-medium text-foreground outline-none transition focus:border-primary focus:ring-1 focus:ring-primary/40"
-                >
-                    <option value="เลือกคำตอบ">
-                        เลือกคำตอบ
-                    </option>
-                    {(options || ["ใช่", "ไม่ใช่"]).map((opt) => (
-                        <option key={opt} value={opt} className="bg-popover text-popover-foreground">
-                            {opt}
-                        </option>
-                    ))}
-                </select>
+                <Select
+                    value={value || ""}
+                    onChange={(val) => onChange?.(val)}
+                    placeholder="เลือกคำตอบ"
+                    options={(options || ["ใช่", "ไม่ใช่"]).map((opt) => ({ value: opt, label: opt }))}
+                    triggerClassName="h-8 rounded-lg border-border bg-card text-[11.5px] font-medium"
+                />
             ) : (
                 <div className="flex items-center gap-3.5">
                     <label className="flex items-center gap-1.5 text-[12px] font-medium text-foreground cursor-pointer select-none">

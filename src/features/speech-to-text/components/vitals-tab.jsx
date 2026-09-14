@@ -559,7 +559,7 @@ export function VitalsTab({ formData, setFormData, triageBaseline = {}, onRevert
                         </div>
                         <Select
                             value={formData.esi || "ESI 3"}
-                            onValueChange={(val) => setFormData(prev => ({ ...prev, esi: val }))}
+                            onChange={(val) => setFormData(prev => ({ ...prev, esi: val }))}
                             placeholder="เลือก ESI"
                             options={[
                                 { value: "ESI 1", label: "ESI 1 : แดง" },
@@ -590,7 +590,7 @@ export function VitalsTab({ formData, setFormData, triageBaseline = {}, onRevert
                         </div>
                         <Select
                             value={formData.barthelIndex || "20"}
-                            onValueChange={(val) => setFormData(prev => ({ ...prev, barthelIndex: val }))}
+                            onChange={(val) => setFormData(prev => ({ ...prev, barthelIndex: val }))}
                             placeholder="เลือก Barthel Index"
                             options={Array.from({ length: 21 }, (_, i) => String(i))}
                             className="h-7.5 sm:h-8 w-full rounded-lg border-input bg-muted/40 px-2 text-[11px] sm:text-xs font-semibold text-foreground hover:bg-muted/70"
@@ -615,7 +615,7 @@ export function VitalsTab({ formData, setFormData, triageBaseline = {}, onRevert
                         </div>
                         <Select
                             value={formData.cvdRisk || "< 10%"}
-                            onValueChange={(val) => setFormData(prev => ({ ...prev, cvdRisk: val }))}
+                            onChange={(val) => setFormData(prev => ({ ...prev, cvdRisk: val }))}
                             placeholder="เลือก CVD Risk"
                             options={[
                                 { value: "< 10%", label: "< 10% : เสี่ยงต่ำ" },

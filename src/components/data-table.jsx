@@ -46,11 +46,14 @@ export function DataTable({ columns, data, searchPlaceholder, onRowSelect, selec
 
       <div className="overflow-x-auto rounded-lg border border-border bg-card">
         <Table>
-          <TableHeader className="bg-muted/70 [&_tr]:border-border">
+          <TableHeader className="bg-primary/[0.08] dark:bg-primary/15 border-b border-primary/20 dark:border-primary/30">
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="hover:bg-transparent">
+              <TableRow key={headerGroup.id} className="hover:bg-transparent border-transparent">
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="h-10 sm:h-11 px-3 sm:px-4 normal-case text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                  <TableHead
+                    key={header.id}
+                    className="h-10 sm:h-11 px-3 sm:px-4 normal-case text-xs sm:text-sm font-semibold text-foreground dark:text-foreground whitespace-nowrap transition-colors duration-150 hover:bg-slate-200 dark:hover:bg-slate-800"
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(header.column.columnDef.header, header.getContext())}
@@ -68,7 +71,13 @@ export function DataTable({ columns, data, searchPlaceholder, onRowSelect, selec
                   <TableRow
                     key={row.id}
                     onClick={() => onRowSelect?.(row.original)}
-                    className={`border-border ${onRowSelect ? "cursor-pointer hover:bg-primary/[0.04]" : ""} ${isSelected ? "bg-primary/[0.08] hover:bg-primary/[0.1]" : ""}`}
+                    className={`border-border transition-colors ${
+                      onRowSelect ? "cursor-pointer hover:bg-muted/60 dark:hover:bg-muted/40" : ""
+                    } ${
+                      isSelected
+                        ? "bg-muted/50 dark:bg-muted/30 hover:bg-muted/70 dark:hover:bg-muted/50"
+                        : ""
+                    }`}
                   >
                     {row.getVisibleCells().map((cell, index) => (
                       <TableCell key={cell.id} className={`px-3 sm:px-4 py-2.5 sm:py-3 text-xs sm:text-sm text-foreground whitespace-nowrap ${isSelected && index === 0 ? "border-l-[3px] border-l-primary pl-[11px] sm:pl-[13px]" : ""}`}>

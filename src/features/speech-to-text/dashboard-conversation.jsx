@@ -17,12 +17,14 @@ import {
   ChevronsLeft,
   ChevronsRight,
   FilterX,
+  SearchIcon,
 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { mockPatients } from "@/features/drg-worklist/data";
 import { DatePicker } from "@/components/ui/date-picker";
 import dayjs from "@/lib/dayjs";
+import { Button } from "@/components/ui/button";
 
 const generateNotebooksFromPatients = () => {
   const times = ["08:45 น.", "09:30 น.", "10:15 น.", "11:00 น.", "13:30 น.", "14:00 น.", "15:15 น.", "16:00 น."];
@@ -357,18 +359,14 @@ export function DashboardConversation() {
               )}
             </div>
 
-            {/* Search Button */}
-            <button
+            <Button
               type="submit"
-              className="
-                flex h-9 items-center gap-1.5 rounded-md
-                bg-primary px-4 text-xs font-semibold text-primary-foreground
-                transition hover:bg-primary/90 active:scale-98 cursor-pointer shadow-xs
-              "
+              size="sm"
+              className="h-9 px-3.5 text-xs font-semibold shadow-xs"
             >
               <Search size={15} />
               <span>ค้นหา</span>
-            </button>
+            </Button>
 
             {/* Reset / Clear Filter Button */}
             {hasActiveFilters && (
@@ -715,10 +713,9 @@ export function DashboardConversation() {
                         onClick={() => setCurrentPage(p)}
                         className={`
                           flex h-8 min-w-[32px] items-center justify-center rounded-md px-2 text-xs font-medium transition
-                          ${
-                            isCurrent
-                              ? "bg-primary text-primary-foreground shadow-xs font-semibold"
-                              : "border border-input bg-card text-foreground hover:bg-muted"
+                          ${isCurrent
+                            ? "bg-primary text-primary-foreground shadow-xs font-semibold"
+                            : "border border-input bg-card text-foreground hover:bg-muted"
                           }
                         `}
                       >

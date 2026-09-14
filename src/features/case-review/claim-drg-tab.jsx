@@ -41,12 +41,12 @@ export function ClaimDrgTab({ onSwitchTab }) {
 
           <div className="overflow-hidden rounded-lg border border-border text-xs">
             <table className="w-full text-left">
-              <thead className="bg-muted/60 text-muted-foreground font-semibold border-b border-border">
+              <thead className="bg-primary/[0.08] dark:bg-primary/15 text-foreground dark:text-foreground font-semibold border-b border-primary/20 dark:border-primary/30">
                 <tr>
-                  <th className="p-3">ลำดับขั้นตอน</th>
-                  <th className="p-3">รหัส/เกณฑ์</th>
-                  <th className="p-3">คำอธิบาย</th>
-                  <th className="p-3 text-right">RW</th>
+                  <th className="p-3 transition-colors duration-150 hover:bg-slate-200 dark:hover:bg-slate-800">ลำดับขั้นตอน</th>
+                  <th className="p-3 transition-colors duration-150 hover:bg-slate-200 dark:hover:bg-slate-800">รหัส/เกณฑ์</th>
+                  <th className="p-3 transition-colors duration-150 hover:bg-slate-200 dark:hover:bg-slate-800">คำอธิบาย</th>
+                  <th className="p-3 text-right transition-colors duration-150 hover:bg-slate-200 dark:hover:bg-slate-800">RW</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">

@@ -1,5 +1,7 @@
 import {
   BookOpenIcon,
+  BookSearch,
+  BookText,
   BriefcaseMedicalIcon,
   CircleDollarSignIcon,
   ClipboardListIcon,
@@ -12,10 +14,6 @@ import {
   StethoscopeIcon,
 } from "lucide-react"
 
-/**
- * โครงสร้างเมนูนำทางหลักของระบบ (Single Source of Truth)
- * ใช้ร่วมกันระหว่าง AppSidebar และ Breadcrumb ใน __root.jsx
- */
 export const navigationGroups = [
   {
     label: "การจัดการ DRG",
@@ -47,29 +45,25 @@ export const navigationGroups = [
     label: "การจัดการระบบ",
     isDividerBefore: true,
     items: [
-      { title: "คลังความรู้การให้รหัสโรค", icon: BookOpenIcon },
-      { title: "ประวัติการใช้งาน", icon: HistoryIcon },
+      { title: "แบบประเมิน", to: "/assesment-page", icon: BookText },
+      { title: "คลังความรู้การให้รหัสโรค", to: "/coding-knowledge", icon: BookOpenIcon },
+      { title: "ประวัติการใช้งาน", to: "/activity-history", icon: HistoryIcon },
       { title: "ตั้งค่า", icon: SettingsIcon },
     ],
   },
 ]
 
-/**
- * เส้นทางเพิ่มเติมที่ไม่ได้อยู่ในเมนูหลักของ Sidebar แต่เชื่อมโยงเป็นลำดับขั้น (Hierarchical Flow)
- * - กำหนด parent: เพื่อระบุหน้าที่กดเชื่อมโยงมา ระบบจะสร้าง Breadcrumb ย้อนหลังให้คลิกกลับได้อัตโนมัติ
- * - กำหนด section: หากต้องการให้แสดงชื่อหมวดหมู่นำหน้า
- */
 export const additionalRoutes = [
   {
     title: "แปลงเสียงเป็นข้อความ",
     to: "/speech-to-text",
-    parent: "/dashboard-conversation", // กดมาจาก หน้าภาพรวมบทสนทนา
+    parent: "/dashboard-conversation",
     section: "ระบบแปลงเสียงเป็นข้อความ",
   },
   {
     title: "สรุปข้อมูล",
     to: "/result-page",
-    parent: "/speech-to-text", // กดมาจาก หน้าแปลงเสียงเป็นข้อความ
+    parent: "/speech-to-text",
     section: "ระบบแปลงเสียงเป็นข้อความ",
   },
   // { title: "EMR Case Viewer", to: "/emr-viewer", section: "การจัดการ DRG" },
@@ -77,13 +71,10 @@ export const additionalRoutes = [
   // { title: "Claim & Alerts", to: "/claim-alerts", section: "การจัดการ DRG" },
 ]
 
-/**
- * สร้าง breadcrumbByPath อัตโนมัติพร้อม Parent Trail ลำดับขั้น
- */
+
 export const breadcrumbByPath = (() => {
   const rawMap = {}
 
-  // 1. นำข้อมูลจาก navigationGroups เข้าสู่ rawMap
   navigationGroups.forEach((group) => {
     group.items.forEach((item) => {
       if (item.to) {
@@ -98,7 +89,6 @@ export const breadcrumbByPath = (() => {
     })
   })
 
-  // 2. นำข้อมูลจาก additionalRoutes เข้าสู่ rawMap
   additionalRoutes.forEach((item) => {
     if (item.to) {
       rawMap[item.to] = {
@@ -111,7 +101,6 @@ export const breadcrumbByPath = (() => {
     }
   })
 
-  // 3. คำนวณ Parents Chain อัตโนมัติ (เช่น /result-page -> /speech-to-text -> /dashboard-conversation)
   const finalMap = {}
 
   Object.entries(rawMap).forEach(([to, config]) => {

@@ -106,7 +106,6 @@ function DashboardPage() {
 
   return (
     <div className="space-y-4">
-      {/* Filter Bar (แบบเดียวกับ WorklistCard) */}
       <FilterBar
         filters={dashboardFilterConfigs}
         initialValues={{

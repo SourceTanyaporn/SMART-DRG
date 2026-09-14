@@ -27,6 +27,7 @@ export function DatePicker({
   minDate,
   maxDate,
   disabled = false,
+  align = "left",
 }) {
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef(null)
@@ -170,7 +171,12 @@ export function DatePicker({
 
       {/* Popover Calendar */}
       {isOpen && (
-        <div className="absolute left-0 top-[calc(100%+4px)] z-50 w-72 rounded-xl border border-border bg-popover p-3 shadow-xl ring-1 ring-black/10 animate-in fade-in-0 zoom-in-95 duration-100">
+        <div
+          className={cn(
+            "absolute top-[calc(100%+4px)] z-50 w-72 rounded-xl border border-border bg-popover p-3 shadow-xl ring-1 ring-black/10 animate-in fade-in-0 zoom-in-95 duration-100",
+            align === "right" ? "right-0" : "left-0"
+          )}
+        >
           {/* Calendar Header */}
           <div className="flex items-center justify-between gap-1 pb-2.5 border-b border-border">
             <Button

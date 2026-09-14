@@ -16,6 +16,7 @@ import {
 import { useState, useEffect } from "react"
 import { useRouterState } from "@tanstack/react-router"
 import { Card } from "@/components/ui/card"
+import { Tab, TabsList } from "@/components/ui/tabs"
 import { EmrViewerTab } from "./emr-viewer-tab"
 import { CodingReviewTab } from "./coding-review-tab"
 import { ClinicalSummaryTab } from "./clinical-summary-tab"
@@ -106,7 +107,7 @@ export function CaseReviewPage({ initialTab }) {
           />
 
           {/* Tab Navigation */}
-          <div className="mt-3 flex flex-wrap gap-1 border-b border-border text-sm">
+          <TabsList className="mt-3 flex-wrap text-sm">
             <Tab
               label="ข้อมูลผู้ป่วย"
               active={activeTab === "patient"}
@@ -143,7 +144,7 @@ export function CaseReviewPage({ initialTab }) {
               active={activeTab === "audit"}
               onClick={() => setActiveTab("audit")}
             />
-          </div>
+          </TabsList>
         </div>
       </section>
 
@@ -366,26 +367,6 @@ export function CaseReviewPage({ initialTab }) {
   )
 }
 
-function Tab({ label, active, onClick, icon: Icon, badge, badgeClass, className = "" }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-sm font-medium transition cursor-pointer ${active
-          ? "border-primary text-primary font-semibold"
-          : "border-transparent text-muted-foreground hover:border-border hover:text-foreground"
-        } ${className}`}
-    >
-      {Icon && <Icon className="size-4" />}
-      <span>{label}</span>
-      {badge && (
-        <span className={`rounded-full border px-2 py-0.2 text-[11px] font-semibold ${badgeClass || "bg-muted text-muted-foreground"}`}>
-          {badge}
-        </span>
-      )}
-    </button>
-  )
-}
 
 function MedicalRow({ label, code, detail }) {
   return (
