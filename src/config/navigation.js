@@ -46,7 +46,7 @@ export const navigationGroups = [
     isDividerBefore: true,
     items: [
       { title: "แบบประเมิน", to: "/assesment-page", icon: BookText },
-      { title: "คลังความรู้การให้รหัสโรค", to: "/coding-knowledge", icon: BookOpenIcon },
+      // { title: "คลังความรู้การให้รหัสโรค", to: "/coding-knowledge", icon: BookOpenIcon },
       { title: "ประวัติการใช้งาน", to: "/activity-history", icon: HistoryIcon },
       { title: "ตั้งค่า", icon: SettingsIcon },
     ],
