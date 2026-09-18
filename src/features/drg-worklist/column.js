@@ -16,13 +16,40 @@ const statusClasses = {
 export const drgWorklistColumns = [
   {
     accessorKey: "an",
-    header: "AN",
-    cell: ({ getValue }) =>
-      createElement(
-        "span",
-        { className: "font-semibold text-foreground hover:text-primary transition-colors whitespace-nowrap" },
-        getValue(),
-      ),
+    header: "AN / VN",
+    cell: ({ getValue, row }) => {
+      const anVal = getValue()
+      if (anVal && String(anVal).trim() !== "" && anVal !== "-") {
+        return createElement(
+          "div",
+          { className: "flex items-center gap-1.5 whitespace-nowrap" },
+          createElement(
+            "span",
+            { className: "text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-500/15 text-indigo-700 dark:text-indigo-400 border border-indigo-500/25" },
+            "IPD"
+          ),
+          createElement(
+            "span",
+            { className: "font-semibold text-foreground hover:text-primary transition-colors font-mono text-xs" },
+            anVal
+          )
+        )
+      }
+      return createElement(
+        "div",
+        { className: "flex items-center gap-1.5 whitespace-nowrap" },
+        createElement(
+          "span",
+          { className: "text-[10px] font-bold px-1.5 py-0.5 rounded bg-sky-500/15 text-sky-700 dark:text-sky-400 border border-sky-500/25" },
+          "OPD"
+        ),
+        createElement(
+          "span",
+          { className: "font-medium text-muted-foreground font-mono text-xs" },
+          row.original.vn || "-"
+        )
+      )
+    },
   },
   {
     accessorKey: "hn",

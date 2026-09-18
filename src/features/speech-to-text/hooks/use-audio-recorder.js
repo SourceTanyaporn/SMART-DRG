@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from "react";
 import { TranscribeService } from "@/api/transcribe-service.js";
 import { toast } from "@/components/ui/toast-notification";
+import { isDoctorSpeaker } from "@/features/speech-to-text/utils/speaker-helper";
 
 export function useAudioRecorder({ selectedPatient, noteText } = {}) {
     const [audioFiles, setAudioFiles] = useState([]);
@@ -132,8 +133,8 @@ export function useAudioRecorder({ selectedPatient, noteText } = {}) {
                 const segments = transcriptionResult?.segments ?? [];
 
                 const formattedTranscript = segments.map((segment, index) => {
-                    const speaker = segment.speaker || "SPEAKER_00";
-                    const isDoctor = speaker === "SPEAKER_01";
+                    const isDoctor = isDoctorSpeaker(segment.speaker, segment.role);
+                    const speaker = segment.speaker || (isDoctor ? "speak00" : "speak01");
 
                     return {
                         id: segment.id ?? `${jobId}-${index}`,
@@ -143,7 +144,7 @@ export function useAudioRecorder({ selectedPatient, noteText } = {}) {
                         text: segment.text ?? "",
                         start: segment.start,
                         end: segment.end,
-                        role: segment.role ?? null,
+                        role: isDoctor ? "doctor" : "patient",
                     };
                 });
 
@@ -674,13 +675,14 @@ export function useAudioRecorder({ selectedPatient, noteText } = {}) {
 
             if (nextActive.transcriptSegments && nextActive.transcriptSegments.length > 0) {
                 const formatted = nextActive.transcriptSegments.map((segment, index) => {
-                    const isDoctor = segment.role === "doctor" || segment.speaker === "Doctor";
+                    const isDoctor = isDoctorSpeaker(segment.speaker, segment.role);
                     return {
                         id: index + 1,
-                        speaker: segment.speaker || (isDoctor ? "Doctor" : "Patient"),
+                        speaker: segment.speaker || (isDoctor ? "speak00" : "speak01"),
+                        name: isDoctor ? "แพทย์" : "ผู้ป่วย",
                         doctor: isDoctor,
                         text: segment.text,
-                        role: segment.role ?? null,
+                        role: isDoctor ? "doctor" : "patient",
                     };
                 });
                 setTranscript(formatted);
@@ -768,6 +770,32 @@ export function useAudioRecorder({ selectedPatient, noteText } = {}) {
         }
     };
 
+    const startProgressLoop = () => {
+        cancelAnimationFrame(animationFrameRef.current);
+        let lastTickTime = 0;
+        const tick = () => {
+            const audio = audioRef.current;
+            if (!audio) return;
+            const now = performance.now();
+            // Throttle to 30fps (~33ms) so React renders smoothly without freezing the main thread
+            if (now - lastTickTime >= 33) {
+                lastTickTime = now;
+                setCurrentTime(audio.currentTime);
+            }
+            if (!audio.paused && !audio.ended) {
+                animationFrameRef.current = requestAnimationFrame(tick);
+            }
+        };
+        animationFrameRef.current = requestAnimationFrame(tick);
+    };
+
+    const stopProgressLoop = () => {
+        cancelAnimationFrame(animationFrameRef.current);
+        if (audioRef.current) {
+            setCurrentTime(audioRef.current.currentTime);
+        }
+    };
+
     const updateAudioProgress = () => {
         const audio = audioRef.current;
         if (!audio) return;
@@ -778,18 +806,33 @@ export function useAudioRecorder({ selectedPatient, noteText } = {}) {
     };
 
     const handlePlayPause = async () => {
-        if (!audioRef.current || !audioUrl) return;
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        // Auto-recover audioUrl and src from active file if missing
+        let targetUrl = audioUrl;
+        if (!targetUrl && audioFiles.length > 0) {
+            const activeFile = audioFiles.find((f) => f.active) || audioFiles[0];
+            if (activeFile?.url) {
+                targetUrl = activeFile.url;
+                setAudioUrl(targetUrl);
+                if (!audio.src) {
+                    audio.src = targetUrl;
+                }
+            }
+        }
+
+        if (!audio.src && !targetUrl) return;
+
         try {
-            const audio = audioRef.current;
             if (audio.paused) {
                 await audio.play();
                 setIsPlaying(true);
-                cancelAnimationFrame(animationFrameRef.current);
-                animationFrameRef.current = requestAnimationFrame(updateAudioProgress);
+                startProgressLoop();
             } else {
                 audio.pause();
                 setIsPlaying(false);
-                cancelAnimationFrame(animationFrameRef.current);
+                stopProgressLoop();
             }
         } catch (error) {
             console.error("Playback error:", error);
@@ -824,6 +867,64 @@ export function useAudioRecorder({ selectedPatient, noteText } = {}) {
         setCurrentTime(newTime);
     };
 
+    const seekAndPlay = async (timeInSeconds) => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        // If audioUrl is not yet set, try to use active file's url
+        let targetUrl = audioUrl;
+        if (!targetUrl && audioFiles.length > 0) {
+            const activeFile = audioFiles.find((f) => f.active) || audioFiles[0];
+            if (activeFile?.url) {
+                targetUrl = activeFile.url;
+                setAudioUrl(targetUrl);
+                if (!audio.src) {
+                    audio.src = targetUrl;
+                }
+            }
+        }
+
+        const targetTime = Math.max(0, Math.min(duration || Infinity, Number(timeInSeconds) || 0));
+
+        try {
+            audio.currentTime = targetTime;
+            setCurrentTime(targetTime);
+
+            if (audio.paused) {
+                await audio.play();
+                setIsPlaying(true);
+                startProgressLoop();
+            }
+        } catch (error) {
+            console.error("Seek and play error:", error);
+        }
+    };
+
+    const updateTranscriptItem = (id, newText) => {
+        setTranscript((prev) =>
+            prev.map((item) =>
+                item.id === id ? { ...item, text: newText } : item
+            )
+        );
+        toast.success("แก้ไขข้อความเรียบร้อย");
+    };
+
+    const toggleSpeakerRole = (id) => {
+        setTranscript((prev) =>
+            prev.map((item) => {
+                if (item.id !== id) return item;
+                const nextDoc = !item.doctor;
+                return {
+                    ...item,
+                    doctor: nextDoc,
+                    name: nextDoc ? "แพทย์" : "ผู้ป่วย",
+                    speaker: nextDoc ? "speak00" : "speak01",
+                    role: nextDoc ? "doctor" : "patient",
+                };
+            })
+        );
+    };
+
     const handleSelectAudioFile = (file) => {
         if (!file.url) return;
 
@@ -848,13 +949,16 @@ export function useAudioRecorder({ selectedPatient, noteText } = {}) {
         // Load transcript of the selected file
         if (file.transcriptSegments && file.transcriptSegments.length > 0) {
             const formatted = file.transcriptSegments.map((segment, index) => {
-                const isDoctor = segment.role === "doctor" || segment.speaker === "Doctor";
+                const isDoctor = isDoctorSpeaker(segment.speaker, segment.role);
                 return {
-                    id: index + 1,
-                    speaker: segment.speaker || (isDoctor ? "Doctor" : "Patient"),
+                    id: segment.id || `${file.id}-${index}`,
+                    speaker: segment.speaker || (isDoctor ? "speak00" : "speak01"),
+                    name: isDoctor ? "แพทย์" : "ผู้ป่วย",
                     doctor: isDoctor,
                     text: segment.text,
-                    role: segment.role ?? null,
+                    start: segment.start ?? segment.start_time ?? 0,
+                    end: segment.end ?? segment.end_time ?? 0,
+                    role: isDoctor ? "doctor" : "patient",
                 };
             });
             setTranscript(formatted);
@@ -865,6 +969,8 @@ export function useAudioRecorder({ selectedPatient, noteText } = {}) {
                     name: "ผู้ป่วย",
                     doctor: false,
                     text: file.transcript || file.rawText,
+                    start: 0,
+                    end: file.duration || 0,
                 },
             ]);
         } else {
@@ -925,10 +1031,13 @@ export function useAudioRecorder({ selectedPatient, noteText } = {}) {
         handleVolumeChange,
         handleSeek,
         handleWaveformClick,
+        seekAndPlay,
         handlePlaybackRate,
         formatTime,
         generateWaveform,
         updateAudioProgress,
+        startProgressLoop,
+        stopProgressLoop,
         animationFrameRef,
 
         // Transcription & Dialogue
@@ -936,6 +1045,8 @@ export function useAudioRecorder({ selectedPatient, noteText } = {}) {
         transcriptionProgress,
         transcript,
         setTranscript,
+        updateTranscriptItem,
+        toggleSpeakerRole,
         treatmentTitle,
         setTreatmentTitle,
         isEditingTitle,

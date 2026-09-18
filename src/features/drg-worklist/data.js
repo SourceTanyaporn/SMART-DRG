@@ -10,7 +10,12 @@ const patientTemplates = [
     age: 65,
     dob: "12 ม.ค. 2504",
     rights: "บัตรทอง (UC)",
-    department: "OPD อายุรกรรม",
+    patientType: "IPD",
+    admitDate: "10 มี.ค. 2569",
+    dischargeDate: "ยังไม่จำหน่าย",
+    department: "IPD หอผู้ป่วยศัลยกรรมออร์โธปิดิกส์",
+    ward: "หอผู้ป่วยออร์โธปิดิกส์ ชั้น 4",
+    bed: "เตียง 08",
     doctor: "นพ. กิตติพงศ์ วงศ์สมุทร (ว.45892)",
     drg: "I70Z",
     diagnosis: "Major Hip Joint Replacement",
@@ -582,6 +587,95 @@ const patientTemplates = [
       barthelIndex: "5",
       cvdRisk: ">= 40%",
     },
+    patientType: "IPD",
+    ward: "หอผู้ป่วย ICU อายุรกรรม ชั้น 3",
+    bed: "เตียง ICU 02",
+  },
+  {
+    prefix: "นาย",
+    firstName: "อรรถพล",
+    lastName: "เจริญจิตต์",
+    gender: "ชาย",
+    age: 52,
+    dob: "14 พ.ค. 2517",
+    rights: "ประกันสังคม (SSO)",
+    department: "OPD คลินิกอายุรกรรม",
+    doctor: "นพ. กิตติพงศ์ วงศ์สมุทร (ว.45892)",
+    drg: "I10Z",
+    diagnosis: "Essential (primary) hypertension follow-up",
+    adjrw: 0.4521,
+    cost: 12500,
+    risk: "ต่ำ",
+    alerts: 0,
+    status: "เสร็จสิ้น",
+    allergies: "ไม่มีประวัติแพ้ยา",
+    allergyDetails: [],
+    underlying: "Hypertension",
+    bloodGroup: "O+",
+    phone: "089-771-4455",
+    citizenId: "3-1002-00441-22-1",
+    chiefComplaint: "มาตรวจติดตามความดันโลหิตตามนัด ขอยาเดิม ไม่มีอาการผิดปกติ",
+    presentIllness: "ผู้ป่วยความดันโลหิตสูง ทานยาสม่ำเสมอ ไม่มีอาการปวดศีรษะ ตาไม่พร่ามัว เจาะเลือดตรวจประจำปี",
+    physicalExam: "BP stable, Heart regular, lungs clear, no peripheral edema",
+    vitals: {
+      systolic: "130",
+      diastolic: "82",
+      bp: "130/82",
+      pr: "72",
+      respiratory: "16",
+      bodyTemperature: "36.5",
+      o2sat: "99",
+      weight: "68",
+      height: "170",
+      painScore: "0",
+      esi: "ESI 5",
+      barthelIndex: "20",
+      cvdRisk: "10-20%",
+    },
+    patientType: "OPD",
+  },
+  {
+    prefix: "นาง",
+    firstName: "ศิริพร",
+    lastName: "บุญมี",
+    gender: "หญิง",
+    age: 38,
+    dob: "28 ก.ย. 2531",
+    rights: "บัตรทอง (UC)",
+    department: "OPD เวชศาสตร์ครอบครัว",
+    doctor: "พญ. ปิยะดา เกษมสุข (ว.42199)",
+    drg: "J00Z",
+    diagnosis: "Acute Upper Respiratory Infection (Common Cold)",
+    adjrw: 0.3214,
+    cost: 8400,
+    risk: "ต่ำ",
+    alerts: 0,
+    status: "เสร็จสิ้น",
+    allergies: "ไม่มีประวัติแพ้ยา",
+    allergyDetails: [],
+    underlying: "ไม่มี",
+    bloodGroup: "B+",
+    phone: "086-332-9988",
+    citizenId: "1-4005-00128-99-4",
+    chiefComplaint: "มีไข้ต่ำๆ เจ็บคอ มีน้ำมูกใส ไอเล็กน้อย 2 วัน",
+    presentIllness: "2 วันก่อนเริ่มมีอาการเจ็บคอ กลืนลำบากเล็กน้อย มีน้ำมูกใส จามบ่อย ไม่มีอาการหอบเหนื่อย",
+    physicalExam: "Pharynx injected, tonsils not enlarged, lungs clear, no lymphadenopathy",
+    vitals: {
+      systolic: "118",
+      diastolic: "74",
+      bp: "118/74",
+      pr: "80",
+      respiratory: "18",
+      bodyTemperature: "37.5",
+      o2sat: "99",
+      weight: "52",
+      height: "158",
+      painScore: "2",
+      esi: "ESI 4",
+      barthelIndex: "20",
+      cvdRisk: "< 10%",
+    },
+    patientType: "OPD",
   },
 ]
 
@@ -609,13 +703,13 @@ export function generateDailyMockPatients() {
       const padIndex = String(globalIndex).padStart(4, "0")
       const patientId = `P${padIndex}`
       const hn = `67${String(10000 + (globalIndex % 90000)).padStart(6, "0")}`
-      const an = `${dateYmdShort}-${String(100 + i).padStart(5, "0")}`
 
-      const los = 2 + (i % 5)
-      const startDate = targetDate.subtract(los, "day").format("D MMM BBBB")
-      const dateRange = `${startDate} - ${thaiDate} (${los} วัน)`
-
-      const fullName = `${tpl.prefix}${tpl.firstName} ${tpl.lastName}`
+      // Rule: ถ้ามี AN คือ IPD / ถ้าไม่มี AN คือ OPD
+      // สลับเคสให้มีทั้ง IPD และ OPD ตาม Template
+      const isIpd = tpl.patientType === "IPD" || (!tpl.patientType && (i % 2 === 0 || tpl.department?.includes("IPD")))
+      const patientType = isIpd ? "IPD" : "OPD"
+      const an = isIpd ? `${dateYmdShort}-${String(100 + i).padStart(5, "0")}` : null
+      const vn = !isIpd ? `VN${targetDate.format("YY")}-${String(10000 + (globalIndex % 90000)).padStart(5, "0")}` : null
 
       // Vary status slightly based on days ago
       let status = tpl.status
@@ -625,10 +719,76 @@ export function generateDailyMockPatients() {
         status = i % 3 === 0 ? "กำลังตรวจสอบ" : "เสร็จสิ้น"
       }
 
+      const los = isIpd ? 2 + (i % 5) : 0
+      const admitDateObj = isIpd ? targetDate.subtract(los, "day") : null
+      const admitDate = isIpd ? admitDateObj.format("D MMM BBBB") : "-"
+      const dischargeDate = isIpd
+        ? (status === "เสร็จสิ้น" ? targetDate.format("D MMM BBBB") : "ยังไม่จำหน่าย")
+        : "-"
+      const visitDate = !isIpd ? thaiDate : null
+      const startDate = isIpd ? admitDate : null
+      const dateRange = isIpd ? `${startDate} - ${thaiDate} (${los} วัน)` : `${thaiDate} (ตรวจผู้ป่วยนอก)`
+
+      const bed = isIpd ? (tpl.bed || `เตียง ${String((i % 24) + 1).padStart(2, "0")}`) : null
+      const ward = isIpd ? (tpl.ward || tpl.department?.replace("OPD", "หอผู้ป่วย") || "หอผู้ป่วยอายุรกรรม") : null
+      const department = isIpd ? (tpl.department?.replace("OPD", "IPD หอผู้ป่วย") || "IPD อายุรกรรม") : (tpl.department || "OPD ทั่วไป")
+
+      const fullName = `${tpl.prefix}${tpl.firstName} ${tpl.lastName}`
+
+      // สร้าง Rounds จำลองสำหรับคนไข้ IPD (ตรวจเยี่ยมหลายรอบ)
+      const rounds = isIpd ? [
+        {
+          id: `rnd-${patientId}-1`,
+          day: 1,
+          date: targetDate.subtract(los - 1, "day").format("D MMM BBBB 09:30"),
+          type: "admission",
+          title: "ประเมินแรกรับ (Admission Note)",
+          doctor: tpl.doctor,
+          note: `แรกรับผู้ป่วย: ${tpl.chiefComplaint} ${tpl.presentIllness}`,
+          vitals: { ...tpl.vitals },
+          barthel: Number(tpl.vitals?.barthelIndex) || 12,
+          braden: 14,
+          status: "เสร็จสิ้น",
+        },
+        {
+          id: `rnd-${patientId}-2`,
+          day: 2,
+          date: targetDate.subtract(Math.max(0, los - 2), "day").format("D MMM BBBB 10:15"),
+          type: "daily_round",
+          title: "Day 2 Morning Round",
+          doctor: tpl.doctor,
+          note: "ติดตามอาการวันที่ 2: อาการทรงตัว ปฏิบัติตัวตามแผนการรักษา สัญญาณชีพคงที่",
+          vitals: { ...tpl.vitals, painScore: "3", bodyTemperature: "37.1" },
+          barthel: Math.min(20, (Number(tpl.vitals?.barthelIndex) || 12) + 2),
+          braden: 15,
+          status: los > 2 ? "เสร็จสิ้น" : "รอบปัจจุบัน",
+        },
+        ...(los > 2 ? [{
+          id: `rnd-${patientId}-3`,
+          day: los,
+          date: targetDate.format("D MMM BBBB 09:00"),
+          type: "daily_round",
+          title: `Day ${los} Ward Round (รอบปัจจุบัน)`,
+          doctor: tpl.doctor,
+          note: "การตรวจเยี่ยมประจำวัน: อาการดีขึ้น ชัดเจน วางแผนเตรียมจำหน่ายและสรุป DRG",
+          vitals: { ...tpl.vitals, painScore: "1", bodyTemperature: "36.8" },
+          barthel: Math.min(20, (Number(tpl.vitals?.barthelIndex) || 12) + 4),
+          braden: 17,
+          status: "รอบปัจจุบัน",
+        }] : [])
+      ] : []
+
       result.push({
         id: patientId,
         an,
+        vn,
         hn,
+        patientType,
+        isIpd,
+        bed,
+        ward,
+        los,
+        rounds,
         citizenId: tpl.citizenId,
         prefix: tpl.prefix,
         firstName: tpl.firstName,
@@ -641,8 +801,11 @@ export function generateDailyMockPatients() {
         demographics: `${tpl.gender}, ${tpl.age} ปี`,
         date: dateStr,
         dateRange,
+        admitDate,
+        dischargeDate,
+        visitDate,
         rights: tpl.rights,
-        department: tpl.department,
+        department,
         doctor: tpl.doctor,
         drg: tpl.drg,
         diagnosis: tpl.diagnosis,

@@ -30,6 +30,8 @@ export const buildFormDataFromPatient = (patient) => {
             treatmentPlan: "",
             note: "",
             disposition: "OPD",
+            admitDate: "",
+            dischargeDate: "",
             rawText: "",
             extractedBy: "rule_based",
 
@@ -96,7 +98,9 @@ export const buildFormDataFromPatient = (patient) => {
         investigations: Array.isArray(patient.investigations) ? patient.investigations : [],
         treatmentPlan: patient.treatmentPlan || "",
         note: patient.note || "",
-        disposition: patient.disposition || "OPD",
+        disposition: patient.disposition || (patient.an ? "IPD" : "OPD"),
+        admitDate: patient.admitDate || "",
+        dischargeDate: patient.dischargeDate || "",
         rawText: patient.rawText || "",
         extractedBy: patient.extractedBy || "rule_based",
 
@@ -142,6 +146,10 @@ export function useClinicalForm({ isNew = false, searchHn, searchPatientId } = {
     };
 
     const [selectedPatient, setSelectedPatient] = useState(() => findInitialPatient());
+    const [activeRoundId, setActiveRoundId] = useState(() => {
+        const p = findInitialPatient();
+        return p?.rounds?.[0]?.id || null;
+    });
 
     const [triageBaseline, setTriageBaseline] = useState(() => {
         const p = findInitialPatient();
@@ -166,6 +174,7 @@ export function useClinicalForm({ isNew = false, searchHn, searchPatientId } = {
     useEffect(() => {
         if (isNew) {
             setSelectedPatient(null);
+            setActiveRoundId(null);
             const emptyData = buildFormDataFromPatient(null);
             setFormData(emptyData);
             setTriageBaseline(emptyData);
@@ -173,6 +182,7 @@ export function useClinicalForm({ isNew = false, searchHn, searchPatientId } = {
             const found = mockPatients.find((p) => (searchHn && p.hn === searchHn) || (searchPatientId && p.id === searchPatientId));
             if (found) {
                 setSelectedPatient(found);
+                setActiveRoundId(found?.rounds?.[0]?.id || null);
                 const data = buildFormDataFromPatient(found);
                 setFormData(data);
                 setTriageBaseline(data);
@@ -182,9 +192,41 @@ export function useClinicalForm({ isNew = false, searchHn, searchPatientId } = {
 
     const handleSelectPatient = (patient) => {
         setSelectedPatient(patient);
+        setActiveRoundId(patient?.rounds?.[0]?.id || null);
         const initialData = buildFormDataFromPatient(patient);
         setFormData(initialData);
         setTriageBaseline(initialData);
+    };
+
+    const handleSelectRound = (round) => {
+        setActiveRoundId(round.id);
+        if (round.vitals) {
+            setFormData((prev) => ({
+                ...prev,
+                systolic: round.vitals.systolic || prev.systolic,
+                diastolic: round.vitals.diastolic || prev.diastolic,
+                pr: round.vitals.pr || prev.pr,
+                pulse: round.vitals.pulse || prev.pulse,
+                bodyTemperature: round.vitals.bodyTemperature || prev.bodyTemperature,
+                respiratory: round.vitals.respiratory || prev.respiratory,
+                o2sat: round.vitals.o2sat || prev.o2sat,
+            }));
+        }
+        if (round.note) {
+            setNoteText(round.note);
+        }
+        toast.info(`เปิดข้อมูล ${round.title}`, `วันที่: ${round.date}`);
+    };
+
+    const handleAddRound = (newRound) => {
+        if (!selectedPatient) return;
+        const updatedRounds = [newRound, ...(selectedPatient.rounds || [])];
+        const updatedPatient = {
+            ...selectedPatient,
+            rounds: updatedRounds,
+        };
+        setSelectedPatient(updatedPatient);
+        setActiveRoundId(newRound.id);
     };
 
     const handleRevertField = (fieldOrFields) => {
@@ -702,5 +744,11 @@ export function useClinicalForm({ isNew = false, searchHn, searchPatientId } = {
         // Drug Allergy & Safety Alerts
         getDrugAllergyAlerts,
         handleRemoveDrugFromPlan,
+
+        // IPD / OPD Ward Round Management
+        activeRoundId,
+        setActiveRoundId,
+        handleSelectRound,
+        handleAddRound,
     };
 }

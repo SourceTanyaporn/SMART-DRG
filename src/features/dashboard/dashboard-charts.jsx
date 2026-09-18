@@ -6,13 +6,13 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 
-const riskData = [
+const defaultRiskData = [
   { name: "สูง", value: 68, fill: "#ef476f" },
   { name: "ปานกลาง", value: 176, fill: "#f5ae21" },
   { name: "ต่ำ", value: 268, fill: "#20b486" },
 ]
 
-const revenueData = [
+const defaultRevenueData = [
   { date: "14 พ.ค.", expected: 520000, actual: 260000 },
   { date: "15 พ.ค.", expected: 840000, actual: 580000 },
   { date: "16 พ.ค.", expected: 940000, actual: 690000 },
@@ -34,32 +34,65 @@ const revenueConfig = {
   actual: { label: "รายได้จริง", color: "#7537d8" },
 }
 
-export function DashboardCharts() {
+export function DashboardCharts({
+  riskData = defaultRiskData,
+  revenueData = defaultRevenueData,
+  loading = false,
+  isLive = false,
+}) {
+  if (loading) {
+    return (
+      <section className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-[minmax(14rem,0.85fr)_minmax(0,1.15fr)]">
+        <div className="rounded-xl border border-border bg-card p-6 h-64 animate-pulse flex items-center justify-center text-muted-foreground text-sm">
+          กำลังโหลดข้อมูลการกระจายความเสี่ยงจาก Panacea API...
+        </div>
+        <div className="rounded-xl border border-border bg-card p-6 h-64 animate-pulse flex items-center justify-center text-muted-foreground text-sm">
+          กำลังโหลดข้อมูลแนวโน้มรายได้จาก Panacea API...
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-[minmax(14rem,0.85fr)_minmax(0,1.15fr)]">
-      <RiskDistribution />
-      <RevenueTrend />
+      <RiskDistribution data={riskData} isLive={isLive} />
+      <RevenueTrend data={revenueData} isLive={isLive} />
     </section>
   )
 }
 
-function RiskDistribution() {
+function RiskDistribution({ data = defaultRiskData, isLive }) {
+  const totalCases = data.reduce((acc, curr) => acc + (Number(curr.value) || 0), 0)
+
   return (
     <section className="rounded-xl border border-border bg-card p-3.5 sm:p-4.5 flex flex-col justify-between">
-      <h2 className="text-sm sm:text-base font-semibold text-foreground">การกระจายความเสี่ยง</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm sm:text-base font-semibold text-foreground">การกระจายความเสี่ยง</h2>
+        {isLive && (
+          <span className="text-[10px] font-medium text-emerald-600 bg-emerald-500/10 dark:text-emerald-400 px-1.5 py-0.5 rounded">
+            Live API
+          </span>
+        )}
+      </div>
       <div className="mt-2 flex flex-col sm:flex-row md:flex-col xl:flex-row items-center justify-around gap-2 sm:gap-4">
         <ChartContainer config={riskConfig} className="h-48 sm:h-52 min-h-48 sm:min-h-52 w-full max-w-[220px] aspect-auto">
           <PieChart>
             <ChartTooltip content={<ChartTooltipContent nameKey="name" hideLabel />} />
-            <Pie data={riskData} dataKey="value" nameKey="name" innerRadius={48} outerRadius={72} paddingAngle={3} strokeWidth={0}>
-              {riskData.map((item) => <Cell key={item.name} fill={item.fill} />)}
+            <Pie data={data} dataKey="value" nameKey="name" innerRadius={48} outerRadius={72} paddingAngle={3} strokeWidth={0}>
+              {data.map((item) => (
+                <Cell key={item.name} fill={item.fill || riskConfig[item.name]?.color || "#8884d8"} />
+              ))}
               <Label
                 content={({ viewBox }) => {
                   if (!viewBox || !("cx" in viewBox) || !("cy" in viewBox)) return null
                   return (
                     <text x={viewBox.cx} y={viewBox.cy} textAnchor="middle" dominantBaseline="middle">
-                      <tspan x={viewBox.cx} className="fill-foreground text-xl sm:text-2xl font-bold">512</tspan>
-                      <tspan x={viewBox.cx} dy="1.45em" className="fill-muted-foreground text-xs">เคสทั้งหมด</tspan>
+                      <tspan x={viewBox.cx} className="fill-foreground text-xl sm:text-2xl font-bold">
+                        {totalCases}
+                      </tspan>
+                      <tspan x={viewBox.cx} dy="1.45em" className="fill-muted-foreground text-xs">
+                        เคสทั้งหมด
+                      </tspan>
                     </text>
                   )
                 }}
@@ -68,30 +101,48 @@ function RiskDistribution() {
           </PieChart>
         </ChartContainer>
         <ul className="flex flex-wrap sm:flex-col justify-center gap-2 sm:gap-2.5 text-xs">
-          {riskData.map((item) => (
-            <li key={item.name} className="flex items-start gap-2">
-              <span className="mt-1 size-2.5 shrink-0 rounded-sm" style={{ backgroundColor: item.fill }} />
-              <span className="leading-4 text-muted-foreground">ความเสี่ยง{item.name}<br /><b className="text-foreground">{item.value} ({((item.value / 512) * 100).toFixed(1)}%)</b></span>
-            </li>
-          ))}
+          {data.map((item) => {
+            const fill = item.fill || riskConfig[item.name]?.color || "#8884d8"
+            const pct = totalCases > 0 ? ((item.value / totalCases) * 100).toFixed(1) : "0"
+
+            return (
+              <li key={item.name} className="flex items-start gap-2">
+                <span className="mt-1 size-2.5 shrink-0 rounded-sm" style={{ backgroundColor: fill }} />
+                <span className="leading-4 text-muted-foreground">
+                  ความเสี่ยง{item.name}
+                  <br />
+                  <b className="text-foreground">
+                    {item.value} ({pct}%)
+                  </b>
+                </span>
+              </li>
+            )
+          })}
         </ul>
       </div>
     </section>
   )
 }
 
-function RevenueTrend() {
+function RevenueTrend({ data = defaultRevenueData, isLive }) {
   return (
     <section className="rounded-xl border border-border bg-card p-3.5 sm:p-4.5 flex flex-col justify-between">
       <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2">
-        <h2 className="text-sm sm:text-base font-semibold text-foreground">แนวโน้มรายได้ (บาท)</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-sm sm:text-base font-semibold text-foreground">แนวโน้มรายได้ (บาท)</h2>
+          {isLive && (
+            <span className="text-[10px] font-medium text-emerald-600 bg-emerald-500/10 dark:text-emerald-400 px-1.5 py-0.5 rounded">
+              Live API
+            </span>
+          )}
+        </div>
         <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs">
           <LegendItem color="#2878e2" label="รายได้คาดการณ์" />
           <LegendItem color="#7537d8" label="รายได้จริง" />
         </div>
       </div>
       <ChartContainer config={revenueConfig} className="mt-2 sm:mt-3 h-48 sm:h-56 min-h-48 sm:min-h-56 aspect-auto">
-        <LineChart data={revenueData} margin={{ top: 8, right: 8, left: -14, bottom: 0 }}>
+        <LineChart data={data} margin={{ top: 8, right: 8, left: -14, bottom: 0 }}>
           <CartesianGrid vertical={false} strokeDasharray="3 3" />
           <XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={10} />
           <YAxis tickLine={false} axisLine={false} tickMargin={6} tickFormatter={(value) => `${value / 1000000}M`} />
@@ -107,3 +158,4 @@ function RevenueTrend() {
 function LegendItem({ color, label }) {
   return <span className="flex items-center gap-1.5 text-muted-foreground"><span className="h-0.5 w-4 rounded" style={{ backgroundColor: color }} />{label}</span>
 }
+

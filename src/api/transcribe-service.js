@@ -1,12 +1,9 @@
-import axios from "axios";
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8002";
-const transcribeApi = axios.create({
-  baseURL: `${API_BASE_URL}/v1/transcribe`,
-  timeout: 0,
-});
+import { aiClient } from "@/api/create-api";
 
 export const TranscribeService = {
+  /**
+   * ส่งไฟล์เสียงสำหรับแปลงเสียงเป็นข้อความ (Speech-to-Text)
+   */
   transcribe: async (file, postProcess = "openai") => {
     const formData = new FormData();
 
@@ -15,14 +12,35 @@ export const TranscribeService = {
     formData.append("task", "transcribe");
     formData.append("post_process", postProcess);
 
-    const response = await transcribeApi.post("", formData);
+    const response = await aiClient.post("/v1/transcribe", formData);
 
     return response.data;
   },
 
+  /**
+   * ตรวจสอบสถานะงาน Transcription
+   */
   getStatus: async (jobId) => {
-    const response = await transcribeApi.get(`/status/${jobId}`);
+    const response = await aiClient.get(`/v1/transcribe/status/${jobId}`);
 
     return response.data;
   },
-};
+
+  /**
+   * ส่ง Prompt งาน AI Clinical Chat / Assistant
+   */
+  chatClinical: async (payload) => {
+    const response = await aiClient.post("/v1/chat/clinical", payload);
+
+    return response.data;
+  },
+
+  /**
+   * ส่งข้อความเพื่อดึงข้อมูลฟอร์มทางคลินิก (Extract Form)
+   */
+  extractForm: async (payload) => {
+    const response = await aiClient.post("/v1/extract-form", payload);
+
+    return response.data;
+  },
+};

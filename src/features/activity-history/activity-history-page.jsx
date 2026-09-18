@@ -249,63 +249,70 @@ export function ActivityHistoryPage() {
   };
 
   return (
-    <div className="w-full space-y-4 p-2 sm:p-4 bg-background">
+    <div className="w-full space-y-4 bg-background">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-primary/10 text-primary">
-              <History size={20} />
+      <div className="rounded-xl border border-border bg-card p-3.5 sm:p-4 shadow-xs">
+        <div className="flex flex-col gap-3.5 lg:flex-row lg:items-center lg:justify-between">
+          {/* Left: Icon, Title, Subtitle, Badge */}
+          <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <History className="size-5" />
             </div>
-            <div>
-              <h1 className="text-base sm:text-lg font-bold text-foreground">
-                ประวัติการใช้งานระบบ (System Activity & Audit Log)
-              </h1>
-              <p className="text-xs text-muted-foreground">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-base sm:text-lg font-bold tracking-tight text-foreground truncate">
+                  ประวัติการใช้งานระบบ (System Activity & Audit Log)
+                </h1>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-semibold text-primary shrink-0">
+                  <span className="size-1.5 rounded-full bg-primary animate-pulse" />
+                  {filteredLogs.length} รายการ
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5 truncate">
                 ติดตามและตรวจสอบประวัติการทำรายการย้อนหลังของทุกโมดูลในระบบ SMART-DRG
               </p>
             </div>
           </div>
-        </div>
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-2 self-end sm:self-auto">
-          {/* View Mode Toggle */}
-          <div className="flex items-center bg-muted/60 p-1 rounded-xl border border-border/70 text-xs">
-            <button
+          {/* Right: View Mode Toggle & Export CSV Button */}
+          <div className="flex items-center gap-2 shrink-0 self-start lg:self-auto">
+            {/* View Mode Toggle */}
+            <div className="flex items-center bg-muted/60 p-1 rounded-xl border border-border/70 text-xs shrink-0">
+              <button
+                type="button"
+                onClick={() => setViewMode("table")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer whitespace-nowrap shrink-0 ${viewMode === "table"
+                  ? "bg-card text-foreground shadow-xs font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
+                  }`}
+              >
+                <TableIcon size={14} className="shrink-0" />
+                <span className="whitespace-nowrap">ตาราง</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("timeline")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer whitespace-nowrap shrink-0 ${viewMode === "timeline"
+                  ? "bg-card text-foreground shadow-xs font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
+                  }`}
+              >
+                <GitCommit size={14} className="shrink-0" />
+                <span className="whitespace-nowrap">ไทม์ไลน์</span>
+              </button>
+            </div>
+
+            {/* Export CSV Button */}
+            <Button
               type="button"
-              onClick={() => setViewMode("table")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer ${viewMode === "table"
-                ? "bg-card text-foreground shadow-xs font-semibold"
-                : "text-muted-foreground hover:text-foreground"
-                }`}
+              variant="outline"
+              onClick={handleExportCSV}
+              className="rounded-xl border-border bg-card text-foreground dark:text-slate-100 hover:bg-muted dark:hover:bg-muted/60 text-xs sm:text-sm font-medium gap-1.5 cursor-pointer shadow-2xs h-9 px-3.5 shrink-0"
             >
-              <TableIcon size={14} />
-              <span>ตาราง</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode("timeline")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer ${viewMode === "timeline"
-                ? "bg-card text-foreground shadow-xs font-semibold"
-                : "text-muted-foreground hover:text-foreground"
-                }`}
-            >
-              <GitCommit size={14} />
-              <span>ไทม์ไลน์</span>
-            </button>
+              <Download size={14} className="shrink-0" />
+              <span className="whitespace-nowrap">ส่งออก CSV</span>
+            </Button>
           </div>
-
-          {/* Export CSV Button */}
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleExportCSV}
-            className="rounded-xl border-border hover:bg-muted text-xs sm:text-sm font-medium gap-1.5 cursor-pointer shadow-2xs h-9 px-3.5"
-          >
-            <Download size={14} />
-            <span className="hidden sm:inline">ส่งออก CSV</span>
-          </Button>
         </div>
       </div>
 

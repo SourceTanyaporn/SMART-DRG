@@ -6,6 +6,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ClipboardCheckIcon,
+  FileBarChartIcon,
   PaperclipIcon,
   SparklesIcon,
   TrendingUpIcon,
@@ -15,6 +16,7 @@ import {
 } from "lucide-react"
 import { useState, useEffect } from "react"
 import { useRouterState } from "@tanstack/react-router"
+import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Tab, TabsList } from "@/components/ui/tabs"
 import { EmrViewerTab } from "./emr-viewer-tab"
@@ -37,9 +39,48 @@ const alerts = [
 export function CaseReviewPage({ initialTab }) {
   const routerState = useRouterState({ select: (s) => s.location })
   const searchTab = routerState?.search?.tab
+  const searchAn = routerState?.search?.an
+  const searchHn = routerState?.search?.hn
 
   const [activeTab, setActiveTab] = useState(initialTab || searchTab || "patient")
-  const [selectedPatient, setSelectedPatient] = useState(mockPatients[0])
+  const [selectedPatient, setSelectedPatient] = useState(() => {
+    if (searchAn) {
+      const match = mockPatients.find((p) => p.an === searchAn)
+      if (match) return match
+    }
+    if (searchHn) {
+      const match = mockPatients.find((p) => p.hn === searchHn)
+      if (match) return match
+    }
+    return mockPatients[0]
+  })
+
+  // Sync if URL search params change
+  useEffect(() => {
+    if (searchAn) {
+      const match = mockPatients.find((p) => p.an === searchAn)
+      if (match) setSelectedPatient(match)
+    } else if (searchHn) {
+      const match = mockPatients.find((p) => p.hn === searchHn)
+      if (match) setSelectedPatient(match)
+    }
+  }, [searchAn, searchHn])
+
+  const currentIndex = mockPatients.findIndex(
+    (p) => p.an === selectedPatient?.an || p.hn === selectedPatient?.hn
+  )
+
+  const handlePrevPatient = () => {
+    if (currentIndex > 0) {
+      setSelectedPatient(mockPatients[currentIndex - 1])
+    }
+  }
+
+  const handleNextPatient = () => {
+    if (currentIndex < mockPatients.length - 1) {
+      setSelectedPatient(mockPatients[currentIndex + 1])
+    }
+  }
 
   const patientSummary = [
     [["AN", selectedPatient?.an || "-"], ["HN", selectedPatient?.hn || "-"]],
@@ -71,43 +112,87 @@ export function CaseReviewPage({ initialTab }) {
 
   return (
     <div className="space-y-4 [&_[data-slot=card]]:!gap-2 [&_h2]:!mb-1 [&_h2+div]:!mt-1">
-      {/* Header & Tabs Navigation */}
-      <section className="flex flex-wrap items-center justify-between gap-3">
-        <div className="w-full space-y-3">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-foreground">Case Review</h1>
-              <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-                รอตรวจสอบ
-              </span>
+      {/* Top Header Card */}
+      <div className="rounded-xl border border-border bg-card p-3.5 sm:p-4 shadow-xs">
+        <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between">
+          {/* Left: Icon, Title, Subtitle, Badges */}
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <FileBarChartIcon className="size-5" />
             </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                className="flex h-9 items-center gap-1 rounded-lg border border-border px-3 text-xs text-muted-foreground transition hover:bg-muted cursor-pointer"
-              >
-                <ChevronLeftIcon className="size-4" /> ก่อนหน้า
-              </button>
-              <span className="px-2 text-xs font-semibold text-foreground">3 จาก 103 เคส</span>
-              <button
-                type="button"
-                className="flex h-9 items-center gap-1 rounded-lg border border-border px-3 text-xs font-semibold text-foreground transition hover:bg-muted cursor-pointer"
-              >
-                ถัดไป <ChevronRightIcon className="size-4" />
-              </button>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-base sm:text-lg font-bold tracking-tight text-foreground truncate">
+                  ตรวจสอบผู้ป่วย (Case Review)
+                </h1>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-semibold text-primary">
+                  <span className="size-1.5 rounded-full bg-primary animate-pulse" />
+                  {selectedPatient?.status || "รอตรวจสอบ"}
+                </span>
+                {selectedPatient?.risk && (
+                  <span
+                    className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                      selectedPatient.risk === "สูง"
+                        ? "bg-rose-500/10 text-rose-600 border border-rose-500/20"
+                        : selectedPatient.risk === "ปานกลาง"
+                        ? "bg-amber-500/10 text-amber-600 border border-amber-500/20"
+                        : "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20"
+                    }`}
+                  >
+                    ความเสี่ยง{selectedPatient.risk}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                ตรวจสอบความถูกต้องของรหัสโรค ข้อมูล EMR และผลการประเมิน DRG รายเคส
+              </p>
             </div>
           </div>
 
-          {/* Patient Search Filter */}
-          <PatientSearchBanner
-            selectedPatient={selectedPatient}
-            onSelectPatient={setSelectedPatient}
-            showPatientCard={false}
-          />
+          {/* Right: Case Navigation Switcher */}
+          <div className="flex items-center gap-1.5 self-start sm:self-auto">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={currentIndex <= 0}
+              onClick={handlePrevPatient}
+              className="h-8 gap-1 px-2.5 text-xs text-muted-foreground hover:text-foreground cursor-pointer disabled:opacity-40"
+              title="เคสก่อนหน้า"
+            >
+              <ChevronLeftIcon className="size-3.5" />
+              <span className="hidden xs:inline">ก่อนหน้า</span>
+            </Button>
 
-          {/* Tab Navigation */}
-          <TabsList className="mt-3 flex-wrap text-sm">
+            <span className="px-2 text-xs font-medium text-muted-foreground whitespace-nowrap">
+              เคส {currentIndex >= 0 ? currentIndex + 1 : 1} / {mockPatients.length}
+            </span>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={currentIndex >= mockPatients.length - 1}
+              onClick={handleNextPatient}
+              className="h-8 gap-1 px-2.5 text-xs text-muted-foreground hover:text-foreground cursor-pointer disabled:opacity-40"
+              title="เคสถัดไป"
+            >
+              <span className="hidden xs:inline">ถัดไป</span>
+              <ChevronRightIcon className="size-3.5" />
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Patient Search & Profile Banner */}
+      <PatientSearchBanner
+        selectedPatient={selectedPatient}
+        onSelectPatient={setSelectedPatient}
+        showPatientCard={true}
+      />
+
+      {/* Tab Navigation */}
+      <TabsList className="mt-1 flex-wrap text-sm">
             <Tab
               label="ข้อมูลผู้ป่วย"
               active={activeTab === "patient"}
@@ -145,8 +230,6 @@ export function CaseReviewPage({ initialTab }) {
               onClick={() => setActiveTab("audit")}
             />
           </TabsList>
-        </div>
-      </section>
 
       {/* Tab Content Display */}
       {activeTab === "patient" && (

@@ -820,32 +820,106 @@ function ScoreSelect({
   );
 }
 
+function parseDiagnosisList(codeStr, descStr) {
+  if (!codeStr || String(codeStr).trim() === "" || String(codeStr).trim() === "-") {
+    if (descStr && String(descStr).trim() !== "" && String(descStr).trim() !== "-") {
+      return [{ code: "-", desc: String(descStr).trim() }];
+    }
+    return [{ code: "-", desc: "" }];
+  }
+
+  const raw = String(codeStr).trim();
+  const rawDesc = descStr && String(descStr).trim() !== "-" ? String(descStr).trim() : "";
+
+  // Split by "/" outside parentheses
+  const parts = [];
+  let current = "";
+  let parenDepth = 0;
+
+  for (let i = 0; i < raw.length; i++) {
+    const char = raw[i];
+    if (char === "(") parenDepth++;
+    else if (char === ")") parenDepth = Math.max(0, parenDepth - 1);
+
+    if (char === "/" && parenDepth === 0) {
+      if (current.trim()) parts.push(current.trim());
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+  if (current.trim()) parts.push(current.trim());
+
+  if (parts.length === 0) {
+    return [{ code: raw, desc: rawDesc }];
+  }
+
+  return parts.map((part) => {
+    const match = part.match(/^([^\(]+?)(?:\s*\((.*)\))?$/);
+    if (match) {
+      const codePart = match[1].trim();
+      let descPart = match[2] ? match[2].trim() : "";
+
+      if (!descPart && rawDesc && parts.length === 1) {
+        descPart = rawDesc;
+      }
+
+      if (descPart.toLowerCase() === codePart.toLowerCase()) {
+        descPart = "";
+      }
+
+      return { code: codePart, desc: descPart };
+    }
+    return { code: part.trim(), desc: "" };
+  });
+}
+
 function DiagnosisCard({
   title,
   code,
   description,
 }) {
+  const items = parseDiagnosisList(code, description);
+  const isEmpty = items.length === 1 && items[0].code === "-" && !items[0].desc;
+
   return (
-    <div>
-      <div className="mb-1 flex items-center justify-between text-[11px]">
+    <div className="flex flex-col h-full">
+      <div className="mb-1.5 flex items-center justify-between text-[11px]">
         <span className="font-semibold text-foreground/90">
           {title}
         </span>
 
-        <span className="text-[10px] text-muted-foreground">
+        <span className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium text-primary bg-primary/10">
+          <Sparkles className="h-2.5 w-2.5" />
           AI Auto-Coded
         </span>
       </div>
 
-      <div className="flex h-9 items-center rounded-lg border border-border bg-muted/40">
-        <span className="px-3 font-bold text-foreground text-xs">
-          {code || "-"}
-        </span>
-
-        {description && (
-          <span className="border-l border-border px-3 text-[11px] text-muted-foreground truncate">
-            {description}
-          </span>
+      <div className="flex min-h-[44px] flex-1 flex-col justify-center gap-1.5 rounded-lg border border-border bg-muted/30 p-1.5">
+        {isEmpty ? (
+          <div className="flex h-8 items-center justify-center text-xs font-semibold text-muted-foreground">
+            -
+          </div>
+        ) : (
+          items.map((item, idx) => (
+            <div
+              key={idx}
+              className="flex items-start gap-2 rounded-md border border-border/70 bg-card px-2.5 py-1.5 text-xs shadow-2xs transition-colors hover:border-border"
+              title={item.desc ? `${item.code}: ${item.desc}` : item.code}
+            >
+              <span className="shrink-0 font-mono text-[12px] font-bold text-foreground tracking-wide">
+                {item.code}
+              </span>
+              {item.desc && (
+                <>
+                  <span className="mt-0.5 h-3.5 w-px bg-border shrink-0" />
+                  <span className="text-[11px] text-muted-foreground leading-snug break-words">
+                    {item.desc}
+                  </span>
+                </>
+              )}
+            </div>
+          ))
         )}
       </div>
     </div>

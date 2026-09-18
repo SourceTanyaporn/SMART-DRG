@@ -76,3 +76,14 @@ export const MessageFooter = React.forwardRef(
     }
 );
 MessageFooter.displayName = "MessageFooter";
+
+export {
+    MessageScroller,
+    MessageScrollerProvider,
+    MessageScrollerViewport,
+    MessageScrollerContent,
+    MessageScrollerItem,
+    MessageScrollerButton,
+    useMessageScroller,
+} from "./message-scroller";
+

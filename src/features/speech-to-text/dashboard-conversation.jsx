@@ -22,7 +22,7 @@ import {
 import { useNavigate } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { mockPatients } from "@/features/drg-worklist/data";
-import { DatePicker } from "@/components/ui/date-picker";
+import { FilterBar } from "@/components/ui/filter-bar";
 import dayjs from "@/lib/dayjs";
 import { Button } from "@/components/ui/button";
 
@@ -199,15 +199,46 @@ function getPageNumbers(currentPage, totalPages) {
   return pages;
 }
 
+const conversationFilterConfigs = [
+  {
+    type: "date",
+    name: "startDate",
+    label: "วันที่เริ่มต้น",
+    placeholder: "เลือกวันที่เริ่มต้น...",
+    minWidth: "w-36 sm:w-40",
+  },
+  {
+    type: "date",
+    name: "endDate",
+    label: "วันที่สิ้นสุด",
+    placeholder: "เลือกวันที่สิ้นสุด...",
+    minWidth: "w-36 sm:w-40",
+  },
+  {
+    type: "input",
+    name: "search",
+    placeholder: "ค้นหา HN, AN, ชื่อผู้ป่วย หรืออื่นๆ...",
+    minWidth: "flex-1 min-w-[200px] max-w-[320px]",
+  },
+];
+
 export function DashboardConversation() {
   const navigate = useNavigate();
 
   const todayStr = useMemo(() => dayjs().format("YYYY-MM-DD"), []);
 
-  const [startDate, setStartDate] = useState(todayStr);
-  const [endDate, setEndDate] = useState(todayStr);
-  const [search, setSearch] = useState("");
-  const [appliedSearch, setAppliedSearch] = useState("");
+  const [filterValues, setFilterValues] = useState(() => ({
+    startDate: todayStr,
+    endDate: todayStr,
+    search: "",
+  }));
+
+  const [appliedFilters, setAppliedFilters] = useState(() => ({
+    startDate: todayStr,
+    endDate: todayStr,
+    search: "",
+  }));
+
   const [viewMode, setViewMode] = useState("grid");
 
   // Pagination states
@@ -221,17 +252,17 @@ export function DashboardConversation() {
     let list = notebookList;
 
     // 1. Date filter: Start Date
-    if (startDate) {
-      list = list.filter((item) => item.rawDate && item.rawDate >= startDate);
+    if (appliedFilters.startDate) {
+      list = list.filter((item) => item.rawDate && item.rawDate >= appliedFilters.startDate);
     }
 
     // 2. Date filter: End Date
-    if (endDate) {
-      list = list.filter((item) => item.rawDate && item.rawDate <= endDate);
+    if (appliedFilters.endDate) {
+      list = list.filter((item) => item.rawDate && item.rawDate <= appliedFilters.endDate);
     }
 
     // 3. Search query filter
-    const query = (appliedSearch || search).trim().toLowerCase();
+    const query = (appliedFilters.search || "").trim().toLowerCase();
     if (query) {
       const cleanQ = query.replace(/[-\s]/g, "");
 
@@ -253,12 +284,12 @@ export function DashboardConversation() {
     }
 
     return list;
-  }, [startDate, endDate, search, appliedSearch, notebookList]);
+  }, [appliedFilters, notebookList]);
 
   // Reset pagination to page 1 whenever filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [startDate, endDate, appliedSearch, search, pageSize]);
+  }, [appliedFilters, pageSize]);
 
   // Pagination Calculations
   const totalItems = filteredData.length;
@@ -270,19 +301,20 @@ export function DashboardConversation() {
     return filteredData.slice(startIndex, endIndex);
   }, [filteredData, startIndex, endIndex]);
 
-  const hasActiveFilters = Boolean(startDate !== todayStr || endDate !== todayStr || search || appliedSearch);
-
-  const handleSearchSubmit = (e) => {
-    if (e) e.preventDefault();
-    setAppliedSearch(search);
-    setCurrentPage(1);
-  };
+  const hasActiveFilters = Boolean(
+    (appliedFilters.startDate && appliedFilters.startDate !== todayStr) ||
+    (appliedFilters.endDate && appliedFilters.endDate !== todayStr) ||
+    appliedFilters.search
+  );
 
   const handleResetFilters = () => {
-    setStartDate(todayStr);
-    setEndDate(todayStr);
-    setSearch("");
-    setAppliedSearch("");
+    const empty = {
+      startDate: "",
+      endDate: "",
+      search: "",
+    };
+    setFilterValues(empty);
+    setAppliedFilters(empty);
     setCurrentPage(1);
   };
 
@@ -290,123 +322,41 @@ export function DashboardConversation() {
     <section className="min-h-full bg-card rounded-xl border border-border">
       <div className="p-5">
         {/* Filter Toolbar */}
-        <div className="mb-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3 rounded-xl bg-muted/40 border border-border p-3">
-          {/* Search & Filter Form */}
-          <form
-            onSubmit={handleSearchSubmit}
-            className="flex flex-wrap items-center gap-2.5 flex-1 min-w-0"
+        <div className="mb-4">
+          <FilterBar
+            layout="inline"
+            filters={conversationFilterConfigs}
+            values={filterValues}
+            onChange={setFilterValues}
+            onSearch={(vals) => {
+              setAppliedFilters(vals);
+              setCurrentPage(1);
+            }}
+            onClear={() => {
+              handleResetFilters();
+            }}
+            clearButtonText="ล้างตัวกรอง"
           >
-            {/* Start Date */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs text-foreground font-medium whitespace-nowrap">วันที่เริ่มต้น:</span>
-              <div className="w-36 sm:w-40">
-                <DatePicker
-                  value={startDate}
-                  onChange={(val) => {
-                    setStartDate(val);
-                    setCurrentPage(1);
-                  }}
-                  placeholder="เลือกวันที่เริ่มต้น"
-                  className="h-9 text-xs"
-                />
-              </div>
-            </div>
-
-            {/* End Date */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs text-foreground font-medium whitespace-nowrap">วันที่สิ้นสุด:</span>
-              <div className="w-36 sm:w-40">
-                <DatePicker
-                  value={endDate}
-                  onChange={(val) => {
-                    setEndDate(val);
-                    setCurrentPage(1);
-                  }}
-                  placeholder="เลือกวันที่สิ้นสุด"
-                  className="h-9 text-xs"
-                />
-              </div>
-            </div>
-
-            {/* Search Input */}
-            <div className="relative flex-1 min-w-[200px] max-w-[320px]">
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="ค้นหา HN, AN, ชื่อผู้ป่วย หรืออื่นๆ..."
-                className="
-                  h-9 w-full rounded-md border border-input
-                  bg-card px-3 pr-8 text-xs text-foreground
-                  outline-none transition
-                  focus:border-primary
-                  focus:ring-1 focus:ring-primary/20
-                "
-              />
-              {search && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSearch("");
-                    setAppliedSearch("");
-                    setCurrentPage(1);
-                  }}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
-                  title="ล้างข้อความค้นหา"
-                >
-                  <X size={14} />
-                </button>
-              )}
-            </div>
-
-            <Button
-              type="submit"
-              size="sm"
-              className="h-9 px-3.5 text-xs font-semibold shadow-xs"
-            >
-              <Search size={15} />
-              <span>ค้นหา</span>
-            </Button>
-
-            {/* Reset / Clear Filter Button */}
-            {hasActiveFilters && (
-              <button
-                type="button"
-                onClick={handleResetFilters}
-                className="
-                  flex h-9 items-center gap-1.5 rounded-md
-                  border border-destructive/30 bg-destructive/10 px-3
-                  text-xs font-medium text-destructive hover:bg-destructive/20 transition cursor-pointer
-                "
-                title="ล้างตัวกรองทั้งหมด"
-              >
-                <RotateCcw size={13} />
-                <span>ล้างตัวกรอง</span>
-              </button>
-            )}
-
             {/* Result Counter Badge */}
             <div className="hidden sm:flex items-center gap-1 rounded-full bg-primary/10 border border-primary/20 px-3 py-1 text-xs text-primary font-medium">
               <span>พบ</span>
               <span className="font-bold text-primary">{totalItems}</span>
               <span>รายการ</span>
             </div>
-          </form>
 
-          {/* View Mode Toggle */}
-          <div className="flex items-center gap-2 shrink-0 self-end lg:self-center">
             {/* Mobile result badge */}
             <div className="sm:hidden text-xs text-muted-foreground font-medium mr-1">
               พบ <span className="font-bold text-primary">{totalItems}</span> รายการ
             </div>
 
+            {/* View Mode Toggle */}
             <div className="flex h-9 overflow-hidden rounded-md border border-input bg-card p-0.5">
               <button
                 type="button"
                 onClick={() => setViewMode("grid")}
                 title="มุมมองแบบการ์ด (Grid)"
                 className={`
-                  flex w-8 items-center justify-center rounded-sm transition
+                  flex w-8 items-center justify-center rounded-sm transition cursor-pointer
                   ${viewMode === "grid"
                     ? "bg-primary text-primary-foreground font-semibold shadow-xs"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted"}
@@ -420,7 +370,7 @@ export function DashboardConversation() {
                 onClick={() => setViewMode("list")}
                 title="มุมมองแบบรายการ (List)"
                 className={`
-                  flex w-8 items-center justify-center rounded-sm transition
+                  flex w-8 items-center justify-center rounded-sm transition cursor-pointer
                   ${viewMode === "list"
                     ? "bg-primary text-primary-foreground font-semibold shadow-xs"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted"}
@@ -429,7 +379,7 @@ export function DashboardConversation() {
                 <List size={16} />
               </button>
             </div>
-          </div>
+          </FilterBar>
         </div>
 
         {/* Empty State */}

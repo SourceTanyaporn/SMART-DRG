@@ -47,7 +47,13 @@ import {
     MessageAvatar,
     MessageContent,
     MessageFooter,
+    MessageScroller,
+    MessageScrollerViewport,
+    MessageScrollerContent,
+    MessageScrollerItem,
+    MessageScrollerButton,
 } from "@/components/ui/message";
+import { ChatMessageItem } from "../../../components/ui/chat-message-item";
 import { toast } from "@/components/ui/toast-notification";
 
 // Helper: แสดงผลข้อความ Markdown ตัวหนา (**bold**) ให้ออกมาคมชัด
@@ -620,7 +626,7 @@ export function AiClinicalSummary({
             className={`relative flex min-w-0 w-full flex-col overflow-hidden rounded-xl border border-border bg-card shadow-2xs col-span-1 lg:col-span-1 h-auto lg:h-full lg:min-h-0 ${className}`}
         >
             {/* Header */}
-            <div className="flex h-10 shrink-0 items-center justify-between border-b border-border bg-primary/5 px-2.5">
+            <div className="flex h-10 shrink-0 items-center justify-between border-b border-border bg-muted/20 px-2.5">
                 <div className="flex items-center gap-1.5 min-w-0">
                     <div className="flex size-5.5 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground shadow-2xs">
                         <Bot size={13} />
@@ -689,120 +695,57 @@ export function AiClinicalSummary({
                 </div>
             )}
 
-            {/* Main Messages Area */}
-            <div
-                ref={scrollContainerRef}
-                onScroll={handleScroll}
-                className="min-h-0 flex-1 overflow-y-auto px-3 py-3 scroll-smooth scrollbar-thin"
-            >
-                <div className="space-y-3">
-                    {messages.map((msg) => (
-                        <Message
-                            key={msg.id}
-                            from={msg.bot ? "bot" : "user"}
-                        >
-                            {msg.bot && (
-                                <MessageAvatar>
-                                    <Avatar size="sm" className="bg-primary text-primary-foreground shadow-2xs">
-                                        <AvatarFallback className="bg-transparent text-primary-foreground">
-                                            <Bot size={13} />
-                                        </AvatarFallback>
-                                    </Avatar>
-                                </MessageAvatar>
-                            )}
-
-                            <MessageContent>
-                                <BubbleGroup>
-                                    <Bubble variant={msg.bot ? "bot" : "user"}>
-                                        <BubbleContent className="text-[11.5px] leading-relaxed whitespace-pre-line break-words">
-                                            {renderFormattedMessage(msg.text)}
-                                        </BubbleContent>
-                                    </Bubble>
-                                </BubbleGroup>
-
-                                <div className="flex items-center justify-between gap-2 px-1 mt-0.5">
-                                    <MessageFooter>
-                                        <span>{msg.bot ? "AI Clinical Assistant" : "ผู้ใช้งาน"}</span>
-                                        <span>•</span>
-                                        <span>{msg.time}</span>
-                                    </MessageFooter>
-
-                                    {msg.bot && (
-                                        <BubbleReactions>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleCopyMessage(msg.text, msg.id)}
-                                                className="cursor-pointer flex items-center gap-1 rounded px-1.5 py-0.5 hover:bg-muted hover:text-foreground text-muted-foreground transition text-[9px]"
-                                                title="คัดลอกข้อความ"
-                                            >
-                                                {copiedId === msg.id ? (
-                                                    <>
-                                                        <Check size={10} className="text-emerald-600 dark:text-emerald-400" />
-                                                        <span className="text-emerald-600 dark:text-emerald-400">คัดลอกแล้ว</span>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <Copy size={10} />
-                                                        <span>คัดลอก</span>
-                                                    </>
-                                                )}
-                                            </button>
-                                        </BubbleReactions>
-                                    )}
-                                </div>
-                            </MessageContent>
-
-                            {!msg.bot && (
-                                <MessageAvatar>
-                                    <Avatar size="sm" className="bg-muted text-muted-foreground shadow-2xs">
-                                        <AvatarFallback className="bg-transparent text-muted-foreground">
-                                            <UserRound size={13} />
-                                        </AvatarFallback>
-                                    </Avatar>
-                                </MessageAvatar>
-                            )}
-                        </Message>
-                    ))}
-
-                    {isTyping && (
-                        <Message from="bot">
-                            <MessageAvatar>
-                                <Avatar size="sm" className="bg-primary text-primary-foreground">
-                                    <AvatarFallback className="bg-transparent text-primary-foreground">
-                                        <Bot size={13} />
-                                    </AvatarFallback>
-                                </Avatar>
-                            </MessageAvatar>
-                            <MessageContent>
-                                <Bubble variant="bot">
-                                    <BubbleContent>
-                                        <span className="italic flex items-center gap-1 text-muted-foreground text-xs">
-                                            AI กำลังวิเคราะห์ข้อมูลทางคลินิก
-                                            <span className="animate-bounce">.</span>
-                                            <span className="animate-bounce delay-100">.</span>
-                                            <span className="animate-bounce delay-200">.</span>
-                                        </span>
-                                    </BubbleContent>
-                                </Bubble>
-                            </MessageContent>
-                        </Message>
-                    )}
-
-                    <div ref={chatEndRef} />
-                </div>
-            </div>
-
-            {/* Floating Scroll to Bottom Button */}
-            {showScrollBottom && (
-                <button
-                    type="button"
-                    onClick={scrollToBottom}
-                    className="cursor-pointer absolute bottom-24 right-4 z-20 flex size-7 items-center justify-center rounded-full bg-card/95 border border-primary/30 shadow-md text-primary hover:bg-muted hover:scale-105 transition-all"
-                    title="เลื่อนลงล่างสุด"
+            {/* Main Messages Area with MessageScroller */}
+            <MessageScroller className="min-h-0 flex-1">
+                <MessageScrollerViewport
+                    ref={scrollContainerRef}
+                    onScroll={handleScroll}
                 >
-                    <ArrowDown size={14} />
-                </button>
-            )}
+                    <MessageScrollerContent>
+                        {messages.map((msg) => (
+                            <ChatMessageItem
+                                key={msg.id}
+                                msg={msg}
+                                copiedId={copiedId}
+                                onCopy={handleCopyMessage}
+                                onApplyStructuredAction={handleApplyStructuredAction}
+                                isApplied={Boolean(appliedActions[msg.id])}
+                            />
+                        ))}
+
+                        {isTyping && (
+                            <MessageScrollerItem messageId="typing-indicator">
+                                <Message from="bot">
+                                    <MessageAvatar>
+                                        <Avatar size="sm" className="bg-primary text-primary-foreground">
+                                            <AvatarFallback className="bg-transparent text-primary-foreground">
+                                                <Bot size={13} />
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    </MessageAvatar>
+                                    <MessageContent>
+                                        <Bubble variant="bot">
+                                            <BubbleContent>
+                                                <span className="italic flex items-center gap-1 text-muted-foreground text-xs">
+                                                    AI กำลังวิเคราะห์ข้อมูลทางคลินิก
+                                                    <span className="animate-bounce">.</span>
+                                                    <span className="animate-bounce delay-100">.</span>
+                                                    <span className="animate-bounce delay-200">.</span>
+                                                </span>
+                                            </BubbleContent>
+                                        </Bubble>
+                                    </MessageContent>
+                                </Message>
+                            </MessageScrollerItem>
+                        )}
+
+                        <div ref={chatEndRef} />
+                    </MessageScrollerContent>
+                </MessageScrollerViewport>
+
+                {/* Floating Scroll to Bottom Button */}
+                <MessageScrollerButton />
+            </MessageScroller>
 
             {/* Bottom Quick Actions & Input Bar */}
             <div className="shrink-0 border-t border-border bg-card">
@@ -838,7 +781,7 @@ export function AiClinicalSummary({
 
                         <button
                             type="submit"
-                            disabled={!inputValue.trim() || isTyping}
+                            // disabled={!inputValue.trim() || isTyping}
                             className="cursor-pointer flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground transition hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed shadow-2xs"
                             title="ส่งข้อความ"
                         >
@@ -874,8 +817,8 @@ export function AiClinicalSummary({
                             type="button"
                             onClick={() => setVisitFilter("all")}
                             className={`cursor-pointer rounded-md px-2 py-0.5 font-semibold transition ${visitFilter === "all"
-                                    ? "bg-primary/10 text-primary border border-primary/20"
-                                    : "text-muted-foreground hover:bg-muted"
+                                ? "bg-primary/10 text-primary border border-primary/20"
+                                : "text-muted-foreground hover:bg-muted"
                                 }`}
                         >
                             ทั้งหมด ({currentPatientSessions.length})
@@ -885,8 +828,8 @@ export function AiClinicalSummary({
                             type="button"
                             onClick={() => setVisitFilter("current_visit")}
                             className={`cursor-pointer rounded-md px-2 py-0.5 font-semibold transition ${visitFilter === "current_visit"
-                                    ? "bg-primary/10 text-primary border border-primary/20"
-                                    : "text-muted-foreground hover:bg-muted"
+                                ? "bg-primary/10 text-primary border border-primary/20"
+                                : "text-muted-foreground hover:bg-muted"
                                 }`}
                         >
                             เฉพาะ Visit ปัจจุบัน ({filteredSessions.length})
@@ -905,8 +848,8 @@ export function AiClinicalSummary({
                                         key={session.id}
                                         onClick={() => handleSelectSession(session)}
                                         className={`cursor-pointer group relative rounded-xl border p-2.5 transition-all shadow-2xs ${isCurrent
-                                                ? "border-primary bg-primary/5 shadow-xs ring-1 ring-primary/30"
-                                                : "border-border bg-card hover:border-primary/40 hover:bg-muted/40"
+                                            ? "border-primary bg-primary/5 shadow-xs ring-1 ring-primary/30"
+                                            : "border-border bg-card hover:border-primary/40 hover:bg-muted/40"
                                             }`}
                                     >
                                         <div className="flex items-start justify-between gap-1.5">

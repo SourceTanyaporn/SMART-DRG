@@ -9,5 +9,11 @@ export const Route = createFileRoute("/worklist")({
 function WorklistPage() {
   const navigate = useNavigate()
 
-  return <WorklistCard onCaseSelect={() => navigate({ to: "/case-review" })} />
+  return (
+    <WorklistCard
+      title="รายการผู้ป่วย DRG"
+      subtitle="รายการข้อมูลเวชระเบียนผู้ป่วยใน สำหรับการประเมิน DRG และตรวจสอบความสมบูรณ์"
+      onCaseSelect={() => navigate({ to: "/case-review" })}
+    />
+  )
 }

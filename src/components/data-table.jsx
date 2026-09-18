@@ -65,7 +65,11 @@ export function DataTable({ columns, data, searchPlaceholder, onRowSelect, selec
           <TableBody>
             {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => {
-                const isSelected = selectedRowId === row.original.an
+                const isSelected = selectedRowId && (
+                  selectedRowId === row.original.an ||
+                  selectedRowId === row.original.vn ||
+                  selectedRowId === row.original.id
+                )
 
                 return (
                   <TableRow

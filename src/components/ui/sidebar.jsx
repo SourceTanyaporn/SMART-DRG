@@ -16,12 +16,9 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet"
 import { Skeleton } from "@/components/ui/skeleton"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { PanelLeftIcon } from "lucide-react"
+import { useTheme } from "@/context/theme-context"
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
@@ -116,7 +113,7 @@ function SidebarProvider({
           }
         }
         className={cn(
-          "group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar",
+          "group/sidebar-wrapper flex min-h-svh w-full max-w-full overflow-x-hidden has-data-[variant=inset]:bg-sidebar",
           className
         )}
         {...props}>
@@ -178,7 +175,7 @@ function Sidebar({
 
   return (
     <div
-      className="group peer hidden text-sidebar-foreground md:block"
+      className="group peer hidden text-sidebar-foreground md:block shrink-0"
       data-state={state}
       data-collapsible={state === "collapsed" ? collapsible : ""}
       data-variant={variant}
@@ -188,7 +185,7 @@ function Sidebar({
       <div
         data-slot="sidebar-gap"
         className={cn(
-          "relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear",
+          "relative w-(--sidebar-width) shrink-0 bg-transparent transition-[width] duration-200 ease-linear",
           "group-data-[collapsible=offcanvas]:w-0",
           "group-data-[side=right]:rotate-180",
           variant === "floating" || variant === "inset"
@@ -224,6 +221,8 @@ function SidebarTrigger({
   ...props
 }) {
   const { toggleSidebar } = useSidebar()
+  const theme = useTheme?.()
+  const isDark = Boolean(theme?.isDark)
 
   return (
     <Button
@@ -231,13 +230,25 @@ function SidebarTrigger({
       data-slot="sidebar-trigger"
       variant="ghost"
       size="icon-sm"
-      className={cn(className)}
+      className={cn(
+        "cursor-pointer transition-colors text-muted-foreground hover:text-foreground hover:bg-muted/80",
+        "dark:!text-white dark:hover:!text-white dark:hover:bg-white/10",
+        isDark && "!text-white hover:!text-white",
+        className
+      )}
+      style={isDark ? { color: "#ffffff" } : undefined}
       onClick={(event) => {
         onClick?.(event)
         toggleSidebar()
       }}
       {...props}>
-      <PanelLeftIcon />
+      <PanelLeftIcon
+        className={cn(
+          "size-4.5 sm:size-5 transition-colors",
+          isDark && "!text-white !stroke-white"
+        )}
+        style={isDark ? { stroke: "#ffffff", color: "#ffffff" } : undefined}
+      />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
@@ -278,7 +289,8 @@ function SidebarInset({
     <main
       data-slot="sidebar-inset"
       className={cn(
-        "relative flex w-full flex-1 flex-col bg-background md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-none md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2",
+        "relative flex min-h-svh flex-1 flex-col bg-background min-w-0 max-w-full",
+        "md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-none md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2",
         className
       )}
       {...props} />

@@ -82,8 +82,8 @@ export function PatientSearchBanner({
         // Quick category filter
         const matchCategory =
             filterCategory === "ทั้งหมด" ||
-            (filterCategory === "วันนี้" && (p.isToday || p.date === todayStr)) ||
-            (filterCategory === "เมื่อวาน" && (p.isYesterday || p.date === yesterdayStr)) ||
+            // (filterCategory === "วันนี้" && (p.isToday || p.date === todayStr)) ||
+            // (filterCategory === "เมื่อวาน" && (p.isYesterday || p.date === yesterdayStr)) ||
             (filterCategory === "OPD" && p.department?.includes("OPD")) ||
             (filterCategory === "IPD" && p.department?.includes("IPD"));
 
@@ -94,10 +94,17 @@ export function PatientSearchBanner({
         const cleanCitizen = (p.citizenId || "").replace(/[-\s]/g, "");
         const cleanHn = (p.hn || "").toLowerCase().replace(/[-\s]/g, "");
         const cleanAn = (p.an || "").toLowerCase().replace(/[-\s]/g, "");
+        const cleanVn = (p.vn || "").toLowerCase().replace(/[-\s]/g, "");
 
-        // Match HN, AN, Citizen ID, Name, Doctor, Date, Diagnosis
+        // Match HN, AN, VN, Type, Citizen ID, Name, Doctor, Date, Diagnosis
         const matchHn = cleanHn.includes(cleanQ) || (p.hn && p.hn.toLowerCase().includes(q));
         const matchAn = cleanAn.includes(cleanQ) || (p.an && p.an.toLowerCase().includes(q));
+        const matchVn = cleanVn.includes(cleanQ) || (p.vn && p.vn.toLowerCase().includes(q));
+        const matchType =
+            (cleanQ === "ipd" && Boolean(p.an)) ||
+            (cleanQ === "opd" && !p.an) ||
+            (q.includes("ผู้ป่วยใน") && Boolean(p.an)) ||
+            (q.includes("ผู้ป่วยนอก") && !p.an);
         const matchCitizen = cleanCitizen.includes(cleanQ) || (p.citizenId && p.citizenId.includes(q));
         const matchName =
             (p.fullName && p.fullName.toLowerCase().includes(q)) ||
@@ -107,7 +114,7 @@ export function PatientSearchBanner({
         const matchDiagnosis = (p.diagnosis && p.diagnosis.toLowerCase().includes(q)) || (p.drg && p.drg.toLowerCase().includes(q));
         const matchDate = (p.date && p.date.includes(q)) || (q === "วันนี้" && (p.isToday || p.date === todayStr)) || (q === "เมื่อวาน" && (p.isYesterday || p.date === yesterdayStr));
 
-        return matchHn || matchAn || matchCitizen || matchName || matchDoctor || matchDiagnosis || matchDate;
+        return matchHn || matchAn || matchVn || matchType || matchCitizen || matchName || matchDoctor || matchDiagnosis || matchDate;
     });
 
     const getMatchReason = (p, query) => {
@@ -117,12 +124,22 @@ export function PatientSearchBanner({
         const cleanCitizen = (p.citizenId || "").replace(/[-\s]/g, "");
         const cleanHn = (p.hn || "").toLowerCase().replace(/[-\s]/g, "");
         const cleanAn = (p.an || "").toLowerCase().replace(/[-\s]/g, "");
+        const cleanVn = (p.vn || "").toLowerCase().replace(/[-\s]/g, "");
 
+        if (cleanAn.includes(cleanQ) || (p.an && p.an.toLowerCase().includes(q))) {
+            return { label: "AN", value: p.an, color: "bg-indigo-500/10 text-indigo-600 border-indigo-500/20" };
+        }
+        if (cleanVn.includes(cleanQ) || (p.vn && p.vn.toLowerCase().includes(q))) {
+            return { label: "VN", value: p.vn, color: "bg-sky-500/10 text-sky-600 border-sky-500/20" };
+        }
+        if ((cleanQ === "ipd" || q.includes("ผู้ป่วยใน")) && p.an) {
+            return { label: "ประเภท", value: "IPD ผู้ป่วยใน", color: "bg-indigo-500/10 text-indigo-600 border-indigo-500/20" };
+        }
+        if ((cleanQ === "opd" || q.includes("ผู้ป่วยนอก")) && !p.an) {
+            return { label: "ประเภท", value: "OPD ผู้ป่วยนอก", color: "bg-sky-500/10 text-sky-600 border-sky-500/20" };
+        }
         if (cleanHn.includes(cleanQ) || (p.hn && p.hn.toLowerCase().includes(q))) {
             return { label: "HN", value: p.hn, color: "bg-primary/10 text-primary border-primary/20" };
-        }
-        if (cleanAn.includes(cleanQ) || (p.an && p.an.toLowerCase().includes(q))) {
-            return { label: "AN", value: p.an, color: "bg-primary/10 text-primary border-primary/20" };
         }
         if (cleanCitizen.includes(cleanQ) || (p.citizenId && p.citizenId.includes(q))) {
             return { label: "เลขบัตร ปชช", value: p.citizenId, color: "bg-primary/10 text-primary border-primary/20" };
@@ -160,6 +177,10 @@ export function PatientSearchBanner({
         }
     };
 
+    const isSelectedPatientIpd = Boolean(
+        selectedPatient?.an && String(selectedPatient.an).trim() !== "" && selectedPatient.an !== "-"
+    );
+
     return (
         <div ref={containerRef} className={`relative z-30 w-full ${className}`}>
             {/* When patient is selected & not in editing search mode */}
@@ -183,21 +204,39 @@ export function PatientSearchBanner({
                                 <h2 className="text-sm font-bold text-foreground tracking-tight truncate">
                                     {selectedPatient.fullName}
                                 </h2>
-                                <span className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] font-medium text-foreground/80">
-                                    อายุ {selectedPatient.age} ปี ({selectedPatient.gender})
-                                </span>
-                                <span className="rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary border border-primary/20">
-                                    {selectedPatient.department}
-                                </span>
-                                {selectedPatient.doctor && (
-                                    <span
-                                        className="flex items-center gap-1 rounded-md bg-primary/10 border border-primary/20 px-2 py-0.5 text-[11px] font-semibold text-primary shadow-2xs"
-                                        title={`แพทย์ผู้ตรวจ: ${selectedPatient.doctor}`}
-                                    >
-                                        <Stethoscope size={12} className="text-primary shrink-0" />
-                                        <span>แพทย์: {selectedPatient.doctor}</span>
+                                {isSelectedPatientIpd ? (
+                                    <span className="inline-flex items-center gap-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-700 dark:text-indigo-400 px-2 py-0.5 text-[10px] font-bold">
+                                        <span className="size-1.5 rounded-full bg-indigo-500"></span>
+                                        IPD ผู้ป่วยใน
+                                    </span>
+                                ) : (
+                                    <span className="inline-flex items-center gap-1 rounded-full bg-sky-500/15 border border-sky-500/30 text-sky-700 dark:text-sky-400 px-2 py-0.5 text-[10px] font-bold">
+                                        <span className="size-1.5 rounded-full bg-sky-500"></span>
+                                        OPD ผู้ป่วยนอก
                                     </span>
                                 )}
+                                <div className="rounded-md border border-border bg-card px-1.5 py-0.5 text-[11px] font-medium text-foreground/80">
+                                    <span className="text-[10px] font-semibold text-primary">อายุ :</span> {selectedPatient.age}
+                                </div>
+                                <div className="rounded-md border border-border bg-card px-1.5 py-0.5 text-[11px] font-medium text-foreground/80">
+                                    <span className="text-[10px] font-semibold text-primary">เพศ :</span> {selectedPatient.gender}
+                                </div>
+                                <div className="rounded-md border border-border bg-card px-1.5 py-0.5 text-[11px] font-medium text-foreground/80">
+                                    <span className="text-[10px] font-semibold text-primary">แผนก :</span> {selectedPatient.department}
+                                </div>
+                                {isSelectedPatientIpd && selectedPatient.ward && (
+                                    <div className="rounded-md border border-border bg-card px-1.5 py-0.5 text-[11px] font-medium text-foreground/80">
+                                        <span className="text-[10px] font-semibold text-primary">หอผู้ป่วย :</span> {selectedPatient.ward}
+                                    </div>
+                                )}
+                                {isSelectedPatientIpd && selectedPatient.bed && (
+                                    <div className="rounded-md border border-border bg-card px-1.5 py-0.5 text-[11px] font-medium text-foreground/80">
+                                        <span className="text-[10px] font-semibold text-primary">เตียง :</span> {selectedPatient.bed}
+                                    </div>
+                                )}
+                                <div className="rounded-md border border-border bg-card px-1.5 py-0.5 text-[11px] font-medium text-foreground/80">
+                                    <span className="text-[10px] font-semibold text-primary">แพทย์ :</span> {selectedPatient.doctor}
+                                </div>
                             </div>
 
                             {/* ID Pills with Click-to-Copy */}
@@ -217,20 +256,37 @@ export function PatientSearchBanner({
                                     )}
                                 </button>
 
-                                <button
-                                    type="button"
-                                    onClick={() => handleCopy(selectedPatient.an, "an")}
-                                    className="group flex items-center gap-1 rounded border border-border bg-card px-1.5 py-0.5 text-[11px] font-medium text-foreground hover:border-primary/40 hover:bg-muted transition cursor-pointer"
-                                    title="คลิกเพื่อคัดลอก AN"
-                                >
-                                    <span className="text-[10px] font-semibold text-primary">AN:</span>
-                                    <span className="font-mono">{selectedPatient.an}</span>
-                                    {copiedField === "an" ? (
-                                        <Check size={10} className="text-emerald-500" />
-                                    ) : (
-                                        <Copy size={9} className="opacity-40 group-hover:opacity-100 text-muted-foreground" />
-                                    )}
-                                </button>
+                                {isSelectedPatientIpd && selectedPatient.an ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleCopy(selectedPatient.an, "an")}
+                                        className="group flex items-center gap-1 rounded border border-indigo-500/30 bg-indigo-500/5 px-1.5 py-0.5 text-[11px] font-medium text-foreground hover:border-indigo-500/60 hover:bg-indigo-500/10 transition cursor-pointer"
+                                        title="คลิกเพื่อคัดลอก AN"
+                                    >
+                                        <span className="text-[10px] font-semibold text-indigo-600 dark:text-indigo-400">AN:</span>
+                                        <span className="font-mono font-bold text-indigo-700 dark:text-indigo-300">{selectedPatient.an}</span>
+                                        {copiedField === "an" ? (
+                                            <Check size={10} className="text-emerald-500" />
+                                        ) : (
+                                            <Copy size={9} className="opacity-40 group-hover:opacity-100 text-muted-foreground" />
+                                        )}
+                                    </button>
+                                ) : selectedPatient.vn ? (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleCopy(selectedPatient.vn, "vn")}
+                                        className="group flex items-center gap-1 rounded border border-sky-500/30 bg-sky-500/5 px-1.5 py-0.5 text-[11px] font-medium text-foreground hover:border-sky-500/60 hover:bg-sky-500/10 transition cursor-pointer"
+                                        title="คลิกเพื่อคัดลอก VN"
+                                    >
+                                        <span className="text-[10px] font-semibold text-sky-600 dark:text-sky-400">VN:</span>
+                                        <span className="font-mono font-bold text-sky-700 dark:text-sky-300">{selectedPatient.vn}</span>
+                                        {copiedField === "vn" ? (
+                                            <Check size={10} className="text-emerald-500" />
+                                        ) : (
+                                            <Copy size={9} className="opacity-40 group-hover:opacity-100 text-muted-foreground" />
+                                        )}
+                                    </button>
+                                ) : null}
 
                                 <button
                                     type="button"
@@ -247,15 +303,17 @@ export function PatientSearchBanner({
                                     )}
                                 </button>
 
-                                <span className="rounded bg-primary/10 border border-primary/20 px-1.5 py-0.5 text-[10px] font-medium text-primary">
-                                    สิทธิ : {selectedPatient.rights}
-                                </span>
+                                <div className="rounded-md border border-border bg-card px-1.5 py-0.5 text-[11px] font-medium text-foreground/80">
+                                    <span className="text-[10px] font-semibold text-primary">สิทธิ :</span> {selectedPatient.rights}
+                                </div>
 
-                                {selectedPatient.date && (
-                                    <span className="rounded bg-muted border border-border px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
-                                        วันที่ : {selectedPatient.isToday ? "วันนี้" : selectedPatient.isYesterday ? "เมื่อวาน" : dayjs(selectedPatient.date).format("D MMM BBBB")}
-                                    </span>
-                                )}
+                                <div className="rounded-md border border-border bg-card px-1.5 py-0.5 text-[11px] font-medium text-foreground/80">
+                                    <span className="text-[10px] font-semibold text-primary">วันที่แอดมิท :</span> {selectedPatient.admitDate || (isSelectedPatientIpd ? (selectedPatient.date ? dayjs(selectedPatient.date).format("D MMM BBBB") : "-") : "-")}
+                                </div>
+
+                                <div className="rounded-md border border-border bg-card px-1.5 py-0.5 text-[11px] font-medium text-foreground/80">
+                                    <span className="text-[10px] font-semibold text-primary">วันที่จำหน่าย :</span> {selectedPatient.dischargeDate || (isSelectedPatientIpd ? "ยังไม่จำหน่าย" : "-")}
+                                </div>
 
                                 {selectedPatient.allergies && selectedPatient.allergies !== "ไม่มีประวัติแพ้ยา" && (
                                     <div className="relative inline-block" ref={allergyCardRef}>
@@ -442,7 +500,7 @@ export function PatientSearchBanner({
 
                         {/* Quick filter chips */}
                         <div className="flex flex-wrap items-center gap-1 text-xs shrink-0">
-                            {["ทั้งหมด", "วันนี้", "เมื่อวาน", "OPD", "IPD"].map((cat) => (
+                            {["ทั้งหมด", "OPD", "IPD"].map((cat) => (
                                 <button
                                     key={cat}
                                     type="button"
@@ -512,6 +570,15 @@ export function PatientSearchBanner({
 
                                                     <div className="min-w-0 flex-1">
                                                         <div className="flex flex-wrap items-center gap-1.5">
+                                                            {Boolean(patient.an && String(patient.an).trim() !== "" && patient.an !== "-") ? (
+                                                                <span className="rounded-md bg-indigo-500/15 border border-indigo-500/30 text-indigo-700 dark:text-indigo-400 px-1.5 py-0.2 text-[10px] font-bold">
+                                                                    IPD
+                                                                </span>
+                                                            ) : (
+                                                                <span className="rounded-md bg-sky-500/15 border border-sky-500/30 text-sky-700 dark:text-sky-400 px-1.5 py-0.2 text-[10px] font-bold">
+                                                                    OPD
+                                                                </span>
+                                                            )}
                                                             <span className="font-bold text-xs sm:text-sm text-foreground group-hover:text-primary transition">
                                                                 {patient.fullName}
                                                             </span>
@@ -545,10 +612,27 @@ export function PatientSearchBanner({
                                                             <span>
                                                                 <strong className="text-primary">HN:</strong> {patient.hn}
                                                             </span>
-                                                            <span>•</span>
-                                                            <span>
-                                                                <strong className="text-primary">AN:</strong> {patient.an}
-                                                            </span>
+                                                            {Boolean(patient.an && String(patient.an).trim() !== "" && patient.an !== "-") ? (
+                                                                <>
+                                                                    <span>•</span>
+                                                                    <span>
+                                                                        <strong className="text-indigo-600 dark:text-indigo-400">AN:</strong> {patient.an}
+                                                                    </span>
+                                                                    {patient.bed && (
+                                                                        <>
+                                                                            <span>•</span>
+                                                                            <span className="font-medium text-foreground/80">เตียง {patient.bed}</span>
+                                                                        </>
+                                                                    )}
+                                                                </>
+                                                            ) : patient.vn ? (
+                                                                <>
+                                                                    <span>•</span>
+                                                                    <span>
+                                                                        <strong className="text-sky-600 dark:text-sky-400">VN:</strong> {patient.vn}
+                                                                    </span>
+                                                                </>
+                                                            ) : null}
                                                             <span>•</span>
                                                             <span>
                                                                 <strong className="text-primary">บัตร ปชช:</strong> {patient.citizenId}

@@ -82,6 +82,33 @@ const KPI_COLOR_PALETTES = [
   },
 ];
 
+export const calculateQuestionScore = (q) => {
+  if (!q) return 0;
+  if (q.type === "matrix") {
+    const maxOpt =
+      q.options && q.options.length > 0
+        ? Math.max(0, ...q.options.map((o) => Number(o.score) || 0))
+        : 0;
+    const rowCount = q.subQuestions?.length || 1;
+    return rowCount * maxOpt;
+  }
+  if (q.type === "checkbox") {
+    if (!q.options || q.options.length === 0) return Number(q.maxScore) || 0;
+    return q.options.reduce(
+      (sum, o) => sum + Math.max(0, Number(o.score) || 0),
+      0
+    );
+  }
+  if (q.type === "text") {
+    return Number(q.maxScore) || 0;
+  }
+  // Radio, Select, or single choice
+  if (q.options && q.options.length > 0) {
+    return Math.max(0, ...q.options.map((o) => Number(o.score) || 0));
+  }
+  return Number(q.maxScore) || 0;
+};
+
 export function AssessmentFormBuilder({
   initialData,
   categories = [],
@@ -100,25 +127,58 @@ export function AssessmentFormBuilder({
   // Questions array
   const [questions, setQuestions] = useState(() => {
     if (initialData?.questions && initialData.questions.length > 0) {
-      return initialData.questions.map((q, qIdx) => ({
-        id: q.id || `q-${qIdx + 1}`,
-        title: q.title || q.text || `คำถามที่ ${qIdx + 1}`,
-        type: q.type || "radio",
-        maxScore: parseInt(q.score) || 5,
-        subQuestions: [
-          { id: "sq-1", text: q.text || "" },
-        ],
-        options: (q.options && q.options.length > 0)
+      return initialData.questions.map((q, qIdx) => {
+        const hasDetailedOpts =
+          Array.isArray(q.optionsWithScores) && q.optionsWithScores.length > 0;
+        const mappedOptions = hasDetailedOpts
+          ? q.optionsWithScores.map((opt, oIdx) => ({
+              id: opt.id || `opt-${oIdx + 1}`,
+              text: opt.text || "",
+              score: Number(opt.score) || 0,
+            }))
+          : q.options && q.options.length > 0
           ? q.options.map((opt, oIdx) => ({
-            id: `opt-${oIdx + 1}`,
-            text: typeof opt === "string" ? opt : opt.text || "",
-            score: oIdx === 0 ? 5 : oIdx === 1 ? 3 : oIdx === 2 ? 1 : 0,
-          }))
+              id: `opt-${oIdx + 1}`,
+              text: typeof opt === "string" ? opt : opt.text || "",
+              score:
+                typeof opt === "object" && opt.score !== undefined
+                  ? Number(opt.score) || 0
+                  : oIdx === 0
+                  ? 5
+                  : oIdx === 1
+                  ? 3
+                  : oIdx === 2
+                  ? 1
+                  : 0,
+            }))
           : [
-            { id: "opt-1", text: "ใช่ / มีอาการ", score: 5 },
-            { id: "opt-2", text: "ไม่ใช่ / ไม่มีอาการ", score: 0 },
-          ],
-      }));
+              { id: "opt-1", text: "ใช่ / มีอาการ", score: 5 },
+              { id: "opt-2", text: "ไม่ใช่ / ไม่มีอาการ", score: 0 },
+            ];
+
+        const tempQ = {
+          id: q.id || `q-${qIdx + 1}`,
+          title: q.title || q.text || `คำถามที่ ${qIdx + 1}`,
+          type: q.type || "radio",
+          subQuestions:
+            q.subQuestions && q.subQuestions.length > 0
+              ? q.subQuestions
+              : [{ id: "sq-1", text: q.text || "" }],
+          options: mappedOptions,
+        };
+
+        const autoScore = calculateQuestionScore(tempQ);
+        const parsedScore = parseInt(q.score);
+        const maxScore =
+          !isNaN(parsedScore) && parsedScore > 0
+            ? parsedScore
+            : autoScore || 5;
+
+        return {
+          ...tempQ,
+          maxScore,
+        };
+      });
     }
 
     // Default 4 questions as in mockup
@@ -157,7 +217,7 @@ export function AssessmentFormBuilder({
         id: "q-4",
         title: "การประเมินความถี่และพฤติกรรมสุขภาพ",
         type: "matrix",
-        maxScore: 8,
+        maxScore: 32,
         subQuestions: [
           { id: "sq-4-1", text: "1. ความถี่ในการดื่มเครื่องดื่มแอลกอฮอล์" },
           { id: "sq-4-2", text: "2. ความถี่ในการสูบบุหรี่หรือผลิตภัณฑ์ยาสูบ" },
@@ -240,25 +300,58 @@ export function AssessmentFormBuilder({
 
       if (initialData.questions && initialData.questions.length > 0) {
         setQuestions(
-          initialData.questions.map((q, qIdx) => ({
-            id: q.id || `q-${qIdx + 1}`,
-            title: q.title || q.text || `คำถามที่ ${qIdx + 1}`,
-            type: q.type || "radio",
-            maxScore: parseInt(q.score) || 5,
-            subQuestions: [
-              { id: "sq-1", text: q.text || "" },
-            ],
-            options: (q.options && q.options.length > 0)
+          initialData.questions.map((q, qIdx) => {
+            const hasDetailedOpts =
+              Array.isArray(q.optionsWithScores) && q.optionsWithScores.length > 0;
+            const mappedOptions = hasDetailedOpts
+              ? q.optionsWithScores.map((opt, oIdx) => ({
+                  id: opt.id || `opt-${oIdx + 1}`,
+                  text: opt.text || "",
+                  score: Number(opt.score) || 0,
+                }))
+              : q.options && q.options.length > 0
               ? q.options.map((opt, oIdx) => ({
-                id: `opt-${oIdx + 1}`,
-                text: typeof opt === "string" ? opt : opt.text || "",
-                score: oIdx === 0 ? 5 : oIdx === 1 ? 3 : oIdx === 2 ? 1 : 0,
-              }))
+                  id: `opt-${oIdx + 1}`,
+                  text: typeof opt === "string" ? opt : opt.text || "",
+                  score:
+                    typeof opt === "object" && opt.score !== undefined
+                      ? Number(opt.score) || 0
+                      : oIdx === 0
+                      ? 5
+                      : oIdx === 1
+                      ? 3
+                      : oIdx === 2
+                      ? 1
+                      : 0,
+                }))
               : [
-                { id: "opt-1", text: "ใช่ / มีอาการ", score: 5 },
-                { id: "opt-2", text: "ไม่ใช่ / ไม่มีอาการ", score: 0 },
-              ],
-          }))
+                  { id: "opt-1", text: "ใช่ / มีอาการ", score: 5 },
+                  { id: "opt-2", text: "ไม่ใช่ / ไม่มีอาการ", score: 0 },
+                ];
+
+            const tempQ = {
+              id: q.id || `q-${qIdx + 1}`,
+              title: q.title || q.text || `คำถามที่ ${qIdx + 1}`,
+              type: q.type || "radio",
+              subQuestions:
+                q.subQuestions && q.subQuestions.length > 0
+                  ? q.subQuestions
+                  : [{ id: "sq-1", text: q.text || "" }],
+              options: mappedOptions,
+            };
+
+            const autoScore = calculateQuestionScore(tempQ);
+            const parsedScore = parseInt(q.score);
+            const maxScore =
+              !isNaN(parsedScore) && parsedScore > 0
+                ? parsedScore
+                : autoScore || 5;
+
+            return {
+              ...tempQ,
+              maxScore,
+            };
+          })
         );
       }
 
@@ -287,8 +380,11 @@ export function AssessmentFormBuilder({
   // Calculate Total Score dynamically
   const totalScore = useMemo(() => {
     return questions.reduce((sum, q) => {
-      // Sum max score of each question
-      return sum + (parseInt(q.maxScore) || 0);
+      const qScore =
+        q.maxScore !== undefined && q.maxScore !== null && !isNaN(Number(q.maxScore))
+          ? Number(q.maxScore)
+          : calculateQuestionScore(q);
+      return sum + (qScore || 0);
     }, 0);
   }, [questions]);
 
@@ -303,17 +399,19 @@ export function AssessmentFormBuilder({
 
   // Question handlers
   const handleAddQuestion = () => {
+    const defaultOptions = [
+      { id: `opt-${Date.now()}-1`, text: "", score: 5 },
+      { id: `opt-${Date.now()}-2`, text: "", score: 0 },
+    ];
     const newQ = {
       id: `q-${Date.now()}`,
       title: "",
       type: "radio",
       maxScore: 5,
       subQuestions: [{ id: `sq-${Date.now()}`, text: "" }],
-      options: [
-        { id: `opt-${Date.now()}-1`, text: "", score: 5 },
-        { id: `opt-${Date.now()}-2`, text: "", score: 0 },
-      ],
+      options: defaultOptions,
     };
+    newQ.maxScore = calculateQuestionScore(newQ);
     setQuestions((prev) => [...prev, newQ]);
   };
 
@@ -332,6 +430,7 @@ export function AssessmentFormBuilder({
         id: `sq-${Date.now()}-${sqIdx}`,
       })),
     };
+    duplicated.maxScore = target.maxScore ?? calculateQuestionScore(duplicated);
     const updated = [...questions];
     updated.splice(idx + 1, 0, duplicated);
     setQuestions(updated);
@@ -346,26 +445,33 @@ export function AssessmentFormBuilder({
     setQuestions((prev) =>
       prev.map((q, i) => {
         if (i !== idx) return q;
-        if (field === "type" && value === "matrix" && (!q.options || q.options.length <= 2)) {
-          return {
-            ...q,
-            type: value,
-            options: [
-              { id: `opt-${Date.now()}-1`, text: "ไม่เคย", score: 0 },
-              { id: `opt-${Date.now()}-2`, text: "เพียง 1–2 ครั้ง", score: 2 },
-              { id: `opt-${Date.now()}-3`, text: "เดือนละ 1–3 ครั้ง", score: 4 },
-              { id: `opt-${Date.now()}-4`, text: "สัปดาห์ละ 1–4 ครั้ง", score: 6 },
-              { id: `opt-${Date.now()}-5`, text: "เกือบทุกวัน", score: 8 },
-            ],
-            subQuestions:
-              q.subQuestions && q.subQuestions.length > 1
-                ? q.subQuestions
-                : [
-                  { id: `sq-${Date.now()}-1`, text: "1. ระบุข้อคำถามแถวที่ 1" },
-                  { id: `sq-${Date.now()}-2`, text: "2. ระบุข้อคำถามแถวที่ 2" },
-                  { id: `sq-${Date.now()}-3`, text: "3. ระบุข้อคำถามแถวที่ 3" },
-                ],
-          };
+        if (field === "type") {
+          let updatedQ;
+          if (value === "matrix" && (!q.options || q.options.length <= 2)) {
+            updatedQ = {
+              ...q,
+              type: value,
+              options: [
+                { id: `opt-${Date.now()}-1`, text: "ไม่เคย", score: 0 },
+                { id: `opt-${Date.now()}-2`, text: "เพียง 1–2 ครั้ง", score: 2 },
+                { id: `opt-${Date.now()}-3`, text: "เดือนละ 1–3 ครั้ง", score: 4 },
+                { id: `opt-${Date.now()}-4`, text: "สัปดาห์ละ 1–4 ครั้ง", score: 6 },
+                { id: `opt-${Date.now()}-5`, text: "เกือบทุกวัน", score: 8 },
+              ],
+              subQuestions:
+                q.subQuestions && q.subQuestions.length > 1
+                  ? q.subQuestions
+                  : [
+                      { id: `sq-${Date.now()}-1`, text: "1. ระบุข้อคำถามแถวที่ 1" },
+                      { id: `sq-${Date.now()}-2`, text: "2. ระบุข้อคำถามแถวที่ 2" },
+                      { id: `sq-${Date.now()}-3`, text: "3. ระบุข้อคำถามแถวที่ 3" },
+                    ],
+            };
+          } else {
+            updatedQ = { ...q, type: value };
+          }
+          updatedQ.maxScore = calculateQuestionScore(updatedQ);
+          return updatedQ;
         }
         return { ...q, [field]: value };
       })
@@ -377,13 +483,13 @@ export function AssessmentFormBuilder({
     setQuestions((prev) =>
       prev.map((q, i) => {
         if (i !== qIdx) return q;
-        return {
-          ...q,
-          options: [
-            ...q.options,
-            { id: `opt-${Date.now()}`, text: "", score: 0 },
-          ],
-        };
+        const nextOptions = [
+          ...q.options,
+          { id: `opt-${Date.now()}`, text: "", score: 0 },
+        ];
+        const updatedQ = { ...q, options: nextOptions };
+        updatedQ.maxScore = calculateQuestionScore(updatedQ);
+        return updatedQ;
       })
     );
   };
@@ -402,7 +508,9 @@ export function AssessmentFormBuilder({
         const nextOptions = [...q.options];
         const [moved] = nextOptions.splice(sourceIdx, 1);
         nextOptions.splice(targetIdx, 0, moved);
-        return { ...q, options: nextOptions };
+        const updatedQ = { ...q, options: nextOptions };
+        updatedQ.maxScore = calculateQuestionScore(updatedQ);
+        return updatedQ;
       })
     );
   };
@@ -415,7 +523,11 @@ export function AssessmentFormBuilder({
         const nextSubQs = [...q.subQuestions];
         const [moved] = nextSubQs.splice(sourceIdx, 1);
         nextSubQs.splice(targetIdx, 0, moved);
-        return { ...q, subQuestions: nextSubQs };
+        const updatedQ = { ...q, subQuestions: nextSubQs };
+        if (q.type === "matrix") {
+          updatedQ.maxScore = calculateQuestionScore(updatedQ);
+        }
+        return updatedQ;
       })
     );
   };
@@ -427,7 +539,11 @@ export function AssessmentFormBuilder({
         const updatedOpts = q.options.map((opt, oi) =>
           oi === optIdx ? { ...opt, [field]: value } : opt
         );
-        return { ...q, options: updatedOpts };
+        const updatedQ = { ...q, options: updatedOpts };
+        if (field === "score") {
+          updatedQ.maxScore = calculateQuestionScore(updatedQ);
+        }
+        return updatedQ;
       })
     );
   };
@@ -437,10 +553,10 @@ export function AssessmentFormBuilder({
       prev.map((q, i) => {
         if (i !== qIdx) return q;
         if (q.options.length <= 1) return q;
-        return {
-          ...q,
-          options: q.options.filter((_, oi) => oi !== optIdx),
-        };
+        const nextOptions = q.options.filter((_, oi) => oi !== optIdx);
+        const updatedQ = { ...q, options: nextOptions };
+        updatedQ.maxScore = calculateQuestionScore(updatedQ);
+        return updatedQ;
       })
     );
   };
@@ -450,13 +566,21 @@ export function AssessmentFormBuilder({
     setQuestions((prev) =>
       prev.map((q, i) => {
         if (i !== qIdx) return q;
-        return {
-          ...q,
-          subQuestions: [
-            ...q.subQuestions,
-            { id: `sq-${Date.now()}`, text: "" },
-          ],
-        };
+        const nextSubQs = [
+          ...q.subQuestions,
+          {
+            id: `sq-${Date.now()}`,
+            text:
+              q.type === "matrix"
+                ? `${q.subQuestions.length + 1}. ระบุข้อคำถามแถวที่ ${q.subQuestions.length + 1}`
+                : "",
+          },
+        ];
+        const updatedQ = { ...q, subQuestions: nextSubQs };
+        if (q.type === "matrix") {
+          updatedQ.maxScore = calculateQuestionScore(updatedQ);
+        }
+        return updatedQ;
       })
     );
   };
@@ -478,10 +602,12 @@ export function AssessmentFormBuilder({
       prev.map((q, i) => {
         if (i !== qIdx) return q;
         if (q.subQuestions.length <= 1) return q;
-        return {
-          ...q,
-          subQuestions: q.subQuestions.filter((_, si) => si !== sqIdx),
-        };
+        const nextSubQs = q.subQuestions.filter((_, si) => si !== sqIdx);
+        const updatedQ = { ...q, subQuestions: nextSubQs };
+        if (q.type === "matrix") {
+          updatedQ.maxScore = calculateQuestionScore(updatedQ);
+        }
+        return updatedQ;
       })
     );
   };
@@ -554,6 +680,7 @@ export function AssessmentFormBuilder({
         type: q.type,
         score: `${q.maxScore} คะแนน`,
         options: q.options.map((o) => o.text),
+        optionsWithScores: q.options.map((o) => ({ text: o.text, score: o.score })),
       })),
       kpiLevels: kpiLevels.map((lvl) => ({
         id: lvl.id,

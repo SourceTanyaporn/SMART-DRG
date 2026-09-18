@@ -1,3 +1,4 @@
+import React, { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -7,12 +8,10 @@ import {
     DialogDescription,
     DialogFooter,
 } from "@/components/ui/dialog";
-import { Grid } from "@/components/ui/grid";
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import {
     Activity,
     ArrowUpDown,
-    Bot,
     ClipboardCheck,
     Clock3,
     Copy,
@@ -25,8 +24,10 @@ import {
     Search,
     Sparkles,
     Square,
+    Stethoscope,
     Trash2,
     Upload,
+    User,
     Volume2,
     X,
 } from "lucide-react";
@@ -38,8 +39,11 @@ import { AssessmentFormsTab } from "./components/assessment-forms-tab";
 import { PatientSearchBanner } from "./components/patient-search-banner";
 import { AiClinicalSummary } from "./components/ai-clinical-summary";
 import { DrugAllergyAlert } from "./components/drug-allergy-alert";
+import { AiSummaryCard, CodeRow } from "./components/ai-summary-card";
+import { TranscriptPanel } from "./components/transcript-panel";
+import { toast } from "@/components/ui/toast-notification";
 
-export { buildFormDataFromPatient };
+export { buildFormDataFromPatient, CodeRow };
 
 export function SpeechToTextPage() {
     const navigate = useNavigate();
@@ -58,7 +62,10 @@ export function SpeechToTextPage() {
     });
 
     // Drug Allergy & Clinical Safety Alert Detection
-    const drugAllergyAlerts = clinical.getDrugAllergyAlerts(audio.transcript, audio.audioFiles);
+    const drugAllergyAlerts = useMemo(
+        () => clinical.getDrugAllergyAlerts(audio.transcript, audio.audioFiles),
+        [clinical, audio.transcript, audio.audioFiles]
+    );
 
     return (
         <div className="flex flex-col gap-2 h-full lg:h-[calc(100vh-5rem)] lg:max-h-[calc(100vh-5rem)] overflow-hidden">
@@ -81,9 +88,9 @@ export function SpeechToTextPage() {
                 className="
                     grid min-h-0 w-full flex-1 gap-2 sm:gap-2.5 
                     grid-cols-1
-                    lg:grid-cols-[250px_minmax(0,1fr)_275px]
-                    xl:grid-cols-[270px_minmax(0,1.35fr)_300px]
-                    2xl:grid-cols-[290px_minmax(0,1.5fr)_330px]
+                    lg:grid-cols-[285px_minmax(0,1fr)_280px]
+                    xl:grid-cols-[315px_minmax(0,1.35fr)_305px]
+                    2xl:grid-cols-[340px_minmax(0,1.5fr)_330px]
                     overflow-y-auto
                     lg:overflow-hidden
                 "
@@ -209,12 +216,14 @@ export function SpeechToTextPage() {
                             </div>
 
                             {/* Sort Toggle Button */}
-                            <button
+                            <Button
                                 type="button"
+                                variant="outline"
+                                size="sm"
                                 onClick={() => audio.setAudioSortOrder((prev) => (prev === "desc" ? "asc" : "desc"))}
-                                className={`flex h-8 shrink-0 items-center gap-1 rounded-lg border px-2 text-[10.5px] font-semibold transition cursor-pointer shadow-2xs ${audio.audioSortOrder === "desc"
-                                    ? "bg-primary/10 border-primary/30 text-primary hover:bg-primary/20"
-                                    : "bg-muted border-border text-foreground hover:bg-muted/80"
+                                className={`h-8 shrink-0 px-2 rounded-lg text-[11px] font-medium normal-case tracking-normal gap-1 transition-all ${audio.audioSortOrder === "desc"
+                                    ? "border-primary/50 bg-primary/5 text-primary hover:bg-primary/20 hover:text-primary"
+                                    : "border-border bg-card text-foreground hover:bg-muted"
                                     }`}
                                 title={
                                     audio.audioSortOrder === "desc"
@@ -229,7 +238,7 @@ export function SpeechToTextPage() {
                                 <span className="whitespace-nowrap">
                                     {audio.audioSortOrder === "desc" ? "ใหม่ → เก่า" : "เก่า → ใหม่"}
                                 </span>
-                            </button>
+                            </Button>
                         </div>
 
                         {/* Audio Files List */}
@@ -381,80 +390,7 @@ export function SpeechToTextPage() {
                     </section>
 
                     {/* Transcribed Text Section */}
-                    <section className="min-h-0 flex-1 flex flex-col overflow-hidden">
-                        <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-2xs">
-                            <div className="flex shrink-0 items-center justify-end border-b border-border px-3 py-2 bg-primary/5">
-
-                                <div className="flex items-center gap-2 text-[12px] text-muted-foreground shrink-0">
-                                    <div className="flex items-center gap-1">
-                                        <Clock3 size={10} />
-                                        <span>ระยะเวลา {audio.formatTime(audio.duration)}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="min-h-0 flex-1 overflow-y-auto px-3 py-2.5 scrollbar-thin scrollbar-thumb-muted-foreground/20">
-                                {audio.transcript && audio.transcript.length > 0 ? (
-                                    <div className="space-y-3">
-                                        {audio.transcript.map((item) => {
-                                            const isDoc = item.doctor ?? false;
-
-                                            return (
-                                                <div key={item.id}>
-                                                    <div className="mb-1.5 flex items-center gap-2">
-                                                        <div
-                                                            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[9px] font-bold ${isDoc
-                                                                ? "bg-primary/20 text-primary border border-primary/30"
-                                                                : "bg-purple-500/20 text-purple-600 dark:text-purple-400 border border-purple-500/30"
-                                                                }`}
-                                                        >
-                                                            {isDoc ? "แพทย์" : "ผู้ป่วย"}
-                                                        </div>
-
-                                                        <div>
-                                                            <p className="text-[12px] font-semibold text-foreground">
-                                                                {isDoc && clinical.selectedPatient?.doctor
-                                                                    ? clinical.selectedPatient.doctor
-                                                                    : !isDoc && clinical.selectedPatient?.fullName
-                                                                        ? clinical.selectedPatient.fullName
-                                                                        : (item.name || (isDoc ? "แพทย์" : "ผู้ป่วย"))}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className="rounded-xl border border-border bg-card/90 px-3 py-2 text-[12px] leading-[1.7] text-foreground/90 break-words shadow-2xs">
-                                                        {item.text}
-                                                    </div>
-
-                                                    {isDoc && (
-                                                        <div className="mt-1 flex justify-end gap-2">
-                                                            <Edit3
-                                                                size={11}
-                                                                className="cursor-pointer text-muted-foreground hover:text-foreground"
-                                                            />
-                                                            <Copy
-                                                                size={11}
-                                                                className="cursor-pointer text-muted-foreground hover:text-foreground"
-                                                            />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                ) : (
-                                    <div className="flex h-full min-h-[160px] flex-col items-center justify-center rounded-xl border border-dashed border-border/80 bg-muted/15 p-4 text-center">
-                                        <p className="text-[12.5px] font-semibold text-foreground">
-                                            ยังไม่มีข้อความเสียง
-                                        </p>
-                                        <p className="mt-1 text-[11px] text-muted-foreground max-w-xs leading-relaxed">
-                                            กรุณาอัปโหลดไฟล์เสียงหรือกดบันทึกเสียงเพื่อเริ่มแปลงข้อความ
-                                        </p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </section>
+                    <TranscriptPanel audio={audio} patient={clinical.selectedPatient} />
 
                     {/* Audio Player Footer Section */}
                     <section className="shrink-0 rounded-xl border border-border bg-card px-3 py-2 shadow-2xs">
@@ -469,18 +405,20 @@ export function SpeechToTextPage() {
                                 onLoadedMetadata={(e) => {
                                     audio.setDuration(e.currentTarget.duration);
                                 }}
+                                onTimeUpdate={(e) => {
+                                    audio.setCurrentTime(e.currentTarget.currentTime);
+                                }}
                                 onPlay={() => {
                                     audio.setIsPlaying(true);
-                                    cancelAnimationFrame(audio.animationFrameRef.current);
-                                    audio.animationFrameRef.current = requestAnimationFrame(audio.updateAudioProgress);
+                                    audio.startProgressLoop?.();
                                 }}
                                 onPause={() => {
                                     audio.setIsPlaying(false);
-                                    cancelAnimationFrame(audio.animationFrameRef.current);
+                                    audio.stopProgressLoop?.();
                                 }}
                                 onEnded={() => {
                                     audio.setIsPlaying(false);
-                                    cancelAnimationFrame(audio.animationFrameRef.current);
+                                    audio.stopProgressLoop?.();
                                     audio.setCurrentTime(0);
                                     if (audio.audioRef.current) {
                                         audio.audioRef.current.currentTime = 0;
@@ -592,13 +530,13 @@ export function SpeechToTextPage() {
                     "
                 >
                     <section className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-2xs">
-                        <header className="flex h-11 sm:h-12 shrink-0 items-center justify-between rounded-t-xl border-b border-border bg-primary/5 px-2 sm:px-3">
+                        <header className="flex h-11 sm:h-12 shrink-0 items-center justify-between rounded-t-xl border-b border-border bg-muted/20 px-2 sm:px-3">
                             <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto scrollbar-none min-w-0 py-0.5">
                                 <button
                                     type="button"
                                     onClick={() => clinical.setActiveStep(0)}
                                     className={`flex shrink-0 whitespace-nowrap items-center gap-1 sm:gap-1.5 rounded-lg px-2 sm:px-2.5 py-1 sm:py-1.5 text-[11px] sm:text-xs font-semibold transition cursor-pointer ${clinical.activeStep === 0
-                                        ? "bg-card text-primary shadow-xs border border-primary/30 ring-1 ring-primary/20"
+                                        ? "bg-card text-primary shadow-xs border border-primary/30"
                                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                         }`}
                                 >
@@ -610,7 +548,7 @@ export function SpeechToTextPage() {
                                     type="button"
                                     onClick={() => clinical.setActiveStep(1)}
                                     className={`flex shrink-0 whitespace-nowrap items-center gap-1 sm:gap-1.5 rounded-lg px-2 sm:px-2.5 py-1 sm:py-1.5 text-[11px] sm:text-xs font-semibold transition cursor-pointer ${clinical.activeStep === 1
-                                        ? "bg-card text-primary shadow-xs border border-primary/30 ring-1 ring-primary/20"
+                                        ? "bg-card text-primary shadow-xs border border-primary/30 "
                                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                         }`}
                                 >
@@ -622,7 +560,7 @@ export function SpeechToTextPage() {
                                     type="button"
                                     onClick={() => clinical.setActiveStep(2)}
                                     className={`flex shrink-0 whitespace-nowrap items-center gap-1 sm:gap-1.5 rounded-lg px-2 sm:px-2.5 py-1 sm:py-1.5 text-[11px] sm:text-xs font-semibold transition cursor-pointer ${clinical.activeStep === 2
-                                        ? "bg-card text-primary shadow-xs border border-primary/30 ring-1 ring-primary/20"
+                                        ? "bg-card text-primary shadow-xs border border-primary/30 "
                                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                         }`}
                                 >
@@ -784,35 +722,7 @@ export function SpeechToTextPage() {
                     </section>
 
                     {/* AI ICD / DRG Codes Summary Card */}
-                    <section className="overflow-hidden rounded-xl border border-border bg-card shadow-2xs">
-                        <div className="flex items-center gap-2 bg-primary/5 border-b border-border/80 px-3 py-2 text-[12px] font-semibold text-foreground">
-                            <Bot
-                                size={13}
-                                className="text-primary"
-                            />
-                            สรุปผลโดย AI
-                        </div>
-
-                        <Grid cols={{ default: 1, sm: 3 }} gap={2} className="p-2">
-                            <CodeRow
-                                label="ICD 10"
-                                code={clinical.formData.icd10Code && clinical.formData.icd10Code !== "-" ? clinical.formData.icd10Code : (clinical.formData.icd10?.split(" ")[0] || "J11.1")}
-                                description={clinical.formData.icd10Name && clinical.formData.icd10Name !== "-" ? clinical.formData.icd10Name : (clinical.formData.icd10Desc || (clinical.formData.icd10?.includes("(") ? clinical.formData.icd10.split("(")[1].replace(")", "") : clinical.formData.icd10) || "Influenza with other respiratory manifestations / ไข้หวัดใหญ่")}
-                            />
-
-                            <CodeRow
-                                label="ICD 9"
-                                code={clinical.formData.icd9Code || (clinical.formData.icd9?.split(" ")[0] || "-")}
-                                description={clinical.formData.icd9Name || clinical.formData.icd9Desc || (clinical.formData.icd9?.includes("(") ? clinical.formData.icd9.split("(")[1].replace(")", "") : "") || "-"}
-                            />
-
-                            <CodeRow
-                                label="DRG"
-                                code={clinical.formData.drgCode && clinical.formData.drgCode !== "-" ? clinical.formData.drgCode : (clinical.formData.drg?.split(" ")[0] || "-")}
-                                description={clinical.formData.drgName && clinical.formData.drgName !== "-" ? clinical.formData.drgName : (clinical.formData.drgDesc || (clinical.formData.drg?.includes("(") ? clinical.formData.drg.split("(")[1].replace(")", "") : "") || "-")}
-                            />
-                        </Grid>
-                    </section>
+                    <AiSummaryCard formData={clinical.formData} />
                 </div>
 
                 {/* Column 3: สรุปทางคลินิกโดย AI (AI Clinical Summary) */}
@@ -867,35 +777,6 @@ export function SpeechToTextPage() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
-        </div>
-    );
-}
-
-function CodeRow({ label, code, description }) {
-    return (
-        <div className="min-w-0 rounded-xl border border-border bg-card/90 p-2.5 shadow-2xs hover:border-border/80 transition">
-            <div className="mb-1 flex items-center justify-between">
-                <span className="text-[11px] font-bold text-muted-foreground">
-                    {label}
-                </span>
-
-                <button
-                    type="button"
-                    className="text-[11px] font-bold text-primary hover:underline cursor-pointer"
-                >
-                    ↻
-                </button>
-            </div>
-
-            <div className="min-w-0">
-                <p className="truncate text-[12px] font-bold text-foreground font-mono">
-                    {code}
-                </p>
-
-                <p className="mt-0.5 truncate text-[10px] text-muted-foreground font-medium" title={description}>
-                    {description}
-                </p>
-            </div>
         </div>
     );
 }

@@ -40,9 +40,9 @@ function RootLayout() {
       <SidebarProvider>
         <Toaster />
         <AppSidebar />
-        <SidebarInset className="bg-background">
+        <SidebarInset className="bg-background min-w-0">
           <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center border-b border-border bg-card/95 backdrop-blur-md px-2 sm:px-3 md:px-4">
-            <SidebarTrigger className="-ml-1 sm:-ml-1.5 mr-1.5 sm:mr-2.5 shrink-0" />
+            <SidebarTrigger className="-ml-1 sm:-ml-1.5 mr-1.5 sm:mr-2.5 shrink-0 text-foreground dark:!text-white dark:hover:!text-white" />
 
             <div className="flex lg:hidden items-center gap-1.5 min-w-0 flex-1 mr-2 text-xs sm:text-sm">
               {immediateParent ? (
@@ -118,7 +118,7 @@ function RootLayout() {
               <NavUser user={currentUser} className="w-auto md:w-auto lg:w-60 shrink-0" />
             </div>
           </header>
-          <main className="flex-1 px-2 py-2 sm:px-2 sm:py-2 md:px-2">
+          <main className="flex-1 px-2 py-2 sm:px-4 sm:py-2 md:px-2 min-w-0 w-full overflow-x-hidden">
             <Outlet />
           </main>
         </SidebarInset>

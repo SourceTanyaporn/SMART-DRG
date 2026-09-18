@@ -14,15 +14,42 @@ const requestparam = {
   barcode: null,
 };
 
-export const apiInstance = axios.create({
-  baseURL:
-    import.meta.env.VITE_API_BASE_URL ||
-    "https://container2.crhospital.org/panacea-claim",
-  timeout: 0,
+// Base URLs
+export const PANACEA_API_BASE_URL =
+  import.meta.env.VITE_PANACEA_API_URL ||
+  import.meta.env.REACT_APP_PANACEACHS_SERVER ||
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://localhost:51804";
+
+export const AI_API_BASE_URL =
+  import.meta.env.VITE_AI_API_URL ||
+  import.meta.env.VITE_API_URL ||
+  "http://localhost:8002";
+
+/**
+ * panaceaClient: Base URL ชี้ไปที่ Panacea API สำหรับดึงข้อมูลเวชระเบียนและ Dashboard
+ */
+export const panaceaClient = axios.create({
+  baseURL: PANACEA_API_BASE_URL,
+  timeout: 30000,
   withCredentials: true,
 });
 
-setupInterceptors(apiInstance);
+/**
+ * aiClient: Base URL ชี้ไปที่ Smart DRG API สำหรับส่งไฟล์เสียงหรือ Prompt งาน AI
+ */
+export const aiClient = axios.create({
+  baseURL: AI_API_BASE_URL,
+  timeout: 0, // AI / Speech-to-text might take longer
+});
+
+// Setup interceptors for both clients (Authorization Bearer Token & CSRF)
+setupInterceptors(panaceaClient, { clientName: "panacea" });
+setupInterceptors(aiClient, { clientName: "ai" });
+
+// Backward compatibility: alias apiInstance to panaceaClient
+export const apiInstance = panaceaClient;
+
 
 const getResponseError = (data) => {
   if (!data) return null;

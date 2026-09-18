@@ -5,7 +5,7 @@ export const Bubble = React.forwardRef(
     ({ className, variant = "default", children, ...props }, ref) => {
         const variants = {
             default: "bg-muted/80 text-foreground rounded-2xl rounded-br-xs border border-border shadow-xs",
-            user: "bg-primary text-primary-foreground rounded-2xl rounded-br-xs shadow-xs",
+            user: "bg-primary/10 text-foreground border border-primary/20 rounded-2xl rounded-br-xs shadow-2xs",
             bot: "bg-primary/[0.04] dark:bg-primary/10 text-foreground rounded-2xl rounded-bl-xs border border-primary/20 shadow-xs",
             ai: "bg-primary/[0.04] dark:bg-primary/10 text-foreground rounded-2xl rounded-bl-xs border border-primary/20 shadow-xs",
             muted: "bg-muted text-muted-foreground rounded-2xl border border-border",
