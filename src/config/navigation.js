@@ -34,13 +34,13 @@ export const navigationGroups = [
       // { title: "Result", to: "/result-page", icon: LayoutDashboardIcon },
     ],
   },
-  {
-    label: "ข้อมูลเชิงลึก",
-    items: [
-      { title: "รายได้และความเสี่ยง", to: "/revenue-risk", icon: CircleDollarSignIcon },
-      // { title: "รายงาน", to: "/reports", icon: FileBarChartIcon },
-    ],
-  },
+  // {
+  //   label: "ข้อมูลเชิงลึก",
+  //   items: [
+  //     { title: "รายได้และความเสี่ยง", to: "/revenue-risk", icon: CircleDollarSignIcon },
+  //     // { title: "รายงาน", to: "/reports", icon: FileBarChartIcon },
+  //   ],
+  // },
   {
     label: "การจัดการระบบ",
     isDividerBefore: true,
