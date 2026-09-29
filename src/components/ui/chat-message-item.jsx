@@ -181,14 +181,14 @@ export function ChatMessageItem({
                     align={isDoc ? "start" : "end"}
                     className="my-1"
                 >
-                    {/* หมอ: Avatar ฝั่งซ้าย (ไอคอนแพทย์ Stethoscope - speak00) */}
+                    {/* หมอ: Avatar ฝั่งซ้าย (ไอคอนแพทย์ Stethoscope) */}
                     {isDoc && (
                         <MessageAvatar>
                             <button
                                 type="button"
                                 onClick={handleToggleRole}
                                 className="cursor-pointer group"
-                                title="แพทย์ (speak00) - คลิกเพื่อสลับบทบาท"
+                                title="แพทย์ - คลิกเพื่อสลับบทบาท"
                             >
                                 <div
                                     className={`size-7 sm:size-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 group-hover:scale-105 group-active:scale-95 ${theme.avatar}`}
@@ -200,16 +200,12 @@ export function ChatMessageItem({
                     )}
 
                     <MessageContent className={`flex-1 min-w-0 max-w-full ${isDoc ? "items-start" : "items-end"}`}>
-                        {/* แถบส่วนหัว: ชื่อผู้พูด + รหัสผู้พูด (speak00/speak01) + เวลาเสียง */}
+                        {/* แถบส่วนหัว: ชื่อผู้พูด + เวลาเสียง */}
                         <div className={`flex items-center gap-1.5 px-0.5 mb-1 w-full flex-wrap ${isDoc ? "justify-start" : "justify-end"}`}>
                             {isDoc ? (
                                 <div className="flex items-center gap-1.5">
-                                    <span className="inline-flex items-center gap-1 rounded bg-primary/10 px-1.5 py-0.5 text-[9.5px] font-bold text-primary border border-primary/20">
-                                        <Stethoscope size={10} strokeWidth={2.5} />
-                                        <span>speak00</span>
-                                    </span>
                                     <span className="text-[11.5px] font-semibold text-foreground">
-                                        {doctorMainName !== "speak00" && doctorMainName !== "SPEAKER_00" ? doctorMainName : "แพทย์"}
+                                        {doctorMainName && !/^(speak|speaker|spk)[-_]?0*0$/i.test(doctorMainName) ? doctorMainName : "แพทย์"}
                                     </span>
                                     {doctorLicense && (
                                         <span className="text-[10px] text-muted-foreground font-normal">
@@ -220,11 +216,7 @@ export function ChatMessageItem({
                             ) : (
                                 <div className="flex items-center gap-1.5">
                                     <span className="text-[11.5px] font-semibold text-foreground">
-                                        {patient?.fullName || (msg.name !== "speak01" && msg.name !== "SPEAKER_01" ? (msg.name || "ผู้ป่วย") : "ผู้ป่วย")}
-                                    </span>
-                                    <span className="inline-flex items-center gap-1 rounded bg-emerald-500/10 px-1.5 py-0.5 text-[9.5px] font-bold text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
-                                        <User size={10} strokeWidth={2.5} />
-                                        <span>speak01</span>
+                                        {patient?.fullName || (msg.name && !/^(speak|speaker|spk)[-_]?0*1$/i.test(msg.name) ? msg.name : "ผู้ป่วย")}
                                     </span>
                                 </div>
                             )}
@@ -380,14 +372,14 @@ export function ChatMessageItem({
                         </BubbleGroup>
                     </MessageContent>
 
-                    {/* คนไข้: Avatar ฝั่งขวา (ไอคอนผู้ป่วย User - speak01) */}
+                    {/* คนไข้: Avatar ฝั่งขวา (ไอคอนผู้ป่วย User) */}
                     {!isDoc && (
                         <MessageAvatar>
                             <button
                                 type="button"
                                 onClick={handleToggleRole}
                                 className="cursor-pointer group"
-                                title="ผู้ป่วย (speak01) - คลิกเพื่อสลับบทบาท"
+                                title="ผู้ป่วย - คลิกเพื่อสลับบทบาท"
                             >
                                 <div
                                     className={`size-7 sm:size-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-200 group-hover:scale-105 group-active:scale-95 ${theme.avatar}`}
