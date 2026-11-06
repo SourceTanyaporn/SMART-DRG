@@ -308,7 +308,7 @@ export function useClinicalForm({ isNew = false, searchHn, searchPatientId } = {
 
         setIsExtracting(true);
         try {
-            const apiBase = import.meta.env.VITE_API_URL || "http://localhost:8002";
+            const apiBase = import.meta.env.VITE_API_URL || "https://smart-drg-api.onrender.com";
             const response = await fetch(`${apiBase}/v1/extract-form`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

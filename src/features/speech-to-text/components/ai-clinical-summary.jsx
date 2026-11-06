@@ -474,7 +474,7 @@ export function AiClinicalSummary({
 
         try {
             console.log("Sending clinical chat request to backend:", requestPayload);
-            const apiBase = import.meta.env.VITE_API_URL || "http://localhost:8002";
+            const apiBase = import.meta.env.VITE_API_URL || "https://smart-drg-api.onrender.com";
             const apiRes = await fetch(`${apiBase}/v1/chat/clinical`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

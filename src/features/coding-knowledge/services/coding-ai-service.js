@@ -3,7 +3,7 @@
  * เชื่อมต่อกับ Backend FastAPI หรือทำงานผ่าน Smart Clinical Knowledge Synthesizer
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8002";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "https://smart-drg-api.onrender.com";
 
 /**
  * ฐานความรู้จำลองอัจฉริยะสำหรับโรคเฉพาะทางที่พบบ่อย (Fallback Medical Knowledge Base)
