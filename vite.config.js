@@ -25,7 +25,7 @@ export default defineConfig({
 
     proxy: {
       "/transcribe": {
-        target: "http://localhost:8002",
+        target: "https://smart-drg-api.onrender.com",
         changeOrigin: true,
         secure: false,
         rewrite: (path) =>
